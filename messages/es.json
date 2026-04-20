@@ -1,0 +1,13 @@
+{
+  "common": {
+    "appName": "AI Sports"
+  },
+  "login": {
+    "title": "Bienvenido",
+    "subtitle": "Introduce tu email y te enviaremos un enlace de acceso.",
+    "emailLabel": "Email",
+    "submit": "Enviar enlace",
+    "sending": "Enviando…",
+    "sent": "Te hemos enviado un enlace a {email}. Revisa tu bandeja de entrada."
+  }
+}
