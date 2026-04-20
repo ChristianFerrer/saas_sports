@@ -1,6 +1,33 @@
 {
   "common": {
-    "appName": "AI Sports"
+    "appName": "AI Sports",
+    "signOut": "Sign out"
+  },
+  "roles": {
+    "admin": "Admin",
+    "coach": "Coach",
+    "parent": "Parent"
+  },
+  "admin": {
+    "home": {
+      "title": "Admin dashboard",
+      "welcome": "Welcome, {name}.",
+      "empty": "No groups or students yet. Create your first one from the management section."
+    }
+  },
+  "coach": {
+    "home": {
+      "title": "My classes",
+      "welcome": "Hi, {name}.",
+      "empty": "No classes assigned yet."
+    }
+  },
+  "parent": {
+    "home": {
+      "title": "My children",
+      "welcome": "Hi, {name}.",
+      "empty": "No students linked to your account."
+    }
   },
   "login": {
     "title": "Welcome",

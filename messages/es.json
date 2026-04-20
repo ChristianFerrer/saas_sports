@@ -1,6 +1,33 @@
 {
   "common": {
-    "appName": "AI Sports"
+    "appName": "AI Sports",
+    "signOut": "Cerrar sesión"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "coach": "Entrenador",
+    "parent": "Padre/Madre"
+  },
+  "admin": {
+    "home": {
+      "title": "Panel de administración",
+      "welcome": "Bienvenida/o, {name}.",
+      "empty": "Aún no hay grupos ni alumnos. Crea el primero desde la sección de gestión."
+    }
+  },
+  "coach": {
+    "home": {
+      "title": "Mis clases",
+      "welcome": "Hola, {name}.",
+      "empty": "No tienes clases asignadas todavía."
+    }
+  },
+  "parent": {
+    "home": {
+      "title": "Mis hijos",
+      "welcome": "Hola, {name}.",
+      "empty": "No hay alumnos vinculados a tu cuenta."
+    }
   },
   "login": {
     "title": "Bienvenido",
