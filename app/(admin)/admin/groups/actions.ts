@@ -18,11 +18,28 @@ export async function createGroup(
   if (!name) return { error: 'nameRequired' };
 
   const supabase = createUntypedClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('groups')
-    .insert({ school_id: user.profile.school_id, name });
+    .insert({ school_id: user.profile.school_id, name })
+    .select('id')
+    .single();
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error('[createGroup] insert failed', {
+      school_id: user.profile.school_id,
+      name,
+      error
+    });
+    return { error: error.message };
+  }
+
+  if (!data) {
+    console.error('[createGroup] insert returned no row (RLS?)', {
+      school_id: user.profile.school_id,
+      name
+    });
+    return { error: 'insertFailed' };
+  }
 
   revalidatePath('/admin/groups');
   revalidatePath('/admin');
