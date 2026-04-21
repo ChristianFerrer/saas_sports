@@ -35,6 +35,11 @@
     "emailLabel": "Email",
     "submit": "Enviar enlace",
     "sending": "Enviando…",
-    "sent": "Te hemos enviado un enlace a {email}. Revisa tu bandeja de entrada."
+    "sent": "Te hemos enviado un enlace a {email}. Revisa tu bandeja de entrada.",
+    "errors": {
+      "no_profile": "Tu cuenta no tiene un perfil asignado. Contacta con el administrador de tu escuela.",
+      "auth_callback_failed": "El enlace ha caducado o no es válido. Solicita uno nuevo.",
+      "generic": "No se pudo iniciar sesión. Inténtalo de nuevo."
+    }
   }
 }

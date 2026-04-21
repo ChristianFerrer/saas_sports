@@ -35,6 +35,11 @@
     "emailLabel": "Email",
     "submit": "Send link",
     "sending": "Sending…",
-    "sent": "We've sent a link to {email}. Check your inbox."
+    "sent": "We've sent a link to {email}. Check your inbox.",
+    "errors": {
+      "no_profile": "Your account has no profile assigned. Contact your school administrator.",
+      "auth_callback_failed": "The sign-in link has expired or is invalid. Request a new one.",
+      "generic": "Sign-in failed. Please try again."
+    }
   }
 }
