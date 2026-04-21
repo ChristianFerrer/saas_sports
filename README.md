@@ -42,11 +42,18 @@ supabase db push
 
 ## Bootstrap del primer admin
 
-La app requiere que exista una fila en `public.profiles` con rol `admin` para poder entrar en `/admin`. Usa el script incluido (idempotente):
+Hay dos maneras de crear el primer admin de una escuela:
+
+### Opción 1 — Registro self-serve (normal)
+
+Abrir `/signup` en la app, rellenar email + contraseña + nombre + nombre de escuela. Eso crea `auth.users` + `schools` + `profiles` con rol `admin` en una sola operación. También funciona con "Continuar con Google" (termina en `/signup/complete` para poner el nombre de la escuela).
+
+### Opción 2 — Script CLI (para entornos sin UI o para crear admins programáticamente)
 
 ```bash
 ADMIN_EMAIL="admin@example.com" \
 ADMIN_FULL_NAME="Nombre Apellido" \
+ADMIN_PASSWORD="contraseña-segura-8+chars" \
 SCHOOL_NAME="Little Kickers Barcelona" \
 SCHOOL_TIMEZONE="Europe/Madrid" \
 pnpm bootstrap:admin
@@ -56,7 +63,9 @@ El script:
 
 1. Lee credenciales desde `.env.local` (vía `dotenv`).
 2. Crea el usuario en `auth.users` si no existe (email ya confirmado).
-3. Crea la escuela si no existe (busca por nombre exacto).
+3. Si el usuario ya existía y pasas `ADMIN_PASSWORD`, actualiza su contraseña.
+4. `ADMIN_PASSWORD` es opcional — si lo omites, el admin tendrá que ir a `/forgot-password` para fijar una contraseña desde el email de recuperación.
+5. Crea la escuela si no existe (busca por nombre exacto).
 4. Hace `upsert` del profile con rol `admin`.
 5. Genera un magic link listo para abrir en `/auth/callback`.
 
@@ -97,14 +106,32 @@ types/database.ts Tipado manual del schema (sincronizado con migración 0001)
 middleware.ts     Refresco de sesión SSR en cada request
 ```
 
-## Login y errores
+## Autenticación
 
-El flujo raíz (`app/page.tsx`) y el callback redirigen a `/login?error=<code>` cuando algo falla. Códigos soportados:
+El login soporta tres métodos:
 
-- `no_profile` — autenticado pero sin fila en `profiles` (falta bootstrap o invitación).
-- `auth_callback_failed` — el link del email caducó o es inválido.
+1. **Email + contraseña** (`/login`).
+2. **Google OAuth** (botón "Continuar con Google") — requiere configurar el proveedor en Supabase → Authentication → Providers → Google con un Client ID/Secret de Google Cloud Console.
+3. **Recuperación de contraseña** (`/forgot-password` → email → `/reset-password`).
 
-Cualquier otro valor cae en el mensaje genérico. Los textos están en `messages/{es,en}.json` bajo `login.errors`.
+Registro self-serve en `/signup` (crea una escuela nueva con rol admin).
+
+**Supabase configuración mínima** (una vez por proyecto):
+
+- Authentication → URL Configuration → añadir la URL de producción (`https://<tu-deploy>/auth/callback`) y `**` wildcard para previews.
+- Authentication → Rate Limits → subir el límite de emails durante testing.
+- Authentication → Providers → Email: activado por defecto.
+- Authentication → Providers → Google: activar y pegar Client ID + Secret de un OAuth Client de Google Cloud (Authorized redirect URI: `https://<proyecto>.supabase.co/auth/v1/callback`).
+
+### Códigos de error en la URL
+
+El flujo raíz (`app/page.tsx`) y el callback redirigen a `/login?error=<code>`:
+
+- `no_profile` — autenticado pero sin fila en `profiles`.
+- `auth_callback_failed` — el link caducó o es inválido.
+- `oauth_failed` — el flujo de Google falló antes de redirigir.
+
+Cualquier otro valor cae en el mensaje genérico. Textos en `messages/{es,en}.json` bajo `auth.errors`.
 
 ## Estado del proyecto
 

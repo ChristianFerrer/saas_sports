@@ -1,14 +1,19 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
+import { AuthCard } from '@/components/auth/auth-card';
+import { GoogleButton } from '@/components/auth/google-button';
 import { createClient } from '@/lib/supabase/client';
 
-type Status = 'idle' | 'sending' | 'sent' | 'error';
-
-const KNOWN_ERROR_KEYS = ['no_profile', 'auth_callback_failed'] as const;
+const KNOWN_ERROR_KEYS = [
+  'no_profile',
+  'auth_callback_failed',
+  'oauth_failed'
+] as const;
 type KnownErrorKey = (typeof KNOWN_ERROR_KEYS)[number];
 
 function isKnownErrorKey(value: string | null): value is KnownErrorKey {
@@ -16,11 +21,13 @@ function isKnownErrorKey(value: string | null): value is KnownErrorKey {
 }
 
 function LoginForm() {
-  const t = useTranslations('login');
+  const t = useTranslations('auth');
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<Status>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [password, setPassword] = useState('');
+  const [pending, setPending] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const queryErrorParam = searchParams.get('error');
   const queryErrorMessage = queryErrorParam
@@ -31,95 +38,114 @@ function LoginForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus('sending');
-    setErrorMessage('');
+    setPending(true);
+    setFormError(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      setErrorMessage(error.message);
-      setStatus('error');
+      const isCredError = /invalid.*credentials|invalid.*password/i.test(error.message);
+      setFormError(t(isCredError ? 'errors.invalid_credentials' : 'errors.generic'));
+      setPending(false);
       return;
     }
 
-    setStatus('sent');
+    router.replace('/');
+    router.refresh();
   }
 
   return (
-    <div className="w-full max-w-sm space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-slate-900">{t('title')}</h1>
-        <p className="text-sm text-slate-600">{t('subtitle')}</p>
-      </header>
+    <AuthCard
+      title={t('login.title')}
+      subtitle={t('login.subtitle')}
+      footer={
+        <>
+          <p>
+            {t('login.noAccount')}{' '}
+            <Link href="/signup" className="font-medium text-emerald-700 hover:text-emerald-800">
+              {t('login.signupLink')}
+            </Link>
+          </p>
+        </>
+      }
+    >
+      <GoogleButton intent="login" />
 
-      {status === 'sent' ? (
-        <div
-          role="status"
-          className="rounded-md bg-emerald-50 p-4 text-sm text-emerald-900"
-        >
-          {t('sent', { email })}
+      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
+        <span className="flex-1 border-t border-slate-200" />
+        {t('or')}
+        <span className="flex-1 border-t border-slate-200" />
+      </div>
+
+      {queryErrorMessage && !formError ? (
+        <div role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+          {queryErrorMessage}
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {queryErrorMessage && status !== 'error' && (
-            <div
-              role="alert"
-              className="rounded-md bg-red-50 p-3 text-sm text-red-800"
-            >
-              {queryErrorMessage}
-            </div>
-          )}
+      ) : null}
 
-          <div className="space-y-1">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-700"
-            >
-              {t('emailLabel')}
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <div className="space-y-1">
+          <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+            {t('fields.email')}
+          </label>
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+              {t('fields.password')}
             </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              inputMode="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+            >
+              {t('login.forgot')}
+            </Link>
           </div>
+          <input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
 
-          {status === 'error' && (
-            <p role="alert" className="text-sm text-red-600">
-              {errorMessage}
-            </p>
-          )}
+        {formError ? (
+          <p role="alert" className="text-sm text-red-600">
+            {formError}
+          </p>
+        ) : null}
 
-          <button
-            type="submit"
-            disabled={status === 'sending'}
-            className="flex w-full items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {status === 'sending' ? t('sending') : t('submit')}
-          </button>
-        </form>
-      )}
-    </div>
+        <button
+          type="submit"
+          disabled={pending}
+          className="flex w-full items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {pending ? t('login.submitting') : t('login.submit')}
+        </button>
+      </form>
+    </AuthCard>
   );
 }
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-12">
-      <Suspense fallback={null}>
-        <LoginForm />
-      </Suspense>
-    </main>
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

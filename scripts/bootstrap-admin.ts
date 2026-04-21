@@ -41,9 +41,15 @@ async function main() {
   const serviceKey = required('SUPABASE_SERVICE_ROLE_KEY');
   const adminEmail = required('ADMIN_EMAIL');
   const adminFullName = optional('ADMIN_FULL_NAME', 'Admin');
+  const adminPassword = process.env.ADMIN_PASSWORD?.trim() || null;
   const schoolName = required('SCHOOL_NAME');
   const schoolTimezone = optional('SCHOOL_TIMEZONE', 'UTC');
   const appUrl = optional('NEXT_PUBLIC_APP_URL', 'http://localhost:3000');
+
+  if (adminPassword && adminPassword.length < 8) {
+    console.error('ADMIN_PASSWORD must be at least 8 characters.');
+    process.exit(1);
+  }
 
   const supabase: SupabaseClient = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }
@@ -54,6 +60,7 @@ async function main() {
   if (!user) {
     const { data, error } = await supabase.auth.admin.createUser({
       email: adminEmail,
+      password: adminPassword ?? undefined,
       email_confirm: true,
       user_metadata: { full_name: adminFullName }
     });
@@ -62,6 +69,13 @@ async function main() {
     console.log(`Created auth user ${user.id} (${adminEmail}).`);
   } else {
     console.log(`Auth user already exists: ${user.id} (${adminEmail}).`);
+    if (adminPassword) {
+      const { error } = await supabase.auth.admin.updateUserById(user.id, {
+        password: adminPassword
+      });
+      if (error) throw error;
+      console.log('Password updated.');
+    }
   }
 
   const { data: existingSchools, error: schoolLookupError } = await supabase
@@ -98,23 +112,16 @@ async function main() {
   if (profileError) throw profileError;
   console.log(`Admin profile linked to school ${schoolId}.`);
 
-  const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email: adminEmail,
-    options: { redirectTo: `${appUrl}/auth/callback` }
-  });
-
-  if (linkError) {
-    console.warn(`Could not generate magic link: ${linkError.message}`);
-    console.warn('Ask the admin to sign in at /login and request a link manually.');
+  console.log('\nBootstrap complete.');
+  if (adminPassword) {
+    console.log(`\nAdmin can sign in at ${appUrl}/login with:`);
+    console.log(`  email:    ${adminEmail}`);
+    console.log(`  password: (the one you set in ADMIN_PASSWORD)`);
   } else {
-    const actionLink = linkData.properties?.action_link;
-    console.log('\nBootstrap complete.');
-    if (actionLink) {
-      console.log(`\nOne-time sign-in link (expires shortly):\n  ${actionLink}`);
-    } else {
-      console.log('Magic link generated. Check the admin inbox or Supabase logs.');
-    }
+    console.log(
+      `\nNo ADMIN_PASSWORD was provided. The admin must go to ${appUrl}/forgot-password`
+    );
+    console.log(`and set a password via the emailed reset link before signing in.`);
   }
 }
 

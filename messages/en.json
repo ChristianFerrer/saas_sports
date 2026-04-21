@@ -82,17 +82,65 @@
       "empty": "No students linked to your account."
     }
   },
-  "login": {
-    "title": "Welcome",
-    "subtitle": "Enter your email and we'll send you a sign-in link.",
-    "emailLabel": "Email",
-    "submit": "Send link",
-    "sending": "Sending…",
-    "sent": "We've sent a link to {email}. Check your inbox.",
+  "auth": {
+    "google": "Continue with Google",
+    "or": "or",
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "passwordConfirm": "Confirm password",
+      "fullName": "Full name",
+      "schoolName": "School name",
+      "newPassword": "New password"
+    },
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Enter your email and password.",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "forgot": "Forgot your password?",
+      "noAccount": "No account yet?",
+      "signupLink": "Sign up"
+    },
+    "signup": {
+      "title": "Create your school",
+      "subtitle": "You'll be the admin. Invite coaches and parents later.",
+      "submit": "Create account",
+      "submitting": "Creating…",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "complete": {
+        "title": "One last step",
+        "subtitle": "Name your school to finish.",
+        "submit": "Finish",
+        "submitting": "Finishing…"
+      }
+    },
+    "forgot": {
+      "title": "Reset password",
+      "subtitle": "We'll email you a reset link.",
+      "submit": "Send link",
+      "submitting": "Sending…",
+      "sent": "Check your inbox at {email}. The link expires in 1 hour.",
+      "backToLogin": "Back to sign in"
+    },
+    "reset": {
+      "title": "New password",
+      "subtitle": "Choose a password with at least 8 characters.",
+      "submit": "Save password",
+      "submitting": "Saving…",
+      "success": "Password updated."
+    },
     "errors": {
       "no_profile": "Your account has no profile assigned. Contact your school administrator.",
-      "auth_callback_failed": "The sign-in link has expired or is invalid. Request a new one.",
-      "generic": "Sign-in failed. Please try again."
+      "auth_callback_failed": "The link has expired or is invalid. Request a new one.",
+      "invalid_credentials": "Wrong email or password.",
+      "email_taken": "An account with that email already exists. Sign in instead.",
+      "weak_password": "Password must be at least 8 characters.",
+      "passwords_mismatch": "Passwords don't match.",
+      "required_field": "This field is required.",
+      "generic": "Something went wrong. Try again.",
+      "oauth_failed": "We couldn't complete Google sign-in."
     }
   }
 }

@@ -82,17 +82,65 @@
       "empty": "No hay alumnos vinculados a tu cuenta."
     }
   },
-  "login": {
-    "title": "Bienvenido",
-    "subtitle": "Introduce tu email y te enviaremos un enlace de acceso.",
-    "emailLabel": "Email",
-    "submit": "Enviar enlace",
-    "sending": "Enviando…",
-    "sent": "Te hemos enviado un enlace a {email}. Revisa tu bandeja de entrada.",
+  "auth": {
+    "google": "Continuar con Google",
+    "or": "o",
+    "fields": {
+      "email": "Email",
+      "password": "Contraseña",
+      "passwordConfirm": "Repite la contraseña",
+      "fullName": "Nombre completo",
+      "schoolName": "Nombre de tu escuela",
+      "newPassword": "Nueva contraseña"
+    },
+    "login": {
+      "title": "Inicia sesión",
+      "subtitle": "Entra con tu email y contraseña.",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes cuenta?",
+      "signupLink": "Regístrate"
+    },
+    "signup": {
+      "title": "Crea tu escuela",
+      "subtitle": "Serás el administrador. Invitarás a entrenadores y padres después.",
+      "submit": "Crear cuenta",
+      "submitting": "Creando…",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Inicia sesión",
+      "complete": {
+        "title": "Un último paso",
+        "subtitle": "Ponle nombre a tu escuela para terminar.",
+        "submit": "Terminar",
+        "submitting": "Terminando…"
+      }
+    },
+    "forgot": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Te enviaremos un enlace para restablecerla.",
+      "submit": "Enviar enlace",
+      "submitting": "Enviando…",
+      "sent": "Revisa tu bandeja {email}. El enlace caduca en 1 hora.",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "reset": {
+      "title": "Nueva contraseña",
+      "subtitle": "Elige una contraseña de al menos 8 caracteres.",
+      "submit": "Guardar contraseña",
+      "submitting": "Guardando…",
+      "success": "Contraseña actualizada."
+    },
     "errors": {
       "no_profile": "Tu cuenta no tiene un perfil asignado. Contacta con el administrador de tu escuela.",
       "auth_callback_failed": "El enlace ha caducado o no es válido. Solicita uno nuevo.",
-      "generic": "No se pudo iniciar sesión. Inténtalo de nuevo."
+      "invalid_credentials": "Email o contraseña incorrectos.",
+      "email_taken": "Ya existe una cuenta con ese email. Inicia sesión.",
+      "weak_password": "La contraseña debe tener al menos 8 caracteres.",
+      "passwords_mismatch": "Las contraseñas no coinciden.",
+      "required_field": "Este campo es obligatorio.",
+      "generic": "Algo falló. Inténtalo de nuevo.",
+      "oauth_failed": "No pudimos completar el acceso con Google."
     }
   }
 }
