@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { AuthCard } from '@/components/auth/auth-card';
+import { mapAuthError } from '@/lib/auth/errors';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ForgotPasswordPage() {
@@ -27,7 +28,8 @@ export default function ForgotPasswordPage() {
     });
 
     if (error) {
-      setFormError(t('errors.generic'));
+      const mapped = mapAuthError(error);
+      setFormError(mapped.key ? t(`errors.${mapped.key}`) : mapped.fallback ?? t('errors.generic'));
       setPending(false);
       return;
     }

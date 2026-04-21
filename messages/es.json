@@ -139,6 +139,7 @@
       "weak_password": "La contraseña debe tener al menos 8 caracteres.",
       "passwords_mismatch": "Las contraseñas no coinciden.",
       "required_field": "Este campo es obligatorio.",
+      "rate_limit": "Has hecho demasiados intentos. Espera unos minutos y vuelve a probar.",
       "generic": "Algo falló. Inténtalo de nuevo.",
       "oauth_failed": "No pudimos completar el acceso con Google."
     }

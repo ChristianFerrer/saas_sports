@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { AuthCard } from '@/components/auth/auth-card';
 import { GoogleButton } from '@/components/auth/google-button';
+import { mapAuthError } from '@/lib/auth/errors';
 import { createClient } from '@/lib/supabase/client';
 
 const KNOWN_ERROR_KEYS = [
@@ -45,8 +46,8 @@ function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      const isCredError = /invalid.*credentials|invalid.*password/i.test(error.message);
-      setFormError(t(isCredError ? 'errors.invalid_credentials' : 'errors.generic'));
+      const mapped = mapAuthError(error);
+      setFormError(mapped.key ? t(`errors.${mapped.key}`) : mapped.fallback ?? t('errors.generic'));
       setPending(false);
       return;
     }

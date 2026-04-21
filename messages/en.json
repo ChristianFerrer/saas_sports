@@ -139,6 +139,7 @@
       "weak_password": "Password must be at least 8 characters.",
       "passwords_mismatch": "Passwords don't match.",
       "required_field": "This field is required.",
+      "rate_limit": "Too many attempts. Wait a few minutes and try again.",
       "generic": "Something went wrong. Try again.",
       "oauth_failed": "We couldn't complete Google sign-in."
     }

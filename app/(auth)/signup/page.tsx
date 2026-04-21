@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { AuthCard } from '@/components/auth/auth-card';
 import { GoogleButton } from '@/components/auth/google-button';
+import { mapAuthError } from '@/lib/auth/errors';
 import { createClient } from '@/lib/supabase/client';
 
 import { createAccount } from './actions';
@@ -67,7 +68,8 @@ export default function SignupPage() {
     });
 
     if (signInError) {
-      setFormError(t('errors.generic'));
+      const mapped = mapAuthError(signInError);
+      setFormError(mapped.key ? t(`errors.${mapped.key}`) : mapped.fallback ?? t('errors.generic'));
       setPending(false);
       return;
     }
