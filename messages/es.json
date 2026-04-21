@@ -1,7 +1,14 @@
 {
   "common": {
     "appName": "AI Sports",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "create": "Crear",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Volver",
+    "optional": "(opcional)"
   },
   "roles": {
     "admin": "Administrador",
@@ -9,10 +16,56 @@
     "parent": "Padre/Madre"
   },
   "admin": {
+    "nav": {
+      "dashboard": "Panel",
+      "groups": "Grupos",
+      "students": "Alumnos"
+    },
     "home": {
       "title": "Panel de administración",
       "welcome": "Bienvenida/o, {name}.",
-      "empty": "Aún no hay grupos ni alumnos. Crea el primero desde la sección de gestión."
+      "stats": {
+        "groups": "Grupos",
+        "students": "Alumnos"
+      },
+      "actions": {
+        "newGroup": "Crear grupo",
+        "newStudent": "Añadir alumno"
+      }
+    },
+    "groups": {
+      "title": "Grupos",
+      "new": "Crear grupo",
+      "edit": "Editar grupo",
+      "empty": "No hay grupos todavía. Crea el primero.",
+      "studentsCount": "{count, plural, =0 {sin alumnos} =1 {1 alumno} other {# alumnos}}",
+      "fields": {
+        "name": "Nombre del grupo",
+        "namePlaceholder": "Ej. Benjamines A"
+      },
+      "errors": {
+        "nameRequired": "El nombre es obligatorio.",
+        "hasStudents": "No se puede eliminar un grupo con alumnos asignados. Muévelos antes."
+      },
+      "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"?"
+    },
+    "students": {
+      "title": "Alumnos",
+      "new": "Añadir alumno",
+      "edit": "Editar alumno",
+      "empty": "No hay alumnos todavía. Añade el primero.",
+      "unassigned": "Sin grupo",
+      "fields": {
+        "fullName": "Nombre completo",
+        "fullNamePlaceholder": "Nombre y apellidos",
+        "birthDate": "Fecha de nacimiento",
+        "group": "Grupo",
+        "groupNone": "— Sin grupo —"
+      },
+      "errors": {
+        "fullNameRequired": "El nombre es obligatorio."
+      },
+      "deleteConfirm": "¿Seguro que quieres eliminar a \"{name}\"?"
     }
   },
   "coach": {

@@ -1,7 +1,14 @@
 {
   "common": {
     "appName": "AI Sports",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "optional": "(optional)"
   },
   "roles": {
     "admin": "Admin",
@@ -9,10 +16,56 @@
     "parent": "Parent"
   },
   "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "groups": "Groups",
+      "students": "Students"
+    },
     "home": {
       "title": "Admin dashboard",
       "welcome": "Welcome, {name}.",
-      "empty": "No groups or students yet. Create your first one from the management section."
+      "stats": {
+        "groups": "Groups",
+        "students": "Students"
+      },
+      "actions": {
+        "newGroup": "Create group",
+        "newStudent": "Add student"
+      }
+    },
+    "groups": {
+      "title": "Groups",
+      "new": "Create group",
+      "edit": "Edit group",
+      "empty": "No groups yet. Create the first one.",
+      "studentsCount": "{count, plural, =0 {no students} =1 {1 student} other {# students}}",
+      "fields": {
+        "name": "Group name",
+        "namePlaceholder": "e.g. Under-8 A"
+      },
+      "errors": {
+        "nameRequired": "Name is required.",
+        "hasStudents": "Can't delete a group with assigned students. Move them first."
+      },
+      "deleteConfirm": "Delete \"{name}\"?"
+    },
+    "students": {
+      "title": "Students",
+      "new": "Add student",
+      "edit": "Edit student",
+      "empty": "No students yet. Add the first one.",
+      "unassigned": "No group",
+      "fields": {
+        "fullName": "Full name",
+        "fullNamePlaceholder": "First and last name",
+        "birthDate": "Birth date",
+        "group": "Group",
+        "groupNone": "— No group —"
+      },
+      "errors": {
+        "fullNameRequired": "Name is required."
+      },
+      "deleteConfirm": "Delete \"{name}\"?"
     }
   },
   "coach": {
