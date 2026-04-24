@@ -3,22 +3,43 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --header-blur: saturate(180%) blur(18px);
+  color-scheme: dark;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --panel-blur: saturate(180%) blur(22px);
 }
 
 html,
 body {
   height: 100%;
+  background: #060b16;
 }
 
 body {
+  color: #e6ecf8;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   font-feature-settings: 'ss01', 'cv11';
+  background:
+    radial-gradient(1200px 520px at 80% -10%, rgba(63, 212, 255, 0.08) 0%, transparent 55%),
+    radial-gradient(900px 420px at 0% 0%, rgba(244, 195, 85, 0.05) 0%, transparent 55%),
+    linear-gradient(180deg, #0a1222 0%, #060b16 100%);
+  background-attachment: fixed;
+}
+
+/* Default focus ring — soft cyan rather than emerald. */
+*:focus-visible {
+  outline: 2px solid rgba(63, 212, 255, 0.55);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Native controls inherit the dark surface. */
+input,
+select,
+textarea {
+  color-scheme: dark;
 }
 
 @layer utilities {
@@ -26,12 +47,39 @@ body {
     padding-top: max(var(--safe-top), 0.75rem);
   }
   .safe-pb {
-    padding-bottom: max(var(--safe-bottom), 0.75rem);
+    padding-bottom: calc(max(var(--safe-bottom), 0.75rem) + 0.25rem);
   }
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: var(--header-blur);
-    -webkit-backdrop-filter: var(--header-blur);
+  .glass {
+    background: linear-gradient(
+      180deg,
+      rgba(36, 52, 89, 0.55) 0%,
+      rgba(12, 20, 38, 0.75) 100%
+    );
+    backdrop-filter: var(--panel-blur);
+    -webkit-backdrop-filter: var(--panel-blur);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+  }
+  .glass-strong {
+    background: linear-gradient(
+      180deg,
+      rgba(45, 63, 104, 0.75) 0%,
+      rgba(14, 22, 40, 0.9) 100%
+    );
+    backdrop-filter: var(--panel-blur);
+    -webkit-backdrop-filter: var(--panel-blur);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #fce9ad 0%, #f4c355 50%, #a87212 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, #a5e9ff 0%, #3fd4ff 50%, #0ca9d8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
@@ -40,34 +88,88 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 @layer components {
+  /* Buttons — premium, pressable, with active scale and crisp focus. */
   .ss-btn {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
   }
   .ss-btn-primary {
-    @apply ss-btn bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-offset-2 focus:ring-offset-white;
+    @apply ss-btn text-navy-900 shadow-gold-glow;
+    background-image: linear-gradient(135deg, #f4c355 0%, #d99419 50%, #a87212 100%);
+  }
+  .ss-btn-primary:hover {
+    filter: brightness(1.05);
   }
   .ss-btn-secondary {
-    @apply ss-btn border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2 focus:ring-offset-white;
+    @apply ss-btn border border-white/10 bg-white/[0.04] text-ink-50 hover:bg-white/[0.08];
   }
   .ss-btn-ghost {
-    @apply ss-btn text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400/30;
+    @apply ss-btn text-ink-200 hover:bg-white/[0.06] hover:text-ink-50;
   }
   .ss-btn-danger {
-    @apply ss-btn text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500/30;
+    @apply ss-btn border border-red-400/20 bg-red-500/10 text-red-300 hover:bg-red-500/20;
   }
+  .ss-btn-cyan {
+    @apply ss-btn text-navy-900 shadow-cyan-glow;
+    background-image: linear-gradient(135deg, #3fd4ff 0%, #22c3f0 55%, #0ca9d8 100%);
+  }
+
+  /* Inputs — dark filled with cyan focus ring. */
   .ss-input {
-    @apply block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40;
+    @apply block w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[15px] text-ink-50 shadow-inner placeholder:text-ink-300 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/30;
   }
+
+  /* Cards — glassmorphism surface with subtle inner highlight. */
   .ss-card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-card;
+    @apply glass rounded-2xl shadow-card;
   }
+  .ss-card-strong {
+    @apply glass-strong rounded-2xl shadow-pop;
+  }
+
+  /* Pills — compact badges for statuses, categories, scores. */
   .ss-pill {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium;
   }
+  .ss-pill-gold {
+    @apply ss-pill;
+    background-image: linear-gradient(135deg, #fce9ad 0%, #f4c355 100%);
+    color: #1a1205;
+  }
+  .ss-pill-cyan {
+    @apply ss-pill bg-cyan-500/15 text-cyan-400;
+  }
+  .ss-pill-mute {
+    @apply ss-pill bg-white/[0.06] text-ink-200;
+  }
+  .ss-pill-success {
+    @apply ss-pill bg-emerald-500/15 text-emerald-300;
+  }
+  .ss-pill-warn {
+    @apply ss-pill bg-amber-500/15 text-amber-300;
+  }
+  .ss-pill-danger {
+    @apply ss-pill bg-red-500/15 text-red-300;
+  }
+
+  /* Labels — form labels, kicker captions, section titles. */
   .ss-label {
-    @apply block text-sm font-medium text-slate-700;
+    @apply block text-sm font-medium text-ink-100;
+  }
+  .ss-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-300;
+  }
+  .ss-section-title {
+    @apply text-sm font-semibold tracking-wide text-ink-100;
+  }
+
+  /* Divider — subtle hairline used between rows. */
+  .ss-divider {
+    @apply border-t border-white/[0.06];
   }
 }

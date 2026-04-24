@@ -24,8 +24,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f172a' }
+    { media: '(prefers-color-scheme: light)', color: '#0a1222' },
+    { media: '(prefers-color-scheme: dark)', color: '#060b16' }
   ]
 };
 
@@ -38,8 +38,8 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body className="bg-slate-50 text-slate-900 antialiased">
+    <html lang={locale} className="dark">
+      <body className="min-h-screen bg-navy-950 text-ink-50 antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>
