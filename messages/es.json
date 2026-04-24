@@ -120,10 +120,16 @@
         "fullNamePlaceholder": "Nombre y apellidos",
         "birthDate": "Fecha de nacimiento",
         "group": "Grupo",
-        "groupNone": "— Sin grupo —"
+        "groupNone": "— Sin grupo —",
+        "enrollment": "Permanencia en la escuela",
+        "enrollmentHint": "Ingreso y (opcional) desvinculación. Las sesiones fuera de este rango no cuentan para la asistencia.",
+        "enrolledAt": "Ingreso",
+        "leftAt": "Desvinculación"
       },
       "errors": {
-        "fullNameRequired": "El nombre es obligatorio."
+        "fullNameRequired": "El nombre es obligatorio.",
+        "dateInvalid": "Alguna fecha no tiene un formato válido.",
+        "dateRangeInvalid": "La desvinculación no puede ser anterior al ingreso."
       },
       "deleteConfirm": "¿Seguro que quieres eliminar a \"{name}\"?",
       "detail": {
@@ -135,6 +141,10 @@
         "noGroup": "Sin grupo asignado",
         "parents": "Padres / tutores",
         "noParents": "No hay padres vinculados todavía.",
+        "enrolledAt": "Fecha de ingreso",
+        "noEnrolledAt": "No registrada",
+        "leftAt": "Desvinculación",
+        "inactive": "Desvinculado",
         "attendance": "Asistencia global",
         "attendanceSummary": "{present}/{total} sesiones",
         "noAttendance": "Sin registros de asistencia todavía.",

@@ -104,6 +104,8 @@ export type Database = {
           full_name: string;
           birth_date: string | null;
           photo_url: string | null;
+          enrolled_at: string | null;
+          left_at: string | null;
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -112,12 +114,16 @@ export type Database = {
           full_name: string;
           birth_date?: string | null;
           photo_url?: string | null;
+          enrolled_at?: string | null;
+          left_at?: string | null;
         };
         Update: Partial<{
           group_id: UUID | null;
           full_name: string;
           birth_date: string | null;
           photo_url: string | null;
+          enrolled_at: string | null;
+          left_at: string | null;
         }>;
       };
       student_parents: {

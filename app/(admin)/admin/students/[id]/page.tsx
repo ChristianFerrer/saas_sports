@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   Cake,
+  CalendarCheck2,
   CheckSquare,
   ChevronLeft,
   Layers,
+  LogOut as LogOutIcon,
   Pencil,
   Target,
   UsersRound
@@ -27,6 +29,8 @@ type StudentRow = {
   group_id: string | null;
   full_name: string;
   birth_date: string | null;
+  enrolled_at: string | null;
+  left_at: string | null;
 };
 
 type GroupRow = { id: string; name: string };
@@ -115,7 +119,9 @@ export default async function AdminStudentDetailPage({
 
   const { data: studentData } = await supabase
     .from('students')
-    .select('id, school_id, group_id, full_name, birth_date')
+    .select(
+      'id, school_id, group_id, full_name, birth_date, enrolled_at, left_at'
+    )
     .eq('id', params.id)
     .maybeSingle();
 
@@ -174,9 +180,23 @@ export default async function AdminStudentDetailPage({
   const group = groupResult.data as GroupRow | null;
   const parents = (parentsResult.data ?? []) as unknown as ParentLinkRow[];
   const attendance = (attendanceResult.data ?? []) as AttendanceRow[];
-  const sessions = (sessionsResult.data ?? []) as SessionRow[];
+  const allSessions = (sessionsResult.data ?? []) as SessionRow[];
   const currentObjectives = (currentObjectivesResult.data ?? []) as CurrentObjectiveRow[];
   const achievements = (achievementsResult.data ?? []) as unknown as AchievementRow[];
+
+  // Scope sessions to the enrollment window: before enrolled_at and after
+  // left_at shouldn't count toward this student's attendance stats.
+  const enrolledMs = student.enrolled_at
+    ? new Date(student.enrolled_at + 'T00:00:00Z').getTime()
+    : -Infinity;
+  const leftMs = student.left_at
+    ? new Date(student.left_at + 'T23:59:59Z').getTime()
+    : Infinity;
+  const sessions = allSessions.filter((s) => {
+    const t = new Date(s.scheduled_at).getTime();
+    return t >= enrolledMs && t <= leftMs;
+  });
+  const isInactive = student.left_at !== null;
 
   const achievementByObjectiveId = new Map<string, AchievementRow>();
   for (const a of achievements) achievementByObjectiveId.set(a.objective_id, a);
@@ -245,9 +265,16 @@ export default async function AdminStudentDetailPage({
           >
             {initialsOf(student.full_name) || '·'}
           </span>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
-            {student.full_name}
-          </h2>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+              {student.full_name}
+            </h2>
+            {isInactive ? (
+              <span className="ss-pill mt-1 bg-slate-100 text-slate-600">
+                {t('admin.students.detail.inactive')}
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -306,6 +333,38 @@ export default async function AdminStudentDetailPage({
             </span>
           )}
         </InfoRow>
+
+        <InfoRow
+          icon={<CalendarCheck2 size={18} strokeWidth={2.2} aria-hidden />}
+          label={t('admin.students.detail.enrolledAt')}
+        >
+          {student.enrolled_at ? (
+            <span className="text-slate-900">
+              {format.dateTime(new Date(student.enrolled_at), {
+                dateStyle: 'long',
+                timeZone: 'UTC'
+              })}
+            </span>
+          ) : (
+            <span className="text-slate-400">
+              {t('admin.students.detail.noEnrolledAt')}
+            </span>
+          )}
+        </InfoRow>
+
+        {student.left_at ? (
+          <InfoRow
+            icon={<LogOutIcon size={18} strokeWidth={2.2} aria-hidden />}
+            label={t('admin.students.detail.leftAt')}
+          >
+            <span className="text-slate-900">
+              {format.dateTime(new Date(student.left_at), {
+                dateStyle: 'long',
+                timeZone: 'UTC'
+              })}
+            </span>
+          </InfoRow>
+        ) : null}
 
         <InfoRow
           icon={<UsersRound size={18} strokeWidth={2.2} aria-hidden />}

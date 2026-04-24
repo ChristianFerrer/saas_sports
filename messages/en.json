@@ -120,10 +120,16 @@
         "fullNamePlaceholder": "First and last name",
         "birthDate": "Birth date",
         "group": "Group",
-        "groupNone": "— No group —"
+        "groupNone": "— No group —",
+        "enrollment": "School enrollment",
+        "enrollmentHint": "Start and (optional) end date. Sessions outside this range don't count toward attendance.",
+        "enrolledAt": "Enrolled on",
+        "leftAt": "Left on"
       },
       "errors": {
-        "fullNameRequired": "Name is required."
+        "fullNameRequired": "Name is required.",
+        "dateInvalid": "One of the dates is not in a valid format.",
+        "dateRangeInvalid": "Left date cannot be before enrolled date."
       },
       "deleteConfirm": "Delete \"{name}\"?",
       "detail": {
@@ -135,6 +141,10 @@
         "noGroup": "No group assigned",
         "parents": "Parents / guardians",
         "noParents": "No parents linked yet.",
+        "enrolledAt": "Enrollment date",
+        "noEnrolledAt": "Not recorded",
+        "leftAt": "Left on",
+        "inactive": "Unenrolled",
         "attendance": "Overall attendance",
         "attendanceSummary": "{present}/{total} sessions",
         "noAttendance": "No attendance records yet.",

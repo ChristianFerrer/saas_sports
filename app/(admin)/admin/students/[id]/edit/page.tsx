@@ -23,7 +23,7 @@ export default async function EditStudentPage({
   const [studentRes, groupsRes] = await Promise.all([
     supabase
       .from('students')
-      .select('id, full_name, birth_date, group_id')
+      .select('id, full_name, birth_date, group_id, enrolled_at, left_at')
       .eq('id', params.id)
       .maybeSingle(),
     supabase.from('groups').select('id, name').order('name', { ascending: true })
@@ -34,6 +34,8 @@ export default async function EditStudentPage({
     full_name: string;
     birth_date: string | null;
     group_id: string | null;
+    enrolled_at: string | null;
+    left_at: string | null;
   } | null;
   const groups = (groupsRes.data ?? []) as Array<{ id: string; name: string }>;
 
@@ -64,8 +66,11 @@ export default async function EditStudentPage({
           defaults={{
             fullName: student.full_name,
             birthDate: student.birth_date,
-            groupId: student.group_id
+            groupId: student.group_id,
+            enrolledAt: student.enrolled_at,
+            leftAt: student.left_at
           }}
+          cancelHref={`/admin/students/${student.id}`}
           submitLabel={t('common.save')}
         />
       </div>
