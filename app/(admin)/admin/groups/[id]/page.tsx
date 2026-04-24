@@ -38,6 +38,7 @@ type SessionRow = {
   scheduled_at: string;
   duration_minutes: number;
   status: 'scheduled' | 'held' | 'cancelled';
+  notes: string | null;
 };
 type AttendanceCountRow = { session_id: string; present: boolean };
 type ObjectiveRow = {
@@ -112,7 +113,7 @@ export default async function AdminGroupDetailPage({
       .order('full_name', { ascending: true }),
     supabase
       .from('class_sessions')
-      .select('id, scheduled_at, duration_minutes, status')
+      .select('id, scheduled_at, duration_minutes, status, notes')
       .eq('group_id', group.id)
       .order('scheduled_at', { ascending: false }),
     supabase.from('attendances').select('session_id, present'),
@@ -157,10 +158,16 @@ export default async function AdminGroupDetailPage({
   }
 
   const now = Date.now();
-  const upcoming = sessions.filter(
-    (s) => s.status === 'scheduled' && new Date(s.scheduled_at).getTime() >= now
-  );
-  const past = sessions.filter((s) => !upcoming.includes(s)).slice(0, 5);
+  // Sessions come ordered DESC from the query. For upcoming we want the 5
+  // soonest (all statuses) — so take future ones, reverse to ASC, slice 5.
+  const upcoming = sessions
+    .filter((s) => new Date(s.scheduled_at).getTime() >= now)
+    .slice()
+    .reverse()
+    .slice(0, 5);
+  const past = sessions
+    .filter((s) => new Date(s.scheduled_at).getTime() < now)
+    .slice(0, 5);
 
   const schedule = (group.schedule ?? []) as GroupScheduleEntry[];
 
@@ -442,6 +449,17 @@ function EmptyBox({ children }: { children: React.ReactNode }) {
   );
 }
 
+function statusPillClass(status: SessionRow['status']): string {
+  switch (status) {
+    case 'held':
+      return 'ss-pill bg-emerald-50 text-emerald-700';
+    case 'cancelled':
+      return 'ss-pill bg-red-50 text-red-700';
+    default:
+      return 'ss-pill bg-slate-100 text-slate-700';
+  }
+}
+
 function SessionList({
   sessions,
   groupId,
@@ -468,13 +486,12 @@ function SessionList({
           <li key={s.id}>
             <Link
               href={`/admin/attendance/${groupId}/sessions/${s.id}`}
-              className="flex items-center gap-3 px-4 py-3 transition hover:bg-slate-50"
+              className="flex items-start gap-3 px-4 py-3 transition hover:bg-slate-50"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-slate-900">{display}</p>
                 <p className="text-xs text-slate-500">
-                  {t(`admin.attendance.status.${s.status}`)} · {s.duration_minutes}{' '}
-                  {t('admin.attendance.minutes')}
+                  {s.duration_minutes} {t('admin.attendance.minutes')}
                   {cnt
                     ? ` · ${t('admin.attendance.attendanceRatio', {
                         present: cnt.present,
@@ -482,10 +499,16 @@ function SessionList({
                       })}`
                     : ''}
                 </p>
+                {s.notes ? (
+                  <p className="mt-1 truncate text-xs text-slate-600">{s.notes}</p>
+                ) : null}
               </div>
+              <span className={`${statusPillClass(s.status)} shrink-0`}>
+                {t(`admin.attendance.status.${s.status}`)}
+              </span>
               <ChevronRight
                 size={16}
-                className="shrink-0 text-slate-400"
+                className="mt-1 shrink-0 text-slate-400"
                 aria-hidden
               />
             </Link>

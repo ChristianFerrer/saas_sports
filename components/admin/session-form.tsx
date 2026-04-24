@@ -10,6 +10,13 @@ type SessionFormProps = {
   action: (state: SessionFormState, formData: FormData) => Promise<SessionFormState>;
   cancelHref: string;
   submitLabel: string;
+  defaults?: {
+    dateIso?: string;
+    timeHHMM?: string;
+    durationMinutes?: number;
+    status?: 'scheduled' | 'held' | 'cancelled';
+    notes?: string | null;
+  };
 };
 
 const INITIAL: SessionFormState = {};
@@ -22,7 +29,12 @@ function todayIsoDate() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProps) {
+export function SessionForm({
+  action,
+  cancelHref,
+  submitLabel,
+  defaults
+}: SessionFormProps) {
   const t = useTranslations('admin.attendance');
   const tCommon = useTranslations('common');
   const [state, formAction] = useFormState(action, INITIAL);
@@ -50,7 +62,7 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
             name="scheduled_at_date"
             type="date"
             required
-            defaultValue={todayIsoDate()}
+            defaultValue={defaults?.dateIso ?? todayIsoDate()}
             className="ss-input"
           />
         </div>
@@ -64,26 +76,61 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
             name="scheduled_at_time"
             type="time"
             required
-            defaultValue="17:00"
+            defaultValue={defaults?.timeHHMM ?? '17:00'}
             className="ss-input"
           />
         </div>
       </div>
 
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <label htmlFor="duration_minutes" className="ss-label">
+            {t('fields.duration')}
+          </label>
+          <input
+            id="duration_minutes"
+            name="duration_minutes"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={3}
+            required
+            defaultValue={String(defaults?.durationMinutes ?? 60)}
+            className="ss-input tabular-nums"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="status" className="ss-label">
+            {t('fields.status')}
+          </label>
+          <select
+            id="status"
+            name="status"
+            defaultValue={defaults?.status ?? 'scheduled'}
+            className="ss-input"
+          >
+            <option value="scheduled">{t('status.scheduled')}</option>
+            <option value="held">{t('status.held')}</option>
+            <option value="cancelled">{t('status.cancelled')}</option>
+          </select>
+        </div>
+      </div>
+
       <div className="space-y-1.5">
-        <label htmlFor="duration_minutes" className="ss-label">
-          {t('fields.duration')}
+        <label htmlFor="notes" className="ss-label">
+          {t('fields.sessionNotes')}{' '}
+          <span className="text-slate-400">{tCommon('optional')}</span>
         </label>
+        <p className="text-xs text-slate-500">{t('fields.sessionNotesHint')}</p>
         <input
-          id="duration_minutes"
-          name="duration_minutes"
-          type="number"
-          min={15}
-          max={240}
-          step={5}
-          required
-          defaultValue={60}
-          className="ss-input max-w-[9rem]"
+          id="notes"
+          name="notes"
+          type="text"
+          maxLength={140}
+          defaultValue={defaults?.notes ?? ''}
+          placeholder={t('fields.sessionNotesPlaceholder')}
+          className="ss-input"
         />
       </div>
 

@@ -182,8 +182,13 @@
         "date": "Date",
         "time": "Time",
         "duration": "Duration (minutes)",
+        "status": "Status",
+        "sessionNotes": "Session note",
+        "sessionNotesHint": "Shown next to the status. e.g. \"Holiday\", \"Venue change\".",
+        "sessionNotesPlaceholder": "e.g. Venue change due to rain",
         "notesPlaceholder": "Coach notes (optional)"
       },
+      "editSession": "Edit session",
       "errors": {
         "dateTimeRequired": "Date and time are required.",
         "durationInvalid": "Duration must be a positive number of minutes.",

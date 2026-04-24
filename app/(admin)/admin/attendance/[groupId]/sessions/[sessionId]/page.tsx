@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Pencil } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { saveAttendance } from '@/app/(admin)/admin/attendance/actions';
@@ -16,6 +17,7 @@ type SessionRow = {
   scheduled_at: string;
   duration_minutes: number;
   status: 'scheduled' | 'held' | 'cancelled';
+  notes: string | null;
 };
 type StudentRow = { id: string; full_name: string };
 type AttendanceRow = { student_id: string; present: boolean; coach_notes: string | null };
@@ -38,7 +40,7 @@ export default async function AttendanceSheetPage({
       .maybeSingle(),
     supabase
       .from('class_sessions')
-      .select('id, group_id, scheduled_at, duration_minutes, status')
+      .select('id, group_id, scheduled_at, duration_minutes, status, notes')
       .eq('id', params.sessionId)
       .maybeSingle()
   ]);
@@ -90,13 +92,25 @@ export default async function AttendanceSheetPage({
         >
           ← {g.name}
         </Link>
-        <h2 className="text-xl font-semibold text-slate-900">
-          {t('admin.attendance.sheetTitle')}
-        </h2>
+        <div className="mt-1 flex items-start justify-between gap-2">
+          <h2 className="text-xl font-semibold text-slate-900">
+            {t('admin.attendance.sheetTitle')}
+          </h2>
+          <Link
+            href={`/admin/attendance/${g.id}/sessions/${s.id}/edit`}
+            className="ss-btn-secondary shrink-0"
+          >
+            <Pencil size={15} strokeWidth={2.2} aria-hidden />
+            <span>{t('admin.attendance.editSession')}</span>
+          </Link>
+        </div>
         <p className="mt-1 text-sm text-slate-600">
           {display} · {s.duration_minutes} {t('admin.attendance.minutes')} ·{' '}
           {t(`admin.attendance.status.${s.status}`)}
         </p>
+        {s.notes ? (
+          <p className="mt-1 text-sm text-slate-700">{s.notes}</p>
+        ) : null}
       </div>
 
       {students.length === 0 ? (

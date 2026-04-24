@@ -14,6 +14,7 @@ type SessionRow = {
   scheduled_at: string;
   duration_minutes: number;
   status: 'scheduled' | 'held' | 'cancelled';
+  notes: string | null;
 };
 type AttendanceCountRow = { session_id: string; present: boolean };
 type SearchParams = { error?: string };
@@ -42,7 +43,7 @@ export default async function AdminAttendanceGroupPage({
   const [sessionsResult, attendanceResult, studentsResult] = await Promise.all([
     supabase
       .from('class_sessions')
-      .select('id, scheduled_at, duration_minutes, status')
+      .select('id, scheduled_at, duration_minutes, status, notes')
       .eq('group_id', params.groupId)
       .order('scheduled_at', { ascending: false }),
     supabase
@@ -67,10 +68,11 @@ export default async function AdminAttendanceGroupPage({
   }
 
   const now = Date.now();
-  const upcoming = sessions.filter(
-    (s) => s.status === 'scheduled' && new Date(s.scheduled_at).getTime() >= now
-  );
-  const past = sessions.filter((s) => !upcoming.includes(s));
+  const upcoming = sessions
+    .filter((s) => new Date(s.scheduled_at).getTime() >= now)
+    .slice()
+    .reverse();
+  const past = sessions.filter((s) => new Date(s.scheduled_at).getTime() < now);
 
   const errorMessage = searchParams.error;
 
@@ -165,6 +167,17 @@ function EmptyBox({ children }: { children: React.ReactNode }) {
   );
 }
 
+function statusPillClass(status: SessionRow['status']): string {
+  switch (status) {
+    case 'held':
+      return 'ss-pill bg-emerald-50 text-emerald-700';
+    case 'cancelled':
+      return 'ss-pill bg-red-50 text-red-700';
+    default:
+      return 'ss-pill bg-slate-100 text-slate-700';
+  }
+}
+
 function SessionList({
   sessions,
   groupId,
@@ -181,7 +194,7 @@ function SessionList({
   confirmDelete: (name: string) => string;
 }) {
   return (
-    <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+    <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
       {sessions.map((s) => {
         const date = new Date(s.scheduled_at);
         const display = format.dateTime(date, {
@@ -191,13 +204,14 @@ function SessionList({
         });
         const cnt = counts.get(s.id);
         return (
-          <li key={s.id} className="flex items-center justify-between px-4 py-3">
-            <div>
+          <li
+            key={s.id}
+            className="flex items-start justify-between gap-3 px-4 py-3"
+          >
+            <div className="min-w-0 flex-1">
               <p className="font-medium text-slate-900">{display}</p>
               <p className="text-xs text-slate-500">
-                {t('admin.attendance.statusLabel')}:{' '}
-                {t(`admin.attendance.status.${s.status}`)} · {s.duration_minutes}{' '}
-                {t('admin.attendance.minutes')}
+                {s.duration_minutes} {t('admin.attendance.minutes')}
                 {cnt
                   ? ` · ${t('admin.attendance.attendanceRatio', {
                       present: cnt.present,
@@ -205,20 +219,28 @@ function SessionList({
                     })}`
                   : ''}
               </p>
+              {s.notes ? (
+                <p className="mt-1 truncate text-xs text-slate-600">{s.notes}</p>
+              ) : null}
             </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/admin/attendance/${groupId}/sessions/${s.id}`}
-                className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
-              >
-                {t('admin.attendance.open')}
-              </Link>
-              <DeleteSessionButton
-                groupId={groupId}
-                sessionId={s.id}
-                confirmMessage={confirmDelete(display)}
-                label={t('common.delete')}
-              />
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <span className={statusPillClass(s.status)}>
+                {t(`admin.attendance.status.${s.status}`)}
+              </span>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/attendance/${groupId}/sessions/${s.id}`}
+                  className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+                >
+                  {t('admin.attendance.open')}
+                </Link>
+                <DeleteSessionButton
+                  groupId={groupId}
+                  sessionId={s.id}
+                  confirmMessage={confirmDelete(display)}
+                  label={t('common.delete')}
+                />
+              </div>
             </div>
           </li>
         );

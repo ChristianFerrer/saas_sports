@@ -19,11 +19,16 @@ export async function createSession(
   const dateStr = String(formData.get('scheduled_at_date') ?? '').trim();
   const timeStr = String(formData.get('scheduled_at_time') ?? '').trim();
   const durationStr = String(formData.get('duration_minutes') ?? '60').trim();
+  const statusRaw = String(formData.get('status') ?? 'scheduled').trim();
+  const notesRaw = String(formData.get('notes') ?? '').trim();
 
   if (!dateStr || !timeStr) return { error: 'dateTimeRequired' };
 
   const duration = Number.parseInt(durationStr, 10);
   if (!Number.isFinite(duration) || duration <= 0) return { error: 'durationInvalid' };
+
+  const status =
+    statusRaw === 'cancelled' || statusRaw === 'held' ? statusRaw : 'scheduled';
 
   // TZ-naive: store the entered local time as if it were UTC. Display path
   // reads it back with timeZone:'UTC' for round-trip consistency. Proper
@@ -37,7 +42,8 @@ export async function createSession(
       group_id: groupId,
       scheduled_at: scheduledAt,
       duration_minutes: duration,
-      status: 'scheduled'
+      status,
+      notes: notesRaw === '' ? null : notesRaw
     })
     .select('id')
     .single();
@@ -50,6 +56,7 @@ export async function createSession(
   if (!data) return { error: 'insertFailed' };
 
   revalidatePath(`/admin/attendance/${groupId}`);
+  revalidatePath(`/admin/groups/${groupId}`);
   redirect(`/admin/attendance/${groupId}/sessions/${data.id}`);
 }
 
@@ -106,6 +113,53 @@ export async function saveAttendance(
   revalidatePath(`/admin/attendance/${groupId}`);
   revalidatePath(`/admin/attendance/${groupId}/sessions/${sessionId}`);
   return { savedAt: Date.now() };
+}
+
+export async function editSession(
+  groupId: string,
+  sessionId: string,
+  _prev: SessionFormState,
+  formData: FormData
+): Promise<SessionFormState> {
+  await requireRole('admin');
+
+  const dateStr = String(formData.get('scheduled_at_date') ?? '').trim();
+  const timeStr = String(formData.get('scheduled_at_time') ?? '').trim();
+  const durationStr = String(formData.get('duration_minutes') ?? '60').trim();
+  const statusRaw = String(formData.get('status') ?? 'scheduled').trim();
+  const notesRaw = String(formData.get('notes') ?? '').trim();
+
+  if (!dateStr || !timeStr) return { error: 'dateTimeRequired' };
+
+  const duration = Number.parseInt(durationStr, 10);
+  if (!Number.isFinite(duration) || duration <= 0) return { error: 'durationInvalid' };
+
+  const status =
+    statusRaw === 'cancelled' || statusRaw === 'held' ? statusRaw : 'scheduled';
+
+  const scheduledAt = `${dateStr}T${timeStr}:00.000Z`;
+
+  const supabase = createUntypedClient();
+  const { error } = await supabase
+    .from('class_sessions')
+    .update({
+      scheduled_at: scheduledAt,
+      duration_minutes: duration,
+      status,
+      notes: notesRaw === '' ? null : notesRaw
+    })
+    .eq('id', sessionId);
+
+  if (error) {
+    console.error('[editSession] update failed', { sessionId, error });
+    if (error.code === '23505') return { error: 'duplicateSession' };
+    return { error: error.message };
+  }
+
+  revalidatePath(`/admin/attendance/${groupId}`);
+  revalidatePath(`/admin/attendance/${groupId}/sessions/${sessionId}`);
+  revalidatePath(`/admin/groups/${groupId}`);
+  redirect(`/admin/attendance/${groupId}/sessions/${sessionId}`);
 }
 
 export async function cancelSession(groupId: string, sessionId: string): Promise<void> {

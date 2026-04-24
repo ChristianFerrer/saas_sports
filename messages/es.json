@@ -182,8 +182,13 @@
         "date": "Fecha",
         "time": "Hora",
         "duration": "Duración (minutos)",
+        "status": "Estado",
+        "sessionNotes": "Nota de la sesión",
+        "sessionNotesHint": "Aparece al lado del estado. Ej. \"Festivo\", \"Cambio de sede\".",
+        "sessionNotesPlaceholder": "Ej. Cambio de sede por lluvia",
         "notesPlaceholder": "Notas del entrenador (opcional)"
       },
+      "editSession": "Editar sesión",
       "errors": {
         "dateTimeRequired": "Fecha y hora son obligatorias.",
         "durationInvalid": "La duración debe ser un número positivo de minutos.",
