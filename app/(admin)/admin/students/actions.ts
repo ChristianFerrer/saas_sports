@@ -80,3 +80,47 @@ export async function deleteStudent(id: string): Promise<void> {
   revalidatePath('/admin');
   redirect('/admin/students');
 }
+
+export async function toggleStudentObjective(
+  studentId: string,
+  objectiveId: string,
+  achieved: boolean
+): Promise<void> {
+  const user = await requireRole('admin');
+  const supabase = createUntypedClient();
+
+  if (achieved) {
+    const { error } = await supabase.from('student_objectives').upsert(
+      {
+        student_id: studentId,
+        objective_id: objectiveId,
+        achieved_at: new Date().toISOString(),
+        marked_by: user.id
+      },
+      { onConflict: 'student_id,objective_id' }
+    );
+    if (error) {
+      console.error('[toggleStudentObjective] upsert failed', {
+        studentId,
+        objectiveId,
+        error
+      });
+    }
+  } else {
+    const { error } = await supabase
+      .from('student_objectives')
+      .delete()
+      .eq('student_id', studentId)
+      .eq('objective_id', objectiveId);
+    if (error) {
+      console.error('[toggleStudentObjective] delete failed', {
+        studentId,
+        objectiveId,
+        error
+      });
+    }
+  }
+
+  revalidatePath(`/admin/students/${studentId}`);
+  revalidatePath(`/admin/groups`);
+}

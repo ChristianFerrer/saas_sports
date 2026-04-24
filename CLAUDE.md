@@ -61,6 +61,7 @@ supabase/
   migrations/0001_initial_schema.sql   tablas + enums + triggers
   migrations/0002_rls_policies.sql     RLS por rol + helpers SQL
   migrations/0003_fix_rls_recursion.sql  arregla recursión RLS vía SECURITY DEFINER helpers
+  migrations/0004_training_cycles_and_objectives.sql  ciclos en groups + tablas objectives/student_objectives
   seed.sql                              alternativa manual al script
   verify_rls.sql                        checks de RLS
 
@@ -71,8 +72,10 @@ middleware.ts                refresca sesión en cada request
 i18n.ts                      config next-intl
 ```
 
-### Tablas existentes (migración 0001)
-`schools`, `profiles`, `groups`, `students`, `student_parents`, `class_sessions`, `attendances`, `communications`, `communication_recipients`, `invitations`.
+### Tablas existentes
+Migración 0001: `schools`, `profiles`, `groups`, `students`, `student_parents`, `class_sessions`, `attendances`, `communications`, `communication_recipients`, `invitations`.
+
+Migración 0004: `objectives` (hitos por grupo — "chutar el balón", "regate", etc.), `student_objectives` (logros m-n student↔objective con `achieved_at`, `notes`, `marked_by`). Además `groups` gana `start_date` y `end_date` para el ciclo de entrenamiento.
 
 Enums: `user_role` (`admin|coach|parent`), `session_status` (`scheduled|held|cancelled`).
 

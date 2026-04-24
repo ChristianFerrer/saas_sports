@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CheckSquare, Target } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
@@ -27,6 +28,24 @@ type AttendanceRow = {
   session_id: string;
   present: boolean;
   coach_notes: string | null;
+};
+
+type CurrentObjectiveRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  display_order: number;
+};
+
+type ParentAchievementRow = {
+  objective_id: string;
+  achieved_at: string;
+  objectives: {
+    id: string;
+    title: string;
+    description: string | null;
+    group_id: string;
+  } | null;
 };
 
 export default async function ParentChildPage({
@@ -57,7 +76,13 @@ export default async function ParentChildPage({
   const s = student as StudentRow | null;
   if (!s) notFound();
 
-  const [groupResult, sessionsResult, attendanceResult] = await Promise.all([
+  const [
+    groupResult,
+    sessionsResult,
+    attendanceResult,
+    currentObjectivesResult,
+    achievementsResult
+  ] = await Promise.all([
     s.group_id
       ? supabase.from('groups').select('id, name').eq('id', s.group_id).maybeSingle()
       : Promise.resolve({ data: null as { id: string; name: string } | null }),
@@ -71,11 +96,47 @@ export default async function ParentChildPage({
     supabase
       .from('attendances')
       .select('session_id, present, coach_notes')
+      .eq('student_id', s.id),
+    s.group_id
+      ? supabase
+          .from('objectives')
+          .select('id, title, description, display_order')
+          .eq('group_id', s.group_id)
+          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: true })
+      : Promise.resolve({ data: [] as CurrentObjectiveRow[] }),
+    supabase
+      .from('student_objectives')
+      .select(
+        'objective_id, achieved_at, objectives (id, title, description, group_id)'
+      )
       .eq('student_id', s.id)
+      .order('achieved_at', { ascending: false })
   ]);
 
   const groupName = (groupResult.data as { name: string } | null)?.name ?? null;
   const sessions = (sessionsResult.data ?? []) as SessionRow[];
+  const currentObjectives = (currentObjectivesResult.data ?? []) as CurrentObjectiveRow[];
+  const achievements = (achievementsResult.data ?? []) as unknown as ParentAchievementRow[];
+  const achievedIds = new Set(achievements.map((a) => a.objective_id));
+
+  const historicalAchievements = achievements.filter(
+    (a) => a.objectives && a.objectives.group_id !== s.group_id
+  );
+  const historicalGroupIds = Array.from(
+    new Set(historicalAchievements.map((a) => a.objectives?.group_id).filter((g): g is string => !!g))
+  );
+  const historicalGroupsById = new Map<string, string>();
+  if (historicalGroupIds.length > 0) {
+    const { data: hist } = await supabase
+      .from('groups')
+      .select('id, name')
+      .in('id', historicalGroupIds);
+    for (const g of (hist ?? []) as Array<{ id: string; name: string }>) {
+      historicalGroupsById.set(g.id, g.name);
+    }
+  }
+
   const attendanceBySession = new Map<string, AttendanceRow>();
   for (const a of (attendanceResult.data ?? []) as AttendanceRow[]) {
     attendanceBySession.set(a.session_id, a);
@@ -114,12 +175,113 @@ export default async function ParentChildPage({
         ) : null}
       </div>
 
+      {currentObjectives.length > 0 || historicalAchievements.length > 0 ? (
+        <>
+          {currentObjectives.length > 0 ? (
+            <>
+              <h3 className="mt-4 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+                <Target size={14} strokeWidth={2.4} aria-hidden />
+                {t('parent.objectives.current', {
+                  group: groupName ?? t('admin.students.unassigned')
+                })}
+              </h3>
+              <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+                {currentObjectives.map((o) => {
+                  const achieved = achievedIds.has(o.id);
+                  return (
+                    <li key={o.id} className="flex items-start gap-3 px-4 py-3">
+                      <span
+                        aria-hidden
+                        className={
+                          achieved
+                            ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500 text-white'
+                            : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-slate-300'
+                        }
+                      >
+                        {achieved ? <CheckSquare size={14} strokeWidth={2.6} /> : null}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={
+                            achieved
+                              ? 'truncate font-semibold text-slate-900'
+                              : 'truncate font-medium text-slate-700'
+                          }
+                        >
+                          {o.title}
+                        </p>
+                        {o.description ? (
+                          <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">
+                            {o.description}
+                          </p>
+                        ) : null}
+                      </div>
+                      <span
+                        className={
+                          achieved
+                            ? 'ss-pill bg-emerald-50 text-emerald-700'
+                            : 'ss-pill bg-slate-100 text-slate-600'
+                        }
+                      >
+                        {achieved
+                          ? t('parent.objectives.statusAchieved')
+                          : t('parent.objectives.statusPending')}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          ) : null}
+
+          {historicalAchievements.length > 0 ? (
+            <>
+              <h3 className="mt-4 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+                <Target size={14} strokeWidth={2.4} aria-hidden />
+                {t('parent.objectives.historical')}
+              </h3>
+              <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+                {historicalAchievements.map((a) => {
+                  const obj = a.objectives!;
+                  const gName = historicalGroupsById.get(obj.group_id) ?? '—';
+                  return (
+                    <li
+                      key={`${obj.id}-${a.achieved_at}`}
+                      className="flex items-start gap-3 px-4 py-3"
+                    >
+                      <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500 text-white">
+                        <CheckSquare size={14} strokeWidth={2.6} aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-slate-900">
+                          {obj.title}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {gName} ·{' '}
+                          {format.dateTime(new Date(a.achieved_at), {
+                            dateStyle: 'medium'
+                          })}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          ) : null}
+        </>
+      ) : null}
+
+      <h3 className="mt-5 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+        <CheckSquare size={14} strokeWidth={2.4} aria-hidden />
+        {t('parent.attendance.historyTitle')}
+      </h3>
       {sessions.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
           {t('parent.attendance.empty')}
         </div>
       ) : (
-        <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+        <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
           {sessions.map((ss) => {
             const att = attendanceBySession.get(ss.id);
             const display = format.dateTime(new Date(ss.scheduled_at), {

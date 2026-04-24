@@ -137,7 +137,13 @@
         "attendance": "Overall attendance",
         "attendanceSummary": "{present}/{total} sessions",
         "noAttendance": "No attendance records yet.",
-        "recentSessions": "Recent attendance"
+        "recentSessions": "Recent attendance",
+        "objectivesCurrent": "Objectives — {group}",
+        "objectivesNoGroup": "Objectives",
+        "objectivesEmpty": "This group has no objectives yet.",
+        "objectivesNoGroupHint": "Assign a group to this student to see their objectives.",
+        "objectivesHistorical": "Previous achievements",
+        "toggleHint": "Tap to mark or unmark as achieved"
       }
     },
     "attendance": {
@@ -334,10 +340,17 @@
       "noData": "No attendance records yet.",
       "percentage": "Attendance {pct}% ({present}/{total})",
       "summary": "Overall attendance: {pct}% ({present}/{total} sessions).",
+      "historyTitle": "Attendance",
       "empty": "No sessions in this group yet.",
       "present": "Present",
       "absent": "Absent",
       "pending": "Pending"
+    },
+    "objectives": {
+      "current": "Objectives — {group}",
+      "historical": "Previous achievements",
+      "statusAchieved": "Achieved",
+      "statusPending": "Pending"
     }
   },
   "auth": {

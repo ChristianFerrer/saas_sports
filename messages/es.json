@@ -137,7 +137,13 @@
         "attendance": "Asistencia global",
         "attendanceSummary": "{present}/{total} sesiones",
         "noAttendance": "Sin registros de asistencia todavía.",
-        "recentSessions": "Asistencias recientes"
+        "recentSessions": "Asistencias recientes",
+        "objectivesCurrent": "Objetivos — {group}",
+        "objectivesNoGroup": "Objetivos",
+        "objectivesEmpty": "Este grupo aún no tiene objetivos configurados.",
+        "objectivesNoGroupHint": "Asigna un grupo al alumno para ver sus objetivos.",
+        "objectivesHistorical": "Logros anteriores",
+        "toggleHint": "Toca para marcar o desmarcar como logrado"
       }
     },
     "attendance": {
@@ -334,10 +340,17 @@
       "noData": "Sin registros de asistencia.",
       "percentage": "Asistencia {pct}% ({present}/{total})",
       "summary": "Asistencia global: {pct}% ({present}/{total} sesiones).",
+      "historyTitle": "Asistencias",
       "empty": "No hay sesiones en el grupo todavía.",
       "present": "Presente",
       "absent": "Ausente",
       "pending": "Pendiente"
+    },
+    "objectives": {
+      "current": "Objetivos — {group}",
+      "historical": "Logros anteriores",
+      "statusAchieved": "Logrado",
+      "statusPending": "Pendiente"
     }
   },
   "auth": {
