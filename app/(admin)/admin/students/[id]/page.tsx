@@ -44,6 +44,12 @@ type StudentRow = {
   birth_date: string | null;
   enrolled_at: string | null;
   left_at: string | null;
+  dorsal_number: number | null;
+  position: string | null;
+  dominant_foot: 'left' | 'right' | 'both' | null;
+  height_cm: number | null;
+  weight_kg: number | null;
+  photo_url: string | null;
 };
 
 type GroupRow = { id: string; name: string };
@@ -105,12 +111,14 @@ function ageFromBirth(birthDate: string | null): number | null {
   return age;
 }
 
-/** Deterministic jersey number 1..99 from the student id. Gives the
- *  player-card "dorsal" feel without adding a schema column. */
-function dorsalFor(id: string): number {
-  let hash = 0;
-  for (let i = 0; i < id.length; i += 1) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  return (hash % 99) + 1;
+function dominantFootLabel(
+  t: Awaited<ReturnType<typeof getTranslations>>,
+  v: 'left' | 'right' | 'both' | null
+): string | null {
+  if (v === 'left') return t('admin.students.fields.dominantFootLeft');
+  if (v === 'right') return t('admin.students.fields.dominantFootRight');
+  if (v === 'both') return t('admin.students.fields.dominantFootBoth');
+  return null;
 }
 
 export default async function AdminStudentDetailPage({
@@ -126,7 +134,8 @@ export default async function AdminStudentDetailPage({
   const { data: studentData } = await supabase
     .from('students')
     .select(
-      'id, school_id, group_id, full_name, birth_date, enrolled_at, left_at'
+      'id, school_id, group_id, full_name, birth_date, enrolled_at, left_at, ' +
+        'dorsal_number, position, dominant_foot, height_cm, weight_kg, photo_url'
     )
     .eq('id', params.id)
     .maybeSingle();
@@ -186,8 +195,9 @@ export default async function AdminStudentDetailPage({
       .order('achieved_at', { ascending: false }),
     supabase
       .from('groups')
-      .select('id, name, created_at')
+      .select('id, name, created_at, display_order')
       .eq('school_id', user.profile.school_id)
+      .order('display_order', { ascending: true })
       .order('created_at', { ascending: true })
   ]);
 
@@ -217,6 +227,7 @@ export default async function AdminStudentDetailPage({
     id: string;
     name: string;
     created_at: string;
+    display_order: number;
   }>;
 
   // Scope sessions to the enrollment window.
@@ -293,26 +304,21 @@ export default async function AdminStudentDetailPage({
   }
 
   const age = ageFromBirth(student.birth_date);
-  const dorsal = dorsalFor(student.id);
+  const dorsal = student.dorsal_number ?? null;
+  const footLabel = dominantFootLabel(t, student.dominant_foot);
 
-  // Hero meta
+  // Hero meta — prefer real player-card data, fall back to context pieces.
   const metaItems: Array<{ label: string; value: React.ReactNode }> = [];
-  if (student.birth_date) {
+  if (student.position) {
     metaItems.push({
-      label: t('admin.students.detail.birthDate'),
-      value: (
-        <>
-          {format.dateTime(new Date(student.birth_date), {
-            dateStyle: 'medium',
-            timeZone: 'UTC'
-          })}
-          {age !== null ? (
-            <span className="ml-1 font-normal text-ink-300">
-              · {age} {t('admin.students.detail.age')}
-            </span>
-          ) : null}
-        </>
-      )
+      label: t('admin.students.detail.position'),
+      value: student.position
+    });
+  }
+  if (age !== null) {
+    metaItems.push({
+      label: t('admin.students.detail.age'),
+      value: `${age} ${t('admin.students.detail.age')}`
     });
   }
   if (group) {
@@ -326,6 +332,24 @@ export default async function AdminStudentDetailPage({
           {group.name}
         </Link>
       )
+    });
+  }
+  if (footLabel) {
+    metaItems.push({
+      label: t('admin.students.detail.dominantFoot'),
+      value: footLabel
+    });
+  }
+  if (student.height_cm) {
+    metaItems.push({
+      label: t('admin.students.detail.height'),
+      value: `${student.height_cm} cm`
+    });
+  }
+  if (student.weight_kg) {
+    metaItems.push({
+      label: t('admin.students.detail.weight'),
+      value: `${student.weight_kg} kg`
     });
   }
   if (coach) {
@@ -386,6 +410,7 @@ export default async function AdminStudentDetailPage({
             : undefined
         }
         initials={initialsOf(student.full_name)}
+        photoUrl={student.photo_url}
         dorsal={dorsal}
         meta={metaItems}
         rightSlot={

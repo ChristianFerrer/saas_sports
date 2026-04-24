@@ -62,14 +62,17 @@
         "cycle": "Ciclo de entrenamiento",
         "cycleHint": "Fechas de inicio y fin del ciclo. Sirve para cerrar temporadas y marcar progreso.",
         "startDate": "Fecha de inicio",
-        "endDate": "Fecha de fin"
+        "endDate": "Fecha de fin",
+        "displayOrder": "Orden en el camino",
+        "displayOrderHint": "Controla la posición del grupo en el roadmap del alumno. Menor va primero."
       },
       "errors": {
         "nameRequired": "El nombre es obligatorio.",
         "hasStudents": "No se puede eliminar un grupo con alumnos asignados. Muévelos antes.",
         "scheduleInvalid": "El horario tiene entradas inválidas. Revisa día, hora y duración.",
         "dateInvalid": "Alguna de las fechas no tiene un formato válido.",
-        "dateRangeInvalid": "La fecha de fin no puede ser anterior a la de inicio."
+        "dateRangeInvalid": "La fecha de fin no puede ser anterior a la de inicio.",
+        "orderInvalid": "El orden debe ser un número entre 0 y 9999."
       },
       "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"?",
       "detail": {
@@ -124,7 +127,20 @@
         "enrollment": "Permanencia en la escuela",
         "enrollmentHint": "Ingreso y (opcional) desvinculación. Las sesiones fuera de este rango no cuentan para la asistencia.",
         "enrolledAt": "Ingreso",
-        "leftAt": "Desvinculación"
+        "leftAt": "Desvinculación",
+        "playerCard": "Datos de jugador",
+        "playerCardHint": "Aparecen en la ficha tipo carta de jugador.",
+        "dorsal": "Dorsal",
+        "position": "Posición",
+        "positionPlaceholder": "Ej. Delantero",
+        "dominantFoot": "Pie dominante",
+        "dominantFootNone": "— Sin definir —",
+        "dominantFootRight": "Derecha",
+        "dominantFootLeft": "Izquierda",
+        "dominantFootBoth": "Ambas",
+        "height": "Altura (cm)",
+        "weight": "Peso (kg)",
+        "photoUrl": "Foto (URL)"
       },
       "errors": {
         "fullNameRequired": "El nombre es obligatorio.",
@@ -145,6 +161,10 @@
         "noEnrolledAt": "No registrada",
         "leftAt": "Desvinculación",
         "inactive": "Desvinculado",
+        "position": "Posición",
+        "dominantFoot": "Pie dominante",
+        "height": "Altura",
+        "weight": "Peso",
         "attendance": "Asistencia global",
         "attendanceSummary": "{present}/{total} sesiones",
         "noAttendance": "Sin registros de asistencia todavía.",

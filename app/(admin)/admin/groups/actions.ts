@@ -80,6 +80,16 @@ export async function updateGroup(
   if (start === 'invalid' || end === 'invalid') return { error: 'dateInvalid' };
   if (start && end && start > end) return { error: 'dateRangeInvalid' };
 
+  const orderRaw = String(formData.get('display_order') ?? '').trim();
+  let displayOrder: number | null = null;
+  if (orderRaw !== '') {
+    const parsed = Number.parseInt(orderRaw, 10);
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 9999) {
+      return { error: 'orderInvalid' };
+    }
+    displayOrder = parsed;
+  }
+
   const supabase = createUntypedClient();
   const { error } = await supabase
     .from('groups')
@@ -88,7 +98,8 @@ export async function updateGroup(
       schedule,
       coach_id,
       start_date: start,
-      end_date: end
+      end_date: end,
+      ...(displayOrder !== null ? { display_order: displayOrder } : {})
     })
     .eq('id', id);
 

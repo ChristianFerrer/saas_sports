@@ -18,10 +18,12 @@ type GroupFormProps = {
   defaultCoachId?: string | null;
   defaultStartDate?: string | null;
   defaultEndDate?: string | null;
+  defaultDisplayOrder?: number;
   coaches?: CoachOption[];
   showSchedule?: boolean;
   showCoach?: boolean;
   showCycle?: boolean;
+  showOrder?: boolean;
   submitLabel: string;
 };
 
@@ -34,10 +36,12 @@ export function GroupForm({
   defaultCoachId = null,
   defaultStartDate = null,
   defaultEndDate = null,
+  defaultDisplayOrder = 0,
   coaches = [],
   showSchedule = false,
   showCoach = false,
   showCycle = false,
+  showOrder = false,
   submitLabel
 }: GroupFormProps) {
   const t = useTranslations('admin.groups');
@@ -53,7 +57,9 @@ export function GroupForm({
           ? t('errors.dateInvalid')
           : state.error === 'dateRangeInvalid'
             ? t('errors.dateRangeInvalid')
-            : state.error;
+            : state.error === 'orderInvalid'
+              ? t('errors.orderInvalid')
+              : state.error;
 
   return (
     <form action={formAction} className="space-y-5">
@@ -132,6 +138,25 @@ export function GroupForm({
               />
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {showOrder ? (
+        <div className="space-y-1.5">
+          <label htmlFor="display_order" className="ss-label">
+            {t('fields.displayOrder')}
+          </label>
+          <p className="text-xs text-ink-300">{t('fields.displayOrderHint')}</p>
+          <input
+            id="display_order"
+            name="display_order"
+            type="number"
+            min={0}
+            max={9999}
+            step={1}
+            defaultValue={defaultDisplayOrder}
+            className="ss-input max-w-[10rem]"
+          />
         </div>
       ) : null}
 

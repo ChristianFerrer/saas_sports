@@ -34,6 +34,9 @@ type StudentRow = {
   birth_date: string | null;
   enrolled_at: string | null;
   left_at: string | null;
+  dorsal_number: number | null;
+  position: string | null;
+  photo_url: string | null;
 };
 
 type SessionRow = {
@@ -116,7 +119,10 @@ export default async function ParentChildPage({
 
   const { data: student } = await supabase
     .from('students')
-    .select('id, full_name, group_id, birth_date, enrolled_at, left_at')
+    .select(
+      'id, full_name, group_id, birth_date, enrolled_at, left_at, ' +
+        'dorsal_number, position, photo_url'
+    )
     .eq('id', params.studentId)
     .maybeSingle();
 
@@ -213,14 +219,25 @@ export default async function ParentChildPage({
     .reverse()[0];
 
   // Roadmap (same derivation as admin) — fetch school groups through group
-  let schoolGroups: Array<{ id: string; name: string; created_at: string }> = [];
+  let schoolGroups: Array<{
+    id: string;
+    name: string;
+    created_at: string;
+    display_order: number;
+  }> = [];
   if (group) {
     const { data: gs } = await supabase
       .from('groups')
-      .select('id, name, created_at')
+      .select('id, name, created_at, display_order')
       .eq('school_id', group.school_id)
+      .order('display_order', { ascending: true })
       .order('created_at', { ascending: true });
-    schoolGroups = (gs ?? []) as Array<{ id: string; name: string; created_at: string }>;
+    schoolGroups = (gs ?? []) as Array<{
+      id: string;
+      name: string;
+      created_at: string;
+      display_order: number;
+    }>;
   }
   const pastGroupIds = new Set<string>();
   for (const a of achievements) {
@@ -341,10 +358,12 @@ export default async function ParentChildPage({
       </Link>
 
       <PremiumProfileHero
-        kicker={t('parent.detail.heroKicker')}
+        kicker={s.position ?? t('parent.detail.heroKicker')}
         title={s.full_name}
         subtitle={positiveMessage}
         initials={initialsOf(s.full_name)}
+        photoUrl={s.photo_url}
+        dorsal={s.dorsal_number ?? undefined}
         meta={metaItems}
         rightSlot={
           <PremiumProgressRing

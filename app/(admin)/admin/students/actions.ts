@@ -8,18 +8,58 @@ import { createUntypedClient } from '@/lib/supabase/server';
 
 export type StudentFormState = { error?: string };
 
+function parseIntOr(raw: string, min?: number, max?: number): number | null {
+  const s = raw.trim();
+  if (s === '') return null;
+  const n = Number.parseInt(s, 10);
+  if (!Number.isFinite(n)) return null;
+  if (min !== undefined && n < min) return null;
+  if (max !== undefined && n > max) return null;
+  return n;
+}
+
+function parseNumberOr(raw: string, min?: number, max?: number): number | null {
+  const s = raw.trim().replace(',', '.');
+  if (s === '') return null;
+  const n = Number.parseFloat(s);
+  if (!Number.isFinite(n)) return null;
+  if (min !== undefined && n < min) return null;
+  if (max !== undefined && n > max) return null;
+  return n;
+}
+
+function parseDominantFoot(raw: string): 'left' | 'right' | 'both' | null {
+  const s = raw.trim().toLowerCase();
+  if (s === 'left' || s === 'right' || s === 'both') return s;
+  return null;
+}
+
 function parseFormData(formData: FormData) {
   const fullName = String(formData.get('full_name') ?? '').trim();
   const birthDateRaw = String(formData.get('birth_date') ?? '').trim();
   const groupIdRaw = String(formData.get('group_id') ?? '').trim();
   const enrolledAtRaw = String(formData.get('enrolled_at') ?? '').trim();
   const leftAtRaw = String(formData.get('left_at') ?? '').trim();
+
+  const positionRaw = String(formData.get('position') ?? '').trim();
+  const dominantFootRaw = String(formData.get('dominant_foot') ?? '').trim();
+  const dorsalRaw = String(formData.get('dorsal_number') ?? '');
+  const heightRaw = String(formData.get('height_cm') ?? '');
+  const weightRaw = String(formData.get('weight_kg') ?? '');
+  const photoUrlRaw = String(formData.get('photo_url') ?? '').trim();
+
   return {
     fullName,
     birthDate: birthDateRaw === '' ? null : birthDateRaw,
     groupId: groupIdRaw === '' ? null : groupIdRaw,
     enrolledAt: enrolledAtRaw === '' ? null : enrolledAtRaw,
-    leftAt: leftAtRaw === '' ? null : leftAtRaw
+    leftAt: leftAtRaw === '' ? null : leftAtRaw,
+    position: positionRaw === '' ? null : positionRaw,
+    dominantFoot: parseDominantFoot(dominantFootRaw),
+    dorsalNumber: parseIntOr(dorsalRaw, 1, 999),
+    heightCm: parseIntOr(heightRaw, 1, 259),
+    weightKg: parseNumberOr(weightRaw, 0.1, 299.99),
+    photoUrl: photoUrlRaw === '' ? null : photoUrlRaw
   };
 }
 
@@ -39,7 +79,8 @@ export async function createStudent(
   formData: FormData
 ): Promise<StudentFormState> {
   const user = await requireRole('admin');
-  const { fullName, birthDate, groupId, enrolledAt, leftAt } = parseFormData(formData);
+  const parsed = parseFormData(formData);
+  const { fullName, birthDate, groupId, enrolledAt, leftAt } = parsed;
 
   if (!fullName) return { error: 'fullNameRequired' };
   const dateErr = validateDateWindow(enrolledAt, leftAt);
@@ -54,7 +95,13 @@ export async function createStudent(
       birth_date: birthDate,
       group_id: groupId,
       enrolled_at: enrolledAt,
-      left_at: leftAt
+      left_at: leftAt,
+      position: parsed.position,
+      dominant_foot: parsed.dominantFoot,
+      dorsal_number: parsed.dorsalNumber,
+      height_cm: parsed.heightCm,
+      weight_kg: parsed.weightKg,
+      photo_url: parsed.photoUrl
     })
     .select('id')
     .single();
@@ -74,7 +121,8 @@ export async function updateStudent(
   formData: FormData
 ): Promise<StudentFormState> {
   await requireRole('admin');
-  const { fullName, birthDate, groupId, enrolledAt, leftAt } = parseFormData(formData);
+  const parsed = parseFormData(formData);
+  const { fullName, birthDate, groupId, enrolledAt, leftAt } = parsed;
 
   if (!fullName) return { error: 'fullNameRequired' };
   const dateErr = validateDateWindow(enrolledAt, leftAt);
@@ -88,7 +136,13 @@ export async function updateStudent(
       birth_date: birthDate,
       group_id: groupId,
       enrolled_at: enrolledAt,
-      left_at: leftAt
+      left_at: leftAt,
+      position: parsed.position,
+      dominant_foot: parsed.dominantFoot,
+      dorsal_number: parsed.dorsalNumber,
+      height_cm: parsed.heightCm,
+      weight_kg: parsed.weightKg,
+      photo_url: parsed.photoUrl
     })
     .eq('id', id);
 

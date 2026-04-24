@@ -62,14 +62,17 @@
         "cycle": "Training cycle",
         "cycleHint": "Start and end dates for the cycle. Useful to close seasons and track progress.",
         "startDate": "Start date",
-        "endDate": "End date"
+        "endDate": "End date",
+        "displayOrder": "Order on the path",
+        "displayOrderHint": "Controls where this group sits on the student's roadmap. Lower goes first."
       },
       "errors": {
         "nameRequired": "Name is required.",
         "hasStudents": "Can't delete a group with assigned students. Move them first.",
         "scheduleInvalid": "The schedule has invalid entries. Check weekday, time and duration.",
         "dateInvalid": "One of the dates is not in a valid format.",
-        "dateRangeInvalid": "End date cannot be before start date."
+        "dateRangeInvalid": "End date cannot be before start date.",
+        "orderInvalid": "Order must be a number between 0 and 9999."
       },
       "deleteConfirm": "Delete \"{name}\"?",
       "detail": {
@@ -124,7 +127,20 @@
         "enrollment": "School enrollment",
         "enrollmentHint": "Start and (optional) end date. Sessions outside this range don't count toward attendance.",
         "enrolledAt": "Enrolled on",
-        "leftAt": "Left on"
+        "leftAt": "Left on",
+        "playerCard": "Player info",
+        "playerCardHint": "Shown on the player-card profile.",
+        "dorsal": "Jersey #",
+        "position": "Position",
+        "positionPlaceholder": "e.g. Forward",
+        "dominantFoot": "Dominant foot",
+        "dominantFootNone": "— Not set —",
+        "dominantFootRight": "Right",
+        "dominantFootLeft": "Left",
+        "dominantFootBoth": "Both",
+        "height": "Height (cm)",
+        "weight": "Weight (kg)",
+        "photoUrl": "Photo (URL)"
       },
       "errors": {
         "fullNameRequired": "Name is required.",
@@ -145,6 +161,10 @@
         "noEnrolledAt": "Not recorded",
         "leftAt": "Left on",
         "inactive": "Unenrolled",
+        "position": "Position",
+        "dominantFoot": "Dominant foot",
+        "height": "Height",
+        "weight": "Weight",
         "attendance": "Overall attendance",
         "attendanceSummary": "{present}/{total} sessions",
         "noAttendance": "No attendance records yet.",

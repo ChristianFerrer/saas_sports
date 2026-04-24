@@ -78,6 +78,7 @@ export type Database = {
           schedule: GroupScheduleEntry[];
           start_date: string | null;
           end_date: string | null;
+          display_order: number;
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -87,6 +88,7 @@ export type Database = {
           schedule?: GroupScheduleEntry[];
           start_date?: string | null;
           end_date?: string | null;
+          display_order?: number;
         };
         Update: Partial<{
           coach_id: UUID | null;
@@ -94,6 +96,7 @@ export type Database = {
           schedule: GroupScheduleEntry[];
           start_date: string | null;
           end_date: string | null;
+          display_order: number;
         }>;
       };
       students: {
@@ -106,6 +109,11 @@ export type Database = {
           photo_url: string | null;
           enrolled_at: string | null;
           left_at: string | null;
+          dorsal_number: number | null;
+          position: string | null;
+          dominant_foot: 'left' | 'right' | 'both' | null;
+          height_cm: number | null;
+          weight_kg: number | null;
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -116,6 +124,11 @@ export type Database = {
           photo_url?: string | null;
           enrolled_at?: string | null;
           left_at?: string | null;
+          dorsal_number?: number | null;
+          position?: string | null;
+          dominant_foot?: 'left' | 'right' | 'both' | null;
+          height_cm?: number | null;
+          weight_kg?: number | null;
         };
         Update: Partial<{
           group_id: UUID | null;
@@ -124,6 +137,11 @@ export type Database = {
           photo_url: string | null;
           enrolled_at: string | null;
           left_at: string | null;
+          dorsal_number: number | null;
+          position: string | null;
+          dominant_foot: 'left' | 'right' | 'both' | null;
+          height_cm: number | null;
+          weight_kg: number | null;
         }>;
       };
       student_parents: {
