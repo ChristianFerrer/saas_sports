@@ -111,9 +111,16 @@
   },
   "coach": {
     "home": {
-      "title": "My classes",
+      "title": "My groups",
       "welcome": "Hi, {name}.",
-      "empty": "No classes assigned yet."
+      "empty": "No groups assigned yet. Ask your admin to assign you one."
+    },
+    "sessions": {
+      "empty": "This group has no sessions scheduled yet.",
+      "upcoming": "Upcoming",
+      "past": "History",
+      "noUpcoming": "No upcoming sessions.",
+      "noPast": "No past sessions yet."
     }
   },
   "parent": {

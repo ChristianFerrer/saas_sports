@@ -8,7 +8,7 @@ import type { SessionFormState } from '@/app/(admin)/admin/attendance/actions';
 
 type SessionFormProps = {
   action: (state: SessionFormState, formData: FormData) => Promise<SessionFormState>;
-  groupId: string;
+  cancelHref: string;
   submitLabel: string;
 };
 
@@ -22,7 +22,7 @@ function todayIsoDate() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export function SessionForm({ action, groupId, submitLabel }: SessionFormProps) {
+export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProps) {
   const t = useTranslations('admin.attendance');
   const tCommon = useTranslations('common');
   const [state, formAction] = useFormState(action, INITIAL);
@@ -105,7 +105,7 @@ export function SessionForm({ action, groupId, submitLabel }: SessionFormProps) 
       <div className="flex items-center gap-2">
         <SubmitButton>{submitLabel}</SubmitButton>
         <Link
-          href={`/admin/attendance/${groupId}`}
+          href={cancelHref}
           className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           {tCommon('cancel')}

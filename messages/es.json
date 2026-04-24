@@ -111,9 +111,16 @@
   },
   "coach": {
     "home": {
-      "title": "Mis clases",
+      "title": "Mis grupos",
       "welcome": "Hola, {name}.",
-      "empty": "No tienes clases asignadas todavía."
+      "empty": "No tienes grupos asignados todavía. Pide al administrador que te asigne uno."
+    },
+    "sessions": {
+      "empty": "Este grupo no tiene sesiones programadas todavía.",
+      "upcoming": "Próximas",
+      "past": "Historial",
+      "noUpcoming": "No hay sesiones programadas.",
+      "noPast": "Aún no hay sesiones pasadas."
     }
   },
   "parent": {

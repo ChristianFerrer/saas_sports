@@ -51,7 +51,11 @@ export default async function NewSessionPage({
       </div>
 
       <div className="max-w-lg">
-        <SessionForm action={action} groupId={g.id} submitLabel={t('common.create')} />
+        <SessionForm
+          action={action}
+          cancelHref={`/admin/attendance/${g.id}`}
+          submitLabel={t('common.create')}
+        />
       </div>
     </AppShell>
   );
