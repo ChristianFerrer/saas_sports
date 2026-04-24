@@ -3,6 +3,7 @@ import { ChevronRight, Layers } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
+import { PremiumSectionTitle } from '@/components/ui/premium-section-title';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -37,39 +38,49 @@ export default async function CoachHomePage() {
       title={t('coach.home.title')}
       role={t('roles.coach')}
       fullName={user.profile.full_name}
+      kicker={t('coach.home.greetingKicker')}
     >
-      <section className="rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-5 text-white shadow-card sm:p-6">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-100/90">
-          {t('coach.home.greetingKicker')}
-        </p>
-        <h2 className="mt-1 text-2xl font-semibold leading-tight sm:text-3xl">
-          {t('coach.home.welcome', { name: user.profile.full_name })}
-        </h2>
-        <p className="mt-1 max-w-md text-sm text-emerald-50/90">
-          {t('coach.home.tagline')}
-        </p>
+      <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-navy-800/60 p-6 sm:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-0 bg-grad-hero opacity-70"
+        />
+        <div className="relative z-10 max-w-xl">
+          <p className="ss-kicker text-gold-300">
+            {t('coach.home.greetingKicker')}
+          </p>
+          <h2 className="mt-2 font-display text-3xl font-extrabold leading-tight tracking-tight text-ink-50 sm:text-4xl">
+            <span className="text-gradient-gold">{user.profile.full_name}</span>
+          </h2>
+          <p className="mt-2 text-sm text-ink-200 sm:text-base">
+            {t('coach.home.tagline')}
+          </p>
+        </div>
       </section>
 
-      <h3 className="mt-6 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-        {t('coach.home.yourGroups')}
-      </h3>
+      <PremiumSectionTitle
+        kicker={t('coach.home.yourGroups')}
+        title={t('coach.home.yourGroups')}
+      />
 
       {groups.length === 0 ? (
-        <EmptyState message={t('coach.home.empty')} />
+        <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-sm text-ink-300">
+          {t('coach.home.empty')}
+        </div>
       ) : (
-        <ul className="mt-2 space-y-2">
+        <ul className="grid gap-3 sm:grid-cols-2">
           {groups.map((g) => (
             <li key={g.id}>
               <Link
                 href={`/coach/groups/${g.id}`}
-                className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card transition hover:border-slate-300 hover:shadow-pop"
+                className="group ss-card flex items-center gap-3 p-4 transition hover:border-white/15 hover:shadow-pop"
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-gold-400/20 to-gold-600/10 text-gold-300 ring-1 ring-gold-400/20">
                   <Layers size={18} strokeWidth={2.2} aria-hidden />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-slate-900">{g.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="truncate font-semibold text-ink-50">{g.name}</p>
+                  <p className="text-xs text-ink-300">
                     {t('admin.groups.studentsCount', {
                       count: studentsByGroup.get(g.id) ?? 0
                     })}
@@ -77,7 +88,7 @@ export default async function CoachHomePage() {
                 </div>
                 <ChevronRight
                   size={18}
-                  className="text-slate-400 transition group-hover:text-slate-700"
+                  className="text-ink-400 transition group-hover:text-ink-100"
                   aria-hidden
                 />
               </Link>
@@ -86,13 +97,5 @@ export default async function CoachHomePage() {
         </ul>
       )}
     </AppShell>
-  );
-}
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="mt-2 rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
-      {message}
-    </div>
   );
 }

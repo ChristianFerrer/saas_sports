@@ -1,6 +1,4 @@
-import Link from 'next/link';
 import {
-  ArrowUpRight,
   CheckSquare,
   Layers,
   Mail,
@@ -9,8 +7,9 @@ import {
 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { AdminNav } from '@/components/admin/admin-nav';
 import { AppShell } from '@/components/ui/app-shell';
+import { PremiumSectionTitle } from '@/components/ui/premium-section-title';
+import { PremiumStatCard } from '@/components/ui/premium-stat-card';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -20,8 +19,14 @@ export default async function AdminHomePage() {
   const supabase = createUntypedClient();
 
   const [groupsResult, studentsResult] = await Promise.all([
-    supabase.from('groups').select('*', { count: 'exact', head: true }),
-    supabase.from('students').select('*', { count: 'exact', head: true })
+    supabase
+      .from('groups')
+      .select('*', { count: 'exact', head: true })
+      .eq('school_id', user.profile.school_id),
+    supabase
+      .from('students')
+      .select('*', { count: 'exact', head: true })
+      .eq('school_id', user.profile.school_id)
   ]);
 
   const groupsCount = groupsResult.count ?? 0;
@@ -32,143 +37,131 @@ export default async function AdminHomePage() {
       title={t('admin.home.title')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
+      kicker={t('admin.home.greetingKicker')}
     >
-      <section className="rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-5 text-white shadow-card sm:p-6">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-100/90">
-          {t('admin.home.greetingKicker')}
-        </p>
-        <h2 className="mt-1 text-2xl font-semibold leading-tight sm:text-3xl">
-          {t('admin.home.welcome', { name: user.profile.full_name })}
-        </h2>
-        <p className="mt-1 max-w-md text-sm text-emerald-50/90">
-          {t('admin.home.tagline')}
-        </p>
+      {/* Hero banner */}
+      <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-navy-800/60 p-6 sm:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-0 bg-grad-hero opacity-70"
+        />
+        <div className="relative z-10 flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-xl">
+            <p className="ss-kicker text-gold-300">
+              {t('admin.home.greetingKicker')}
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-extrabold leading-tight tracking-tight text-ink-50 sm:text-4xl">
+              <span className="text-gradient-gold">{user.profile.full_name}</span>
+            </h2>
+            <p className="mt-2 max-w-md text-sm text-ink-200 sm:text-base">
+              {t('admin.home.tagline')}
+            </p>
+          </div>
+          <div className="flex items-baseline gap-6 text-ink-100">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-300">
+                {t('admin.home.stats.groups')}
+              </p>
+              <p className="font-display text-4xl font-extrabold tracking-tight text-ink-50">
+                {groupsCount}
+              </p>
+            </div>
+            <div className="h-10 w-px bg-white/10" />
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-300">
+                {t('admin.home.stats.students')}
+              </p>
+              <p className="font-display text-4xl font-extrabold tracking-tight text-ink-50">
+                {studentsCount}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <StatCard
+        <PremiumStatCard
           href="/admin/groups"
-          icon={<Layers size={18} strokeWidth={2.2} />}
-          label={t('admin.home.stats.groups')}
+          kicker={t('admin.home.stats.groups')}
           value={groupsCount}
-          accent="emerald"
+          accent="gold"
+          icon={<Layers size={18} strokeWidth={2.2} aria-hidden />}
         />
-        <StatCard
+        <PremiumStatCard
           href="/admin/students"
-          icon={<Users size={18} strokeWidth={2.2} />}
-          label={t('admin.home.stats.students')}
+          kicker={t('admin.home.stats.students')}
           value={studentsCount}
-          accent="indigo"
+          accent="cyan"
+          icon={<Users size={18} strokeWidth={2.2} aria-hidden />}
         />
       </div>
 
-      <h3 className="mt-6 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-        {t('admin.home.quickActions')}
-      </h3>
-      <div className="mt-2 grid gap-3 sm:grid-cols-2">
-        <ActionCard
+      <PremiumSectionTitle
+        kicker={t('admin.home.quickActions')}
+        title={t('admin.home.quickActions')}
+      />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <PremiumStatCard
           href="/admin/groups/new"
-          icon={<Layers size={18} strokeWidth={2.2} />}
-          label={t('admin.home.actions.newGroup')}
-          hint={t('admin.home.actions.newGroupHint')}
+          icon={<Layers size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('admin.home.actions.newGroup')}
+          accent="gold"
+          value={
+            <span className="text-[17px] font-semibold">
+              {t('admin.home.actions.newGroup')}
+            </span>
+          }
+          sub={t('admin.home.actions.newGroupHint')}
         />
-        <ActionCard
+        <PremiumStatCard
           href="/admin/students/new"
-          icon={<Users size={18} strokeWidth={2.2} />}
-          label={t('admin.home.actions.newStudent')}
-          hint={t('admin.home.actions.newStudentHint')}
+          icon={<Users size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('admin.home.actions.newStudent')}
+          accent="cyan"
+          value={
+            <span className="text-[17px] font-semibold">
+              {t('admin.home.actions.newStudent')}
+            </span>
+          }
+          sub={t('admin.home.actions.newStudentHint')}
         />
-        <ActionCard
+        <PremiumStatCard
           href="/admin/attendance"
-          icon={<CheckSquare size={18} strokeWidth={2.2} />}
-          label={t('admin.home.actions.takeAttendance')}
-          hint={t('admin.home.actions.takeAttendanceHint')}
+          icon={<CheckSquare size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('admin.home.actions.takeAttendance')}
+          accent="emerald"
+          value={
+            <span className="text-[17px] font-semibold">
+              {t('admin.home.actions.takeAttendance')}
+            </span>
+          }
+          sub={t('admin.home.actions.takeAttendanceHint')}
         />
-        <ActionCard
+        <PremiumStatCard
           href="/admin/invitations/new"
-          icon={<UserPlus size={18} strokeWidth={2.2} />}
-          label={t('admin.home.actions.invite')}
-          hint={t('admin.home.actions.inviteHint')}
+          icon={<UserPlus size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('admin.home.actions.invite')}
+          accent="mute"
+          value={
+            <span className="text-[17px] font-semibold">
+              {t('admin.home.actions.invite')}
+            </span>
+          }
+          sub={t('admin.home.actions.inviteHint')}
         />
-        <ActionCard
+        <PremiumStatCard
           href="/admin/communications/new"
-          icon={<Mail size={18} strokeWidth={2.2} />}
-          label={t('admin.home.actions.message')}
-          hint={t('admin.home.actions.messageHint')}
+          icon={<Mail size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('admin.home.actions.message')}
+          accent="mute"
+          value={
+            <span className="text-[17px] font-semibold">
+              {t('admin.home.actions.message')}
+            </span>
+          }
+          sub={t('admin.home.actions.messageHint')}
         />
       </div>
     </AppShell>
-  );
-}
-
-function StatCard({
-  href,
-  icon,
-  label,
-  value,
-  accent
-}: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  accent: 'emerald' | 'indigo';
-}) {
-  const iconBg = accent === 'emerald' ? 'bg-emerald-50 text-emerald-700' : 'bg-indigo-50 text-indigo-700';
-  return (
-    <Link
-      href={href}
-      className="group ss-card flex items-center justify-between gap-3 p-4 transition hover:border-slate-300 hover:shadow-pop sm:p-5"
-    >
-      <div className="flex items-center gap-3">
-        <span className={`grid h-10 w-10 place-items-center rounded-xl ${iconBg}`}>{icon}</span>
-        <div>
-          <p className="text-xs font-medium uppercase tracking-[0.08em] text-slate-500">
-            {label}
-          </p>
-          <p className="mt-0.5 text-3xl font-semibold tracking-tight text-slate-900">
-            {value}
-          </p>
-        </div>
-      </div>
-      <ArrowUpRight
-        size={18}
-        className="text-slate-400 transition group-hover:text-slate-700"
-        aria-hidden
-      />
-    </Link>
-  );
-}
-
-function ActionCard({
-  href,
-  icon,
-  label,
-  hint
-}: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  hint: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group ss-card flex items-start gap-3 p-4 transition hover:border-slate-300 hover:shadow-pop"
-    >
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-700 group-hover:bg-emerald-50 group-hover:text-emerald-700">
-        {icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-slate-900">{label}</p>
-        <p className="mt-0.5 text-xs text-slate-500">{hint}</p>
-      </div>
-      <ArrowUpRight
-        size={16}
-        className="shrink-0 text-slate-400 transition group-hover:text-slate-700"
-        aria-hidden
-      />
-    </Link>
   );
 }

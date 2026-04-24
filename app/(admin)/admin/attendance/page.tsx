@@ -2,9 +2,8 @@ import Link from 'next/link';
 import { AlertTriangle, ChevronRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { AdminNav } from '@/components/admin/admin-nav';
-import { AttendanceRing } from '@/components/admin/attendance-ring';
 import { AppShell } from '@/components/ui/app-shell';
+import { PremiumProgressRing } from '@/components/ui/premium-progress-ring';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -17,11 +16,11 @@ type SessionRow = {
 };
 type AttendanceRow = { session_id: string; present: boolean };
 
-function bandColor(pct: number | null): { bg: string; text: string; label: 'high' | 'mid' | 'low' | 'none' } {
-  if (pct === null) return { bg: 'bg-slate-100', text: 'text-slate-600', label: 'none' };
-  if (pct >= 80) return { bg: 'bg-emerald-50', text: 'text-emerald-700', label: 'high' };
-  if (pct >= 50) return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'mid' };
-  return { bg: 'bg-red-50', text: 'text-red-700', label: 'low' };
+function bandClasses(pct: number | null): string {
+  if (pct === null) return 'ss-pill-mute';
+  if (pct >= 80) return 'ss-pill-success';
+  if (pct >= 50) return 'ss-pill-warn';
+  return 'ss-pill-danger';
 }
 
 export default async function AdminAttendanceIndexPage() {
@@ -103,31 +102,32 @@ export default async function AdminAttendanceIndexPage() {
       title={t('admin.attendance.title')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
-      <h2 className="mb-4 text-2xl font-semibold tracking-tight text-slate-900">
-        {t('admin.attendance.title')}
-      </h2>
-
-      <section className="ss-card flex items-center gap-4 p-4 sm:p-5">
-        <AttendanceRing pct={overallPct} size={112} strokeWidth={12} />
+      <section className="ss-card-strong flex items-center gap-5 p-5 sm:p-6">
+        <PremiumProgressRing
+          value={overallPct}
+          size={128}
+          strokeWidth={14}
+          variant="auto"
+          sublabel={t('admin.attendance.overviewKicker')}
+        />
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500">
+          <p className="ss-kicker text-gold-300">
             {t('admin.attendance.overviewKicker')}
           </p>
-          <p className="mt-0.5 text-2xl font-semibold text-slate-900">
+          <p className="mt-1 font-display text-3xl font-extrabold tracking-tight text-ink-50 sm:text-4xl">
             {overallPct === null
               ? t('admin.attendance.noData')
               : t('admin.attendance.overviewValue', { pct: overallPct })}
           </p>
-          <p className="mt-0.5 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-ink-200">
             {t('admin.attendance.overviewDetail', {
               present: overallPresent,
               total: overallTotal
             })}
           </p>
           {attentionGroups.length > 0 ? (
-            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-red-400/30 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-300">
               <AlertTriangle size={13} strokeWidth={2.2} aria-hidden />
               {t('admin.attendance.attentionNeeded', {
                 count: attentionGroups.length
@@ -137,75 +137,75 @@ export default async function AdminAttendanceIndexPage() {
         </div>
       </section>
 
-      <h3 className="mt-6 mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+      <h3 className="mt-6 mb-3 ss-kicker text-gold-300">
         {t('admin.attendance.pickGroup')}
       </h3>
 
       {rows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+        <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-sm text-ink-300">
           {t('admin.attendance.emptyGroups')}{' '}
           <Link
             href="/admin/groups/new"
-            className="font-medium text-emerald-700 hover:text-emerald-800"
+            className="font-semibold text-gold-300 hover:text-gold-200"
           >
             {t('admin.groups.new')}
           </Link>
         </div>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
-          {rows.map((g) => {
-            const band = bandColor(g.pct);
-            return (
-              <li key={g.id}>
-                <Link
-                  href={`/admin/attendance/${g.id}`}
-                  className="group flex items-stretch gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-pop"
-                >
-                  <AttendanceRing pct={g.pct} size={72} strokeWidth={8} />
-                  <div className="flex min-w-0 flex-1 flex-col justify-between">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="min-w-0 truncate font-semibold text-slate-900">
-                          {g.name}
-                        </p>
-                        {g.pct !== null ? (
-                          <span
-                            className={`ss-pill shrink-0 ${band.bg} ${band.text}`}
-                          >
-                            {g.pct}%
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="mt-0.5 text-xs text-slate-500">
-                        {t('admin.groups.studentsCount', { count: g.students })}
+          {rows.map((g) => (
+            <li key={g.id}>
+              <Link
+                href={`/admin/attendance/${g.id}`}
+                className="group ss-card flex items-stretch gap-3 p-4 transition hover:border-white/15 hover:shadow-pop"
+              >
+                <PremiumProgressRing
+                  value={g.pct}
+                  size={76}
+                  strokeWidth={9}
+                  variant="auto"
+                />
+                <div className="flex min-w-0 flex-1 flex-col justify-between">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="min-w-0 truncate font-semibold text-ink-50">
+                        {g.name}
                       </p>
-                      <p className="text-xs text-slate-500">
-                        {t('admin.attendance.sessionsSummary', {
-                          scheduled: g.counts.scheduled,
-                          held: g.counts.held
-                        })}
-                      </p>
+                      {g.pct !== null ? (
+                        <span className={`${bandClasses(g.pct)} shrink-0`}>
+                          {g.pct}%
+                        </span>
+                      ) : null}
                     </div>
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <span className="text-xs text-slate-500">
-                        {g.stats.total === 0
-                          ? t('admin.attendance.noData')
-                          : t('admin.attendance.attendanceRatio', {
-                              present: g.stats.present,
-                              total: g.stats.total
-                            })}
-                      </span>
-                      <ChevronRight
-                        size={16}
-                        className="shrink-0 text-slate-400 transition group-hover:text-slate-700"
-                        aria-hidden
-                      />
-                    </div>
+                    <p className="mt-0.5 text-xs text-ink-300">
+                      {t('admin.groups.studentsCount', { count: g.students })}
+                    </p>
+                    <p className="text-xs text-ink-300">
+                      {t('admin.attendance.sessionsSummary', {
+                        scheduled: g.counts.scheduled,
+                        held: g.counts.held
+                      })}
+                    </p>
                   </div>
-                </Link>
-              </li>
-            );
-          })}
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <span className="text-xs text-ink-300">
+                      {g.stats.total === 0
+                        ? t('admin.attendance.noData')
+                        : t('admin.attendance.attendanceRatio', {
+                            present: g.stats.present,
+                            total: g.stats.total
+                          })}
+                    </span>
+                    <ChevronRight
+                      size={16}
+                      className="shrink-0 text-ink-400 transition group-hover:text-ink-100"
+                      aria-hidden
+                    />
+                  </div>
+                </div>
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
     </AppShell>
