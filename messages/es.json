@@ -127,7 +127,16 @@
     "home": {
       "title": "Mis hijos",
       "welcome": "Hola, {name}.",
-      "empty": "No hay alumnos vinculados a tu cuenta."
+      "empty": "No hay alumnos vinculados a tu cuenta. El administrador debe enviarte una invitación."
+    },
+    "attendance": {
+      "noData": "Sin registros de asistencia.",
+      "percentage": "Asistencia {pct}% ({present}/{total})",
+      "summary": "Asistencia global: {pct}% ({present}/{total} sesiones).",
+      "empty": "No hay sesiones en el grupo todavía.",
+      "present": "Presente",
+      "absent": "Ausente",
+      "pending": "Pendiente"
     }
   },
   "auth": {

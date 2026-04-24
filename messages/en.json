@@ -127,7 +127,16 @@
     "home": {
       "title": "My children",
       "welcome": "Hi, {name}.",
-      "empty": "No students linked to your account."
+      "empty": "No students linked to your account. The admin needs to send you an invitation."
+    },
+    "attendance": {
+      "noData": "No attendance records yet.",
+      "percentage": "Attendance {pct}% ({present}/{total})",
+      "summary": "Overall attendance: {pct}% ({present}/{total} sessions).",
+      "empty": "No sessions in this group yet.",
+      "present": "Present",
+      "absent": "Absent",
+      "pending": "Pending"
     }
   },
   "auth": {
