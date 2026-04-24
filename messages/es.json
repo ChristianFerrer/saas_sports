@@ -57,12 +57,18 @@
         "name": "Nombre del grupo",
         "namePlaceholder": "Ej. Benjamines A",
         "coach": "Entrenador asignado",
-        "coachNone": "— Sin entrenador —"
+        "coachNone": "— Sin entrenador —",
+        "cycle": "Ciclo de entrenamiento",
+        "cycleHint": "Fechas de inicio y fin del ciclo. Sirve para cerrar temporadas y marcar progreso.",
+        "startDate": "Fecha de inicio",
+        "endDate": "Fecha de fin"
       },
       "errors": {
         "nameRequired": "El nombre es obligatorio.",
         "hasStudents": "No se puede eliminar un grupo con alumnos asignados. Muévelos antes.",
-        "scheduleInvalid": "El horario tiene entradas inválidas. Revisa día, hora y duración."
+        "scheduleInvalid": "El horario tiene entradas inválidas. Revisa día, hora y duración.",
+        "dateInvalid": "Alguna de las fechas no tiene un formato válido.",
+        "dateRangeInvalid": "La fecha de fin no puede ser anterior a la de inicio."
       },
       "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"?",
       "detail": {
@@ -70,6 +76,9 @@
         "noCoach": "Sin entrenador asignado",
         "schedule": "Horario semanal",
         "noSchedule": "Sin horario configurado",
+        "cycle": "Ciclo",
+        "noCycle": "Sin ciclo definido",
+        "daysPerWeek": "{count, plural, =0 {0 días por semana} =1 {1 día por semana} other {# días por semana}}",
         "studentsSection": "Alumnos ({count})",
         "noStudents": "Aún no hay alumnos en este grupo.",
         "upcomingSessions": "Próximas sesiones",

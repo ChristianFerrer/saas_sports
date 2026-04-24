@@ -67,6 +67,8 @@ export type Database = {
           coach_id: UUID | null;
           name: string;
           schedule: GroupScheduleEntry[];
+          start_date: string | null;
+          end_date: string | null;
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -74,11 +76,15 @@ export type Database = {
           coach_id?: UUID | null;
           name: string;
           schedule?: GroupScheduleEntry[];
+          start_date?: string | null;
+          end_date?: string | null;
         };
         Update: Partial<{
           coach_id: UUID | null;
           name: string;
           schedule: GroupScheduleEntry[];
+          start_date: string | null;
+          end_date: string | null;
         }>;
       };
       students: {
@@ -207,6 +213,47 @@ export type Database = {
         Update: Partial<{
           delivered_at: Timestamp | null;
           read_at: Timestamp | null;
+        }>;
+      };
+      objectives: {
+        Row: {
+          id: UUID;
+          group_id: UUID;
+          title: string;
+          description: string | null;
+          display_order: number;
+        } & WithTimestamps;
+        Insert: {
+          id?: UUID;
+          group_id: UUID;
+          title: string;
+          description?: string | null;
+          display_order?: number;
+        };
+        Update: Partial<{
+          title: string;
+          description: string | null;
+          display_order: number;
+        }>;
+      };
+      student_objectives: {
+        Row: {
+          student_id: UUID;
+          objective_id: UUID;
+          achieved_at: Timestamp;
+          notes: string | null;
+          marked_by: UUID | null;
+        };
+        Insert: {
+          student_id: UUID;
+          objective_id: UUID;
+          achieved_at?: Timestamp;
+          notes?: string | null;
+          marked_by?: UUID | null;
+        };
+        Update: Partial<{
+          achieved_at: Timestamp;
+          notes: string | null;
         }>;
       };
       invitations: {

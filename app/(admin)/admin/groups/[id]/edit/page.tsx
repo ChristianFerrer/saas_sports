@@ -14,6 +14,8 @@ type GroupRow = {
   name: string;
   schedule: GroupScheduleEntry[] | null;
   coach_id: string | null;
+  start_date: string | null;
+  end_date: string | null;
 };
 
 type CoachRow = { user_id: string; full_name: string };
@@ -30,7 +32,7 @@ export default async function EditGroupPage({
   const [{ data: groupData }, { data: coachesData }] = await Promise.all([
     supabase
       .from('groups')
-      .select('id, name, schedule, coach_id')
+      .select('id, name, schedule, coach_id, start_date, end_date')
       .eq('id', params.id)
       .maybeSingle(),
     supabase
@@ -69,9 +71,12 @@ export default async function EditGroupPage({
           defaultName={group.name}
           defaultSchedule={Array.isArray(group.schedule) ? group.schedule : []}
           defaultCoachId={group.coach_id}
+          defaultStartDate={group.start_date}
+          defaultEndDate={group.end_date}
           coaches={coaches.map((c) => ({ id: c.user_id, fullName: c.full_name }))}
           showSchedule
           showCoach
+          showCycle
           submitLabel={t('common.save')}
         />
       </div>

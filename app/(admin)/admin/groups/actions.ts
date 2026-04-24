@@ -47,6 +47,15 @@ export async function createGroup(
   redirect('/admin/groups');
 }
 
+function parseDate(raw: FormDataEntryValue | null): string | null | 'invalid' {
+  const v = String(raw ?? '').trim();
+  if (v === '') return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return 'invalid';
+  const d = new Date(v + 'T00:00:00Z');
+  if (Number.isNaN(d.getTime())) return 'invalid';
+  return v;
+}
+
 export async function updateGroup(
   id: string,
   _prev: GroupFormState,
@@ -66,17 +75,29 @@ export async function updateGroup(
   const coachIdRaw = String(formData.get('coach_id') ?? '').trim();
   const coach_id = coachIdRaw === '' ? null : coachIdRaw;
 
+  const start = parseDate(formData.get('start_date'));
+  const end = parseDate(formData.get('end_date'));
+  if (start === 'invalid' || end === 'invalid') return { error: 'dateInvalid' };
+  if (start && end && start > end) return { error: 'dateRangeInvalid' };
+
   const supabase = createUntypedClient();
   const { error } = await supabase
     .from('groups')
-    .update({ name, schedule, coach_id })
+    .update({
+      name,
+      schedule,
+      coach_id,
+      start_date: start,
+      end_date: end
+    })
     .eq('id', id);
 
   if (error) return { error: error.message };
 
   revalidatePath('/admin/groups');
+  revalidatePath(`/admin/groups/${id}`);
   revalidatePath(`/admin/groups/${id}/edit`);
-  redirect('/admin/groups');
+  redirect(`/admin/groups/${id}`);
 }
 
 export async function deleteGroup(id: string): Promise<void> {

@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   Calendar,
+  CalendarRange,
   CheckSquare,
   ChevronRight,
   ChevronLeft,
   Pencil,
-  Trash2,
   UserCircle2,
   Users
 } from 'lucide-react';
@@ -25,6 +25,8 @@ type GroupRow = {
   school_id: string;
   coach_id: string | null;
   schedule: GroupScheduleEntry[] | null;
+  start_date: string | null;
+  end_date: string | null;
 };
 
 type CoachRow = { user_id: string; full_name: string };
@@ -73,7 +75,7 @@ export default async function AdminGroupDetailPage({
 
   const { data: groupData } = await supabase
     .from('groups')
-    .select('id, name, school_id, coach_id, schedule')
+    .select('id, name, school_id, coach_id, schedule, start_date, end_date')
     .eq('id', params.id)
     .maybeSingle();
 
@@ -169,6 +171,35 @@ export default async function AdminGroupDetailPage({
           ) : (
             <span className="text-slate-400">
               {t('admin.groups.detail.noCoach')}
+            </span>
+          )}
+        </InfoRow>
+        <InfoRow
+          icon={<CalendarRange size={18} strokeWidth={2.2} aria-hidden />}
+          label={t('admin.groups.detail.cycle')}
+        >
+          {group.start_date || group.end_date ? (
+            <span className="text-slate-900">
+              {group.start_date
+                ? format.dateTime(new Date(group.start_date), {
+                    dateStyle: 'medium',
+                    timeZone: 'UTC'
+                  })
+                : '—'}
+              <span className="mx-1 text-slate-400">→</span>
+              {group.end_date
+                ? format.dateTime(new Date(group.end_date), {
+                    dateStyle: 'medium',
+                    timeZone: 'UTC'
+                  })
+                : '—'}
+              <span className="ml-2 text-slate-500">
+                · {t('admin.groups.detail.daysPerWeek', { count: schedule.length })}
+              </span>
+            </span>
+          ) : (
+            <span className="text-slate-400">
+              {t('admin.groups.detail.noCycle')}
             </span>
           )}
         </InfoRow>

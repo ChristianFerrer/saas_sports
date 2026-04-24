@@ -57,12 +57,18 @@
         "name": "Group name",
         "namePlaceholder": "e.g. Under-8 A",
         "coach": "Assigned coach",
-        "coachNone": "— No coach —"
+        "coachNone": "— No coach —",
+        "cycle": "Training cycle",
+        "cycleHint": "Start and end dates for the cycle. Useful to close seasons and track progress.",
+        "startDate": "Start date",
+        "endDate": "End date"
       },
       "errors": {
         "nameRequired": "Name is required.",
         "hasStudents": "Can't delete a group with assigned students. Move them first.",
-        "scheduleInvalid": "The schedule has invalid entries. Check weekday, time and duration."
+        "scheduleInvalid": "The schedule has invalid entries. Check weekday, time and duration.",
+        "dateInvalid": "One of the dates is not in a valid format.",
+        "dateRangeInvalid": "End date cannot be before start date."
       },
       "deleteConfirm": "Delete \"{name}\"?",
       "detail": {
@@ -70,6 +76,9 @@
         "noCoach": "No coach assigned",
         "schedule": "Weekly schedule",
         "noSchedule": "No schedule configured",
+        "cycle": "Cycle",
+        "noCycle": "No cycle defined",
+        "daysPerWeek": "{count, plural, =0 {0 days per week} =1 {1 day per week} other {# days per week}}",
         "studentsSection": "Students ({count})",
         "noStudents": "No students in this group yet.",
         "upcomingSessions": "Upcoming sessions",

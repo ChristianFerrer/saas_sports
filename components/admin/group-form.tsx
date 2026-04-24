@@ -16,9 +16,12 @@ type GroupFormProps = {
   defaultName?: string;
   defaultSchedule?: GroupScheduleEntry[];
   defaultCoachId?: string | null;
+  defaultStartDate?: string | null;
+  defaultEndDate?: string | null;
   coaches?: CoachOption[];
   showSchedule?: boolean;
   showCoach?: boolean;
+  showCycle?: boolean;
   submitLabel: string;
 };
 
@@ -29,9 +32,12 @@ export function GroupForm({
   defaultName = '',
   defaultSchedule = [],
   defaultCoachId = null,
+  defaultStartDate = null,
+  defaultEndDate = null,
   coaches = [],
   showSchedule = false,
   showCoach = false,
+  showCycle = false,
   submitLabel
 }: GroupFormProps) {
   const t = useTranslations('admin.groups');
@@ -43,7 +49,11 @@ export function GroupForm({
       ? t('errors.nameRequired')
       : state.error === 'scheduleInvalid'
         ? t('errors.scheduleInvalid')
-        : state.error;
+        : state.error === 'dateInvalid'
+          ? t('errors.dateInvalid')
+          : state.error === 'dateRangeInvalid'
+            ? t('errors.dateRangeInvalid')
+            : state.error;
 
   return (
     <form action={formAction} className="space-y-5">
@@ -81,6 +91,47 @@ export function GroupForm({
               </option>
             ))}
           </select>
+        </div>
+      ) : null}
+
+      {showCycle ? (
+        <div className="space-y-2">
+          <div className="space-y-0.5">
+            <label className="ss-label">{t('fields.cycle')}</label>
+            <p className="text-xs text-slate-500">{t('fields.cycleHint')}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label
+                htmlFor="start_date"
+                className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500"
+              >
+                {t('fields.startDate')}
+              </label>
+              <input
+                id="start_date"
+                name="start_date"
+                type="date"
+                defaultValue={defaultStartDate ?? ''}
+                className="ss-input"
+              />
+            </div>
+            <div className="space-y-1">
+              <label
+                htmlFor="end_date"
+                className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500"
+              >
+                {t('fields.endDate')}
+              </label>
+              <input
+                id="end_date"
+                name="end_date"
+                type="date"
+                defaultValue={defaultEndDate ?? ''}
+                className="ss-input"
+              />
+            </div>
+          </div>
         </div>
       ) : null}
 
