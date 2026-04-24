@@ -57,6 +57,7 @@ components/
 supabase/
   migrations/0001_initial_schema.sql   tablas + enums + triggers
   migrations/0002_rls_policies.sql     RLS por rol + helpers SQL
+  migrations/0003_fix_rls_recursion.sql  arregla recursión RLS vía SECURITY DEFINER helpers
   seed.sql                              alternativa manual al script
   verify_rls.sql                        checks de RLS
 
@@ -126,6 +127,7 @@ Enums: `user_role` (`admin|coach|parent`), `session_status` (`scheduled|held|can
 3. **Resend sin configurar** — `RESEND_API_KEY` / `RESEND_FROM_EMAIL` en `.env.example` pero no se usa todavía. Necesario para invitaciones.
 4. **`supabase.auth.getUser()` en middleware** — crítico para refresco SSR, no reemplazar por `getSession()`.
 5. **Google OAuth** requiere config manual en Supabase Dashboard (ver README §Autenticación).
+6. **RLS recursion** — las policies originales de 0002 se referenciaban en círculo entre `groups`/`students`/`class_sessions`/`attendances`. La migración 0003 las reescribe con helpers `SECURITY DEFINER`. Si añades policies nuevas con `EXISTS` sobre otras tablas, envuélvelas en un helper igual para evitar el error `infinite recursion detected in policy for relation`.
 
 ---
 
