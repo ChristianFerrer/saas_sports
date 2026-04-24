@@ -245,7 +245,7 @@ function daysAgoIso(days: number, hour = 17, minute = 0): string {
 async function main() {
   const supabaseUrl = required('NEXT_PUBLIC_SUPABASE_URL');
   const serviceKey = required('SUPABASE_SERVICE_ROLE_KEY');
-  const schoolName = optional('SEED_SCHOOL_NAME', 'AI Sports Demo');
+  const schoolName = optional('SEED_SCHOOL_NAME', 'SmartSpots Demo');
   const schoolTimezone = optional('SEED_SCHOOL_TIMEZONE', 'Europe/Madrid');
   const password = optional('SEED_DEFAULT_PASSWORD', 'password123');
   const adminEmail = optional('SEED_ADMIN_EMAIL', 'admin@demo.local');

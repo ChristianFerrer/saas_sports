@@ -1,4 +1,4 @@
-# AI Sports
+# SmartSpots
 
 SaaS para escuelas deportivas. Next.js 14 (App Router) + Supabase (Postgres + Auth) + next-intl (ES/EN) + Tailwind.
 

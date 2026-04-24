@@ -81,7 +81,7 @@ export async function createInvitation(
     .select('id, name')
     .eq('id', user.profile.school_id)
     .maybeSingle();
-  const schoolName = (school as SchoolRow | null)?.name ?? 'AI Sports';
+  const schoolName = (school as SchoolRow | null)?.name ?? 'SmartSpots';
 
   const acceptUrl = `${appUrl()}/invite/${token}`;
 

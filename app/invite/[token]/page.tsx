@@ -41,7 +41,7 @@ export default async function AcceptInvitationPage({
     .select('name')
     .eq('id', inv.school_id)
     .maybeSingle();
-  const schoolName = (schoolData as { name: string } | null)?.name ?? 'AI Sports';
+  const schoolName = (schoolData as { name: string } | null)?.name ?? 'SmartSpots';
 
   const boundAccept = acceptInvitation.bind(null, params.token);
 
@@ -61,7 +61,7 @@ export default async function AcceptInvitationPage({
 
 function Invalid({ reason }: { reason: string }) {
   return (
-    <AuthCard title="AI Sports" subtitle="">
+    <AuthCard title="SmartSpots" subtitle="">
       <p className="text-sm text-red-700">{reason}</p>
     </AuthCard>
   );

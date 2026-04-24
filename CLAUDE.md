@@ -8,7 +8,7 @@
 
 ## 1. Qué es el proyecto
 
-**AI Sports** — SaaS multi-tenant para escuelas deportivas.
+**SmartSpots** — SaaS multi-tenant para escuelas deportivas.
 Cada escuela tiene admins, coaches y padres. Gestiona grupos, alumnos, asistencias, comunicaciones e invitaciones.
 
 ### Stack

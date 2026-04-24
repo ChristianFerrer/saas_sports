@@ -20,7 +20,7 @@ function htmlBody({ fullName, schoolName, role, acceptUrl }: InvitationEmailArgs
 <body style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.5;color:#111;max-width:560px;margin:0 auto;padding:24px;">
   <p>Hola ${fullName},</p>
   <p>
-    <strong>${schoolName}</strong> te ha invitado a AI Sports como
+    <strong>${schoolName}</strong> te ha invitado a SmartSpots como
     <strong>${ROLE_LABEL[role]}</strong>.
   </p>
   <p>
@@ -42,7 +42,7 @@ function htmlBody({ fullName, schoolName, role, acceptUrl }: InvitationEmailArgs
 function textBody({ fullName, schoolName, role, acceptUrl }: InvitationEmailArgs): string {
   return `Hola ${fullName},
 
-${schoolName} te ha invitado a AI Sports como ${ROLE_LABEL[role]}.
+${schoolName} te ha invitado a SmartSpots como ${ROLE_LABEL[role]}.
 
 Acepta la invitación aquí:
 ${acceptUrl}
@@ -55,7 +55,7 @@ export async function sendInvitationEmail(
 ): Promise<EmailSendResult> {
   return sendEmail({
     to: args.to,
-    subject: `Te han invitado a ${args.schoolName} en AI Sports`,
+    subject: `Te han invitado a ${args.schoolName} en SmartSpots`,
     html: htmlBody(args),
     text: textBody(args)
   });

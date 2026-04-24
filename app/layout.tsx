@@ -5,14 +5,28 @@ import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AI Sports',
-  description: 'Gestión digital para academias de fútbol infantil.'
+  title: {
+    default: 'SmartSpots',
+    template: '%s · SmartSpots'
+  },
+  description: 'Gestión digital para escuelas deportivas.',
+  applicationName: 'SmartSpots',
+  appleWebApp: {
+    capable: true,
+    title: 'SmartSpots',
+    statusBarStyle: 'default'
+  }
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#059669'
+  maximumScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f172a' }
+  ]
 };
 
 export default async function RootLayout({
