@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { createClient } from '@/lib/supabase/client';
 
+import { AcademyTierCard } from './academy-tier-card';
 import { BrandWordmark, BrandMark } from './brand-mark';
 import {
   ADMIN_NAV_ITEMS,
@@ -15,6 +16,7 @@ import {
   PARENT_NAV_ITEMS,
   type NavItem
 } from './nav-items';
+import type { AcademyTier } from '@/lib/academy/tier';
 
 type Role = 'admin' | 'coach' | 'parent';
 
@@ -26,6 +28,12 @@ type Props = {
   children: ReactNode;
   /** Optional right-aligned hero-area actions (e.g. primary CTA). */
   actions?: ReactNode;
+  /** Academy tier gauge rendered in the sidebar footer. */
+  academy?: {
+    tier: AcademyTier;
+    label: string;
+    caption: string;
+  };
 };
 
 function resolveRole(pathname: string): Role {
@@ -46,7 +54,8 @@ export function PremiumShell({
   title,
   kicker,
   children,
-  actions
+  actions,
+  academy
 }: Props) {
   const pathname = usePathname() ?? '/';
   const role = resolveRole(pathname);
@@ -67,6 +76,7 @@ export function PremiumShell({
         items={items}
         namespace={namespace}
         pathname={pathname}
+        academy={academy}
       />
 
       <div className="md:pl-64">
@@ -94,13 +104,15 @@ function DesktopSidebar({
   initials,
   items,
   namespace,
-  pathname
+  pathname,
+  academy
 }: {
   fullName: string;
   initials: string;
   items: readonly NavItem[];
   namespace: string;
   pathname: string;
+  academy?: Props['academy'];
 }) {
   const t = useTranslations(namespace);
 
@@ -142,7 +154,17 @@ function DesktopSidebar({
         })}
       </nav>
 
-      <div className="mt-4 rounded-2xl border border-white/5 bg-white/[0.03] p-3">
+      {academy ? (
+        <div className="mt-4">
+          <AcademyTierCard
+            tier={academy.tier}
+            label={academy.label}
+            caption={academy.caption}
+          />
+        </div>
+      ) : null}
+
+      <div className="mt-3 rounded-2xl border border-white/5 bg-white/[0.03] p-3">
         <div className="flex items-center gap-2.5">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-300 to-gold-600 text-[12px] font-bold text-navy-900">
             {initials || '·'}

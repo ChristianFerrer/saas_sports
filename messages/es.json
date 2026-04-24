@@ -8,7 +8,8 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "back": "Volver",
-    "optional": "(opcional)"
+    "optional": "(opcional)",
+    "academyTierCaption": "{count, plural, =0 {Nivel academia} =1 {1 sesión realizada} other {# sesiones realizadas}}"
   },
   "roles": {
     "admin": "Administrador",
@@ -203,6 +204,11 @@
           "kicker": "Habilidades",
           "title": "Valoración por área",
           "hint": "0 (en proceso) — 100 (dominado). Se ve en la ficha del alumno y en la vista de los padres."
+        },
+        "trend": {
+          "kicker": "Progreso",
+          "title": "Asistencia mensual",
+          "lastMonths": "Últimos {count} meses"
         },
         "contactInfo": {
           "kicker": "Ficha",
@@ -501,6 +507,11 @@
       },
       "recent": {
         "kicker": "Últimos entrenos"
+      },
+      "trend": {
+        "kicker": "Progreso",
+        "title": "Mi asistencia mensual",
+        "lastMonths": "Últimos {count} meses"
       }
     }
   },

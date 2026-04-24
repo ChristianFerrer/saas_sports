@@ -8,7 +8,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "back": "Back",
-    "optional": "(optional)"
+    "optional": "(optional)",
+    "academyTierCaption": "{count, plural, =0 {Academy level} =1 {1 session held} other {# sessions held}}"
   },
   "roles": {
     "admin": "Admin",
@@ -203,6 +204,11 @@
           "kicker": "Skills",
           "title": "Rating by area",
           "hint": "0 (learning) — 100 (mastered). Appears on the player profile and parent view."
+        },
+        "trend": {
+          "kicker": "Progress",
+          "title": "Monthly attendance",
+          "lastMonths": "Last {count} months"
         },
         "contactInfo": {
           "kicker": "Record",
@@ -501,6 +507,11 @@
       },
       "recent": {
         "kicker": "Recent sessions"
+      },
+      "trend": {
+        "kicker": "Progress",
+        "title": "My monthly attendance",
+        "lastMonths": "Last {count} months"
       }
     }
   },

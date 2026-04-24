@@ -15,6 +15,7 @@ import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
 import { PremiumAchievementBadge } from '@/components/ui/premium-achievement-badge';
+import { PremiumLineChart } from '@/components/ui/premium-line-chart';
 import { PremiumProfileHero } from '@/components/ui/premium-profile-hero';
 import { PremiumProgressBar } from '@/components/ui/premium-progress-bar';
 import { PremiumProgressRing } from '@/components/ui/premium-progress-ring';
@@ -25,6 +26,7 @@ import {
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
 import { requireRole } from '@/lib/auth/guards';
+import { buildMonthlyAttendanceSeries } from '@/lib/students/attendance-series';
 import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -404,6 +406,38 @@ export default async function ParentChildPage({
           />
         }
       />
+
+      {/* Monthly attendance trend */}
+      {(() => {
+        const series = buildMonthlyAttendanceSeries(
+          sessions.map((ss) => ({ id: ss.id, scheduled_at: ss.scheduled_at })),
+          Array.from(attendanceBySession.values()).map((a) => ({
+            session_id: a.session_id,
+            present: a.present
+          })),
+          10
+        );
+        const hasAny = series.some((p) => p.value !== null);
+        if (!hasAny) return null;
+        return (
+          <section className="ss-card mt-5 p-4 sm:p-5">
+            <div className="mb-3 flex items-end justify-between gap-2">
+              <div>
+                <p className="ss-kicker text-gold-300">
+                  {t('parent.detail.trend.kicker')}
+                </p>
+                <h3 className="mt-0.5 text-[15px] font-bold text-ink-50">
+                  {t('parent.detail.trend.title')}
+                </h3>
+              </div>
+              <span className="ss-pill-mute">
+                {t('parent.detail.trend.lastMonths', { count: 10 })}
+              </span>
+            </div>
+            <PremiumLineChart data={series} height={180} variant="gold" />
+          </section>
+        );
+      })()}
 
       {/* KPI row */}
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
