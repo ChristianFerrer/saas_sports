@@ -21,7 +21,8 @@
       "groups": "Groups",
       "students": "Students",
       "attendance": "Attendance",
-      "invitations": "Invitations"
+      "invitations": "Invitations",
+      "communications": "Messages"
     },
     "home": {
       "title": "Admin dashboard",
@@ -174,6 +175,37 @@
         "studentNotFound": "Selected student not found.",
         "alreadyInvited": "There is already a pending invitation for that email."
       }
+    },
+    "communications": {
+      "title": "Messages",
+      "new": "New message",
+      "send": "Send",
+      "empty": "You haven't sent any messages yet.",
+      "audienceSchool": "Whole school",
+      "audienceGroup": "Group: {group}",
+      "sentOn": "Sent on {date}",
+      "readStats": "{read}/{total} read",
+      "deleteConfirm": "Delete the message \"{subject}\"? It will disappear for parents too.",
+      "audiences": {
+        "school": "All parents in the school",
+        "group": "Parents of a specific group"
+      },
+      "fields": {
+        "audience": "Recipients",
+        "group": "Group",
+        "groupPlaceholder": "Pick a group",
+        "noGroups": "You don't have any groups yet.",
+        "subject": "Subject",
+        "content": "Message"
+      },
+      "errors": {
+        "subjectRequired": "Subject is required.",
+        "contentRequired": "Message body cannot be empty.",
+        "audienceInvalid": "Pick a valid audience.",
+        "groupRequired": "Pick the group to send to.",
+        "noRecipients": "No parents match that audience. Invite them first.",
+        "insertFailed": "Could not send the message. Try again."
+      }
     }
   },
   "invite": {
@@ -208,10 +240,19 @@
     }
   },
   "parent": {
+    "nav": {
+      "home": "My children",
+      "messages": "Messages"
+    },
     "home": {
       "title": "My children",
       "welcome": "Hi, {name}.",
       "empty": "No students linked to your account. The admin needs to send you an invitation."
+    },
+    "messages": {
+      "title": "Messages",
+      "empty": "No messages yet.",
+      "unreadCount": "{count, plural, =1 {1 unread} other {# unread}}"
     },
     "attendance": {
       "noData": "No attendance records yet.",

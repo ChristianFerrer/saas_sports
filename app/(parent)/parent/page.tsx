@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
+import { ParentNav } from '@/components/ui/parent-nav';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -64,6 +65,7 @@ export default async function ParentHomePage() {
       title={t('parent.home.title')}
       role={t('roles.parent')}
       fullName={user.profile.full_name}
+      nav={<ParentNav />}
     >
       <p className="text-slate-700">
         {t('parent.home.welcome', { name: user.profile.full_name })}

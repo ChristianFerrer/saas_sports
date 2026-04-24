@@ -21,7 +21,8 @@
       "groups": "Grupos",
       "students": "Alumnos",
       "attendance": "Asistencias",
-      "invitations": "Invitaciones"
+      "invitations": "Invitaciones",
+      "communications": "Comunicaciones"
     },
     "home": {
       "title": "Panel de administración",
@@ -174,6 +175,37 @@
         "studentNotFound": "El alumno seleccionado no existe.",
         "alreadyInvited": "Ya existe una invitación pendiente para ese email."
       }
+    },
+    "communications": {
+      "title": "Comunicaciones",
+      "new": "Nuevo mensaje",
+      "send": "Enviar",
+      "empty": "Aún no has enviado mensajes.",
+      "audienceSchool": "Toda la escuela",
+      "audienceGroup": "Grupo: {group}",
+      "sentOn": "Enviado el {date}",
+      "readStats": "{read}/{total} leídos",
+      "deleteConfirm": "¿Eliminar el mensaje \"{subject}\"? Se borrará también para los padres.",
+      "audiences": {
+        "school": "Todos los padres de la escuela",
+        "group": "Padres de un grupo"
+      },
+      "fields": {
+        "audience": "Destinatarios",
+        "group": "Grupo",
+        "groupPlaceholder": "Selecciona un grupo",
+        "noGroups": "No tienes grupos creados todavía.",
+        "subject": "Asunto",
+        "content": "Mensaje"
+      },
+      "errors": {
+        "subjectRequired": "El asunto es obligatorio.",
+        "contentRequired": "El mensaje no puede estar vacío.",
+        "audienceInvalid": "Selecciona un destinatario válido.",
+        "groupRequired": "Selecciona el grupo al que enviar el mensaje.",
+        "noRecipients": "No hay padres vinculados a ese destinatario. Invítalos primero.",
+        "insertFailed": "No se pudo enviar el mensaje. Inténtalo de nuevo."
+      }
     }
   },
   "invite": {
@@ -208,10 +240,19 @@
     }
   },
   "parent": {
+    "nav": {
+      "home": "Mis hijos",
+      "messages": "Mensajes"
+    },
     "home": {
       "title": "Mis hijos",
       "welcome": "Hola, {name}.",
       "empty": "No hay alumnos vinculados a tu cuenta. El administrador debe enviarte una invitación."
+    },
+    "messages": {
+      "title": "Mensajes",
+      "empty": "No hay mensajes todavía.",
+      "unreadCount": "{count, plural, =1 {1 sin leer} other {# sin leer}}"
     },
     "attendance": {
       "noData": "Sin registros de asistencia.",

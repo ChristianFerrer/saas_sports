@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
+import { ParentNav } from '@/components/ui/parent-nav';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -92,6 +93,7 @@ export default async function ParentChildPage({
       title={s.full_name}
       role={t('roles.parent')}
       fullName={user.profile.full_name}
+      nav={<ParentNav />}
     >
       <div className="mb-4">
         <Link href="/parent" className="text-xs text-slate-500 hover:text-slate-700">

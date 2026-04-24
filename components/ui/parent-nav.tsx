@@ -5,17 +5,13 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 const LINKS = [
-  { href: '/admin', key: 'dashboard', exact: true },
-  { href: '/admin/groups', key: 'groups', exact: false },
-  { href: '/admin/students', key: 'students', exact: false },
-  { href: '/admin/attendance', key: 'attendance', exact: false },
-  { href: '/admin/invitations', key: 'invitations', exact: false },
-  { href: '/admin/communications', key: 'communications', exact: false }
+  { href: '/parent', key: 'home', exact: true },
+  { href: '/parent/messages', key: 'messages', exact: false }
 ] as const;
 
-export function AdminNav() {
+export function ParentNav() {
   const pathname = usePathname();
-  const t = useTranslations('admin.nav');
+  const t = useTranslations('parent.nav');
 
   return (
     <>
