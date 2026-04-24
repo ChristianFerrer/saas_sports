@@ -154,7 +154,38 @@
         "objectivesEmpty": "Este grupo aún no tiene objetivos configurados.",
         "objectivesNoGroupHint": "Asigna un grupo al alumno para ver sus objetivos.",
         "objectivesHistorical": "Logros anteriores",
-        "toggleHint": "Toca para marcar o desmarcar como logrado"
+        "toggleHint": "Toca para marcar o desmarcar como logrado",
+        "futureLabel": "Futuro",
+        "futureSub": "Sueños",
+        "hero": {
+          "kicker": "Jugadora/Jugador de la academia",
+          "subtitle": "Grupo actual · {group}"
+        },
+        "kpis": {
+          "attendance": "Asistencia global",
+          "objectives": "Objetivos del ciclo",
+          "objectivesSub": "Logrados en este grupo",
+          "nextSession": "Próxima sesión",
+          "noNext": "Sin sesiones programadas"
+        },
+        "roadmap": {
+          "kicker": "Su camino",
+          "title": "Camino formativo",
+          "caption": "Cada etapa suma — grupos y categorías que ya ha vivido y los que vendrán."
+        },
+        "objectives": {
+          "kicker": "Objetivos"
+        },
+        "achievements": {
+          "kicker": "Trofeos"
+        },
+        "contactInfo": {
+          "kicker": "Ficha",
+          "title": "Datos básicos"
+        },
+        "recent": {
+          "kicker": "Últimas sesiones"
+        }
       }
     },
     "attendance": {

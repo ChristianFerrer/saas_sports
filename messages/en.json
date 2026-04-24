@@ -154,7 +154,38 @@
         "objectivesEmpty": "This group has no objectives yet.",
         "objectivesNoGroupHint": "Assign a group to this student to see their objectives.",
         "objectivesHistorical": "Previous achievements",
-        "toggleHint": "Tap to mark or unmark as achieved"
+        "toggleHint": "Tap to mark or unmark as achieved",
+        "futureLabel": "Future",
+        "futureSub": "Dreams",
+        "hero": {
+          "kicker": "Academy player",
+          "subtitle": "Current group · {group}"
+        },
+        "kpis": {
+          "attendance": "Overall attendance",
+          "objectives": "Cycle objectives",
+          "objectivesSub": "Reached in this group",
+          "nextSession": "Next session",
+          "noNext": "No upcoming sessions"
+        },
+        "roadmap": {
+          "kicker": "Their path",
+          "title": "Formative journey",
+          "caption": "Every step adds up — groups and categories already lived and the ones to come."
+        },
+        "objectives": {
+          "kicker": "Objectives"
+        },
+        "achievements": {
+          "kicker": "Trophies"
+        },
+        "contactInfo": {
+          "kicker": "Record",
+          "title": "Basic info"
+        },
+        "recent": {
+          "kicker": "Latest sessions"
+        }
       }
     },
     "attendance": {

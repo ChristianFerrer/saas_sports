@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Circle, Loader2 } from 'lucide-react';
+import { Check, Loader2, Target } from 'lucide-react';
 import { useOptimistic, useTransition } from 'react';
 
 import { toggleStudentObjective } from '@/app/(admin)/admin/students/actions';
@@ -47,7 +47,7 @@ export function StudentObjectivesList({
   }
 
   return (
-    <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+    <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
       {optimistic.map((o) => (
         <li key={o.id}>
           <button
@@ -56,40 +56,43 @@ export function StudentObjectivesList({
             disabled={pending}
             aria-pressed={o.achieved}
             title={toggleHint}
-            className="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-slate-50 disabled:cursor-wait"
+            className="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-white/[0.03] disabled:cursor-wait"
           >
             <span
               aria-hidden
               className={
                 o.achieved
-                  ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500 text-white'
-                  : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-slate-300 text-transparent'
+                  ? 'mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-gold-300 to-gold-600 text-navy-900 shadow-gold-glow'
+                  : 'mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-ink-300'
               }
             >
               {o.achieved ? (
-                <Check size={15} strokeWidth={3} />
+                <Check size={16} strokeWidth={3} />
               ) : pending ? (
-                <Loader2 size={14} className="animate-spin text-slate-400" />
+                <Loader2 size={14} className="animate-spin" />
               ) : (
-                <Circle size={0} />
+                <Target size={14} strokeWidth={2.4} />
               )}
             </span>
             <div className="min-w-0 flex-1">
               <p
                 className={
                   o.achieved
-                    ? 'truncate font-semibold text-slate-900'
-                    : 'truncate font-medium text-slate-700'
+                    ? 'truncate font-semibold text-ink-50'
+                    : 'truncate font-medium text-ink-100'
                 }
               >
                 {o.title}
               </p>
               {o.description ? (
-                <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">
+                <p className="mt-0.5 line-clamp-2 text-sm text-ink-300">
                   {o.description}
                 </p>
               ) : null}
             </div>
+            {o.achieved ? (
+              <span className="ss-pill-gold shrink-0 self-center">Logrado</span>
+            ) : null}
           </button>
         </li>
       ))}
