@@ -30,7 +30,7 @@ export default async function ParentMessagesPage() {
     )
     .eq('parent_user_id', user.id);
 
-  const rows = ((data ?? []) as RecipientRow[])
+  const rows = ((data ?? []) as unknown as RecipientRow[])
     .filter((r) => r.communications !== null)
     .sort((a, b) => {
       const aT = new Date(a.communications!.sent_at ?? a.communications!.created_at).getTime();

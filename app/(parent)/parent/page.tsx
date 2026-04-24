@@ -25,7 +25,7 @@ export default async function ParentHomePage() {
     .select('student_id, relationship, students (id, full_name, group_id)')
     .eq('parent_user_id', user.id);
 
-  const links = (linkRows ?? []) as StudentParentRow[];
+  const links = (linkRows ?? []) as unknown as StudentParentRow[];
   const students = links
     .map((l) => l.students)
     .filter((s): s is NonNullable<typeof s> => s !== null);

@@ -50,7 +50,7 @@ export async function sendCommunication(
       .select('parent_user_id, students!inner (group_id)')
       .eq('students.group_id', groupId);
     if (error) return { error: error.message };
-    const rows = (data ?? []) as ParentLinkRow[];
+    const rows = (data ?? []) as unknown as ParentLinkRow[];
     parentUserIds = Array.from(new Set(rows.map((r) => r.parent_user_id)));
   }
 

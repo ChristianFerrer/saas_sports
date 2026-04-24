@@ -24,8 +24,11 @@ Cada escuela tiene admins, coaches y padres. Gestiona grupos, alumnos, asistenci
 pnpm dev          # http://localhost:3000
 pnpm lint         # ESLint (eslint-config-next)
 pnpm typecheck    # tsc --noEmit
+pnpm test         # Vitest (unit tests de lógica pura)
+pnpm test:watch   # Vitest en modo watch
 pnpm build        # build de producción
 pnpm bootstrap:admin   # crea primer admin (ver README)
+pnpm seed:dev          # datos dummy para desarrollo (admin/coach/parent + grupos + asistencias)
 ```
 
 ---
@@ -89,22 +92,24 @@ Enums: `user_role` (`admin|coach|parent`), `session_status` (`scheduled|held|can
 - [x] Registro self-serve `/signup` (crea escuela + admin)
 - [x] Códigos de error en login
 
-### 🟡 Fase 2 — EN CURSO
-- [x] **CRUD Groups** — list/create/edit/delete con Server Actions. Edit solo permite nombre (editor de schedule diferido).
+### ✅ Fase 2 — COMPLETADA
+- [x] **CRUD Groups** — list/create/edit/delete con Server Actions. Edit permite nombre, coach asignado y horario semanal.
 - [x] **CRUD Students** — list/create/edit/delete con `birth_date` y grupo opcional.
 - [x] **Admin Dashboard** — contadores live de grupos/alumnos + quick actions.
-- [ ] **Captura de asistencias** — UI para `class_sessions` + `attendances` (tablas listas).
-- [ ] **Sistema de invitaciones** — tabla `invitations` lista; falta UI admin + flujo de aceptación + envío email (Resend).
-- [ ] **Módulo de comunicaciones** — tablas `communications` + `communication_recipients` listas; falta UI.
-- [ ] **Editor de schedule de grupos** — diferido desde CRUD de groups.
-- [ ] **Seeds de prueba** — datos dummy para dev.
-- [ ] **Tests** — nada configurado aún.
+- [x] **Captura de asistencias** — admin/coach crean/abren sesiones, registran presente/ausente + notas; parent ve historial por hijo con % de asistencia.
+- [x] **Sistema de invitaciones** — admin invita coach/parent, link copiable; Resend opcional (si no está configurado, se omite silenciosamente); `/invite/[token]` pública crea user + profile + student_parents y hace sign-in.
+- [x] **Módulo de comunicaciones** — admin manda a escuela completa o a padres de un grupo; parent ve inbox con unread + detalle que marca `read_at`.
+- [x] **Editor de schedule de grupos** — editor de franjas semanales (día/inicio/duración) en edit de grupo.
+- [x] **Seeds de prueba** — `pnpm seed:dev` crea escuela demo + 6 usuarios + 3 grupos + 15 alumnos + 15 sesiones con asistencia.
+- [x] **Tests** — Vitest con 15 unit tests sobre lógica pura (`parseSchedule`, `generateInvitationToken`). CI en `.github/workflows/ci.yml` corre lint + typecheck + test en cada push/PR.
 
-### 🔜 Orden sugerido para retomar
-1. **Asistencias** (bloquea value prop del producto; usa groups/students ya hechos).
-2. **Invitaciones** (requiere `RESEND_API_KEY` + `RESEND_FROM_EMAIL`).
-3. **Comunicaciones** (depende de invitaciones para tener padres/coaches reales).
-4. **Schedule editor** + **seeds** + **tests** en paralelo.
+### 🔜 Fuera de Fase 2 (Fase 3 / nice-to-have)
+- Auto-generar `class_sessions` desde `groups.schedule` (job periódico).
+- Vista coach con estadísticas de asistencia por alumno.
+- Smoke tests e2e con Playwright (requiere entorno de ejecución).
+- Email a padres al publicar comunicaciones (hook Resend en `sendCommunication`).
+- Editor rico / adjuntos / respuestas en comunicaciones.
+- Manejo correcto de timezones (ver §5 gotcha #6).
 
 ---
 
@@ -128,6 +133,8 @@ Enums: `user_role` (`admin|coach|parent`), `session_status` (`scheduled|held|can
 4. **`supabase.auth.getUser()` en middleware** — crítico para refresco SSR, no reemplazar por `getSession()`.
 5. **Google OAuth** requiere config manual en Supabase Dashboard (ver README §Autenticación).
 6. **RLS recursion** — las policies originales de 0002 se referenciaban en círculo entre `groups`/`students`/`class_sessions`/`attendances`. La migración 0003 las reescribe con helpers `SECURITY DEFINER`. Si añades policies nuevas con `EXISTS` sobre otras tablas, envuélvelas en un helper igual para evitar el error `infinite recursion detected in policy for relation`.
+7. **Timezones en `class_sessions.scheduled_at`** — actualmente se guarda el wall-clock introducido por el admin como si fuera UTC (sufijo `Z`), y la lectura lo muestra con `timeZone:'UTC'` para que round-trippee igual. No respeta `schools.timezone` (p.ej. un admin en Madrid verá "10:00" tras introducir "10:00", pero el instant UTC almacenado es 10:00 UTC, no 10:00 CET). Arreglar cuando haga falta calendario real / recordatorios.
+8. **Relaciones PostgREST + untyped client** — queries con `.select('a, b, table_rel (c, d)')` devuelven objeto único para FKs many-to-one, pero la inferencia del untyped client asume array. Se usa `as unknown as Row[]` en los consumers (ver `app/(parent)/parent/page.tsx`, `messages/page.tsx`, `app/(admin)/admin/communications/actions.ts`). Runtime correcto.
 
 ---
 
@@ -156,5 +163,5 @@ Pendientes (Fase 2):
 
 ---
 
-_Última actualización de este archivo: 2026-04-21 — tras completar CRUD de groups/students._
+_Última actualización de este archivo: 2026-04-24 — tras completar Fase 2 (asistencias, invitaciones, comunicaciones, schedule editor, seeds, tests + CI)._
 _Actualizar esta fecha y la sección §3 al cerrar cada milestone._
