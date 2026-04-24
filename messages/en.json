@@ -149,6 +149,11 @@
     },
     "attendance": {
       "title": "Attendance",
+      "overviewKicker": "Overall attendance",
+      "overviewValue": "{pct}%",
+      "overviewDetail": "{present} of {total} presences recorded",
+      "attentionNeeded": "{count, plural, =1 {1 group below 50%} other {# groups below 50%}}",
+      "noData": "No data yet",
       "pickGroup": "Pick a group to manage attendance.",
       "emptyGroups": "Create a group before tracking attendance.",
       "groupTitle": "Attendance — {name}",

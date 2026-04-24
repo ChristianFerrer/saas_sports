@@ -149,6 +149,11 @@
     },
     "attendance": {
       "title": "Asistencias",
+      "overviewKicker": "Asistencia global",
+      "overviewValue": "{pct}%",
+      "overviewDetail": "{present} de {total} presencias registradas",
+      "attentionNeeded": "{count, plural, =1 {1 grupo por debajo del 50%} other {# grupos por debajo del 50%}}",
+      "noData": "Sin datos todavía",
       "pickGroup": "Elige un grupo para gestionar sus asistencias.",
       "emptyGroups": "Crea un grupo antes de registrar asistencias.",
       "groupTitle": "Asistencias — {name}",
