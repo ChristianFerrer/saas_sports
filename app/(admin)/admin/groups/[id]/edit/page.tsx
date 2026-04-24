@@ -13,7 +13,10 @@ type GroupRow = {
   id: string;
   name: string;
   schedule: GroupScheduleEntry[] | null;
+  coach_id: string | null;
 };
+
+type CoachRow = { user_id: string; full_name: string };
 
 export default async function EditGroupPage({
   params
@@ -24,14 +27,23 @@ export default async function EditGroupPage({
   const t = await getTranslations();
   const supabase = createUntypedClient();
 
-  const { data: groupData } = await supabase
-    .from('groups')
-    .select('id, name, schedule')
-    .eq('id', params.id)
-    .maybeSingle();
+  const [{ data: groupData }, { data: coachesData }] = await Promise.all([
+    supabase
+      .from('groups')
+      .select('id, name, schedule, coach_id')
+      .eq('id', params.id)
+      .maybeSingle(),
+    supabase
+      .from('profiles')
+      .select('user_id, full_name')
+      .eq('school_id', user.profile.school_id)
+      .eq('role', 'coach')
+      .order('full_name', { ascending: true })
+  ]);
 
   const group = groupData as GroupRow | null;
   if (!group) notFound();
+  const coaches = (coachesData ?? []) as CoachRow[];
 
   const boundUpdate = async (
     prev: GroupFormState,
@@ -56,7 +68,10 @@ export default async function EditGroupPage({
           action={boundUpdate}
           defaultName={group.name}
           defaultSchedule={Array.isArray(group.schedule) ? group.schedule : []}
+          defaultCoachId={group.coach_id}
+          coaches={coaches.map((c) => ({ id: c.user_id, fullName: c.full_name }))}
           showSchedule
+          showCoach
           submitLabel={t('common.save')}
         />
       </div>

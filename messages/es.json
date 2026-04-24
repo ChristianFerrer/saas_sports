@@ -20,7 +20,8 @@
       "dashboard": "Panel",
       "groups": "Grupos",
       "students": "Alumnos",
-      "attendance": "Asistencias"
+      "attendance": "Asistencias",
+      "invitations": "Invitaciones"
     },
     "home": {
       "title": "Panel de administración",
@@ -42,7 +43,9 @@
       "studentsCount": "{count, plural, =0 {sin alumnos} =1 {1 alumno} other {# alumnos}}",
       "fields": {
         "name": "Nombre del grupo",
-        "namePlaceholder": "Ej. Benjamines A"
+        "namePlaceholder": "Ej. Benjamines A",
+        "coach": "Entrenador asignado",
+        "coachNone": "— Sin entrenador —"
       },
       "errors": {
         "nameRequired": "El nombre es obligatorio.",
@@ -127,6 +130,67 @@
         "insertFailed": "No se pudo crear la sesión. Inténtalo de nuevo.",
         "noStudents": "No hay alumnos en este grupo."
       }
+    },
+    "invitations": {
+      "title": "Invitaciones",
+      "new": "Nueva invitación",
+      "empty": "Aún no has enviado invitaciones.",
+      "pending": "Pendientes",
+      "accepted": "Aceptadas",
+      "expired": "Caducadas",
+      "noPending": "No hay invitaciones pendientes.",
+      "noAccepted": "Aún nadie ha aceptado una invitación.",
+      "expiresOn": "Caduca el {date}",
+      "acceptedOn": "Aceptada el {date}",
+      "revoke": "Revocar",
+      "revokeConfirm": "¿Revocar la invitación a {email}?",
+      "copyLink": "Copiar link",
+      "copied": "Copiado ✓",
+      "backToList": "Volver a la lista",
+      "roles": {
+        "coach": "Entrenador",
+        "parent": "Padre/Madre"
+      },
+      "fields": {
+        "role": "Rol",
+        "fullName": "Nombre completo",
+        "fullNamePlaceholder": "Nombre y apellidos",
+        "email": "Email",
+        "student": "Alumno a vincular",
+        "studentPlaceholder": "Selecciona un alumno",
+        "noStudents": "Necesitas añadir alumnos antes de invitar padres."
+      },
+      "success": {
+        "title": "Invitación creada.",
+        "emailSent": "Email enviado al destinatario. También puedes copiar el enlace.",
+        "emailSkipped": "Resend no está configurado, así que no se envió email. Copia el enlace y mándaselo por tu medio preferido.",
+        "emailFailed": "Intentamos enviar el email pero falló. Copia el enlace y compártelo manualmente."
+      },
+      "errors": {
+        "emailInvalid": "Email inválido.",
+        "fullNameRequired": "El nombre es obligatorio.",
+        "roleInvalid": "Rol inválido.",
+        "studentRequired": "Selecciona el alumno que vinculará este padre/madre.",
+        "studentNotFound": "El alumno seleccionado no existe.",
+        "alreadyInvited": "Ya existe una invitación pendiente para ese email."
+      }
+    }
+  },
+  "invite": {
+    "title": "Acepta tu invitación",
+    "subtitle": "{school} te ha invitado como {role} ({email}). Elige una contraseña para entrar.",
+    "submit": "Aceptar y entrar",
+    "submitting": "Creando cuenta…",
+    "fields": {
+      "password": "Contraseña (mínimo 8 caracteres)",
+      "passwordConfirm": "Repite la contraseña"
+    },
+    "errors": {
+      "weakPassword": "La contraseña debe tener al menos 8 caracteres.",
+      "passwordsMismatch": "Las contraseñas no coinciden.",
+      "invalidToken": "Esta invitación no es válida.",
+      "alreadyAccepted": "Esta invitación ya fue aceptada.",
+      "expired": "Esta invitación ha caducado. Pide una nueva al administrador."
     }
   },
   "coach": {

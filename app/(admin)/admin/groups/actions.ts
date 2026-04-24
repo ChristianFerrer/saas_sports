@@ -92,10 +92,13 @@ export async function updateGroup(
   );
   if (schedule === null) return { error: 'scheduleInvalid' };
 
+  const coachIdRaw = String(formData.get('coach_id') ?? '').trim();
+  const coach_id = coachIdRaw === '' ? null : coachIdRaw;
+
   const supabase = createUntypedClient();
   const { error } = await supabase
     .from('groups')
-    .update({ name, schedule })
+    .update({ name, schedule, coach_id })
     .eq('id', id);
 
   if (error) return { error: error.message };

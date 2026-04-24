@@ -8,7 +8,8 @@ const LINKS = [
   { href: '/admin', key: 'dashboard', exact: true },
   { href: '/admin/groups', key: 'groups', exact: false },
   { href: '/admin/students', key: 'students', exact: false },
-  { href: '/admin/attendance', key: 'attendance', exact: false }
+  { href: '/admin/attendance', key: 'attendance', exact: false },
+  { href: '/admin/invitations', key: 'invitations', exact: false }
 ] as const;
 
 export function AdminNav() {

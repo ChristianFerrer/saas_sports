@@ -20,7 +20,8 @@
       "dashboard": "Dashboard",
       "groups": "Groups",
       "students": "Students",
-      "attendance": "Attendance"
+      "attendance": "Attendance",
+      "invitations": "Invitations"
     },
     "home": {
       "title": "Admin dashboard",
@@ -42,7 +43,9 @@
       "studentsCount": "{count, plural, =0 {no students} =1 {1 student} other {# students}}",
       "fields": {
         "name": "Group name",
-        "namePlaceholder": "e.g. Under-8 A"
+        "namePlaceholder": "e.g. Under-8 A",
+        "coach": "Assigned coach",
+        "coachNone": "— No coach —"
       },
       "errors": {
         "nameRequired": "Name is required.",
@@ -127,6 +130,67 @@
         "insertFailed": "Could not create the session. Try again.",
         "noStudents": "This group has no students."
       }
+    },
+    "invitations": {
+      "title": "Invitations",
+      "new": "New invitation",
+      "empty": "You haven't sent any invitations yet.",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "expired": "Expired",
+      "noPending": "No pending invitations.",
+      "noAccepted": "Nobody has accepted an invitation yet.",
+      "expiresOn": "Expires on {date}",
+      "acceptedOn": "Accepted on {date}",
+      "revoke": "Revoke",
+      "revokeConfirm": "Revoke the invitation to {email}?",
+      "copyLink": "Copy link",
+      "copied": "Copied ✓",
+      "backToList": "Back to list",
+      "roles": {
+        "coach": "Coach",
+        "parent": "Parent"
+      },
+      "fields": {
+        "role": "Role",
+        "fullName": "Full name",
+        "fullNamePlaceholder": "First and last name",
+        "email": "Email",
+        "student": "Student to link",
+        "studentPlaceholder": "Pick a student",
+        "noStudents": "You need to add students before inviting parents."
+      },
+      "success": {
+        "title": "Invitation created.",
+        "emailSent": "Email sent to the recipient. You can also copy the link.",
+        "emailSkipped": "Resend is not configured, so no email was sent. Copy the link and share it however you like.",
+        "emailFailed": "We tried to send the email but it failed. Copy the link and share it manually."
+      },
+      "errors": {
+        "emailInvalid": "Invalid email.",
+        "fullNameRequired": "Name is required.",
+        "roleInvalid": "Invalid role.",
+        "studentRequired": "Pick the student this parent will be linked to.",
+        "studentNotFound": "Selected student not found.",
+        "alreadyInvited": "There is already a pending invitation for that email."
+      }
+    }
+  },
+  "invite": {
+    "title": "Accept your invitation",
+    "subtitle": "{school} invited you as {role} ({email}). Pick a password to sign in.",
+    "submit": "Accept and sign in",
+    "submitting": "Creating account…",
+    "fields": {
+      "password": "Password (at least 8 characters)",
+      "passwordConfirm": "Confirm password"
+    },
+    "errors": {
+      "weakPassword": "Password must be at least 8 characters.",
+      "passwordsMismatch": "Passwords don't match.",
+      "invalidToken": "This invitation is not valid.",
+      "alreadyAccepted": "This invitation has already been accepted.",
+      "expired": "This invitation has expired. Ask the admin for a new one."
     }
   },
   "coach": {

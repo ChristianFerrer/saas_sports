@@ -9,11 +9,16 @@ import type { GroupScheduleEntry } from '@/types/database';
 
 import { ScheduleEditor } from './schedule-editor';
 
+type CoachOption = { id: string; fullName: string };
+
 type GroupFormProps = {
   action: (state: GroupFormState, formData: FormData) => Promise<GroupFormState>;
   defaultName?: string;
   defaultSchedule?: GroupScheduleEntry[];
+  defaultCoachId?: string | null;
+  coaches?: CoachOption[];
   showSchedule?: boolean;
+  showCoach?: boolean;
   submitLabel: string;
 };
 
@@ -23,7 +28,10 @@ export function GroupForm({
   action,
   defaultName = '',
   defaultSchedule = [],
+  defaultCoachId = null,
+  coaches = [],
   showSchedule = false,
+  showCoach = false,
   submitLabel
 }: GroupFormProps) {
   const t = useTranslations('admin.groups');
@@ -53,6 +61,28 @@ export function GroupForm({
           className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
+
+      {showCoach ? (
+        <div className="space-y-1">
+          <label htmlFor="coach_id" className="block text-sm font-medium text-slate-700">
+            {t('fields.coach')}{' '}
+            <span className="text-slate-400">{tCommon('optional')}</span>
+          </label>
+          <select
+            id="coach_id"
+            name="coach_id"
+            defaultValue={defaultCoachId ?? ''}
+            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="">{t('fields.coachNone')}</option>
+            {coaches.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.fullName}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
 
       {showSchedule ? <ScheduleEditor defaultSchedule={defaultSchedule} /> : null}
 
