@@ -65,6 +65,20 @@
         "scheduleInvalid": "The schedule has invalid entries. Check weekday, time and duration."
       },
       "deleteConfirm": "Delete \"{name}\"?",
+      "detail": {
+        "coach": "Coach",
+        "noCoach": "No coach assigned",
+        "schedule": "Weekly schedule",
+        "noSchedule": "No schedule configured",
+        "studentsSection": "Students ({count})",
+        "noStudents": "No students in this group yet.",
+        "upcomingSessions": "Upcoming sessions",
+        "pastSessions": "Recent sessions",
+        "noUpcoming": "No upcoming sessions.",
+        "noPast": "No past sessions yet.",
+        "takeAttendance": "Attendance",
+        "editGroup": "Edit group"
+      },
       "schedule": {
         "title": "Weekly schedule",
         "hint": "Recurring class days and times. Sessions are not auto-generated from this yet — it's used as reference.",
@@ -101,7 +115,21 @@
       "errors": {
         "fullNameRequired": "Name is required."
       },
-      "deleteConfirm": "Delete \"{name}\"?"
+      "deleteConfirm": "Delete \"{name}\"?",
+      "detail": {
+        "editStudent": "Edit student",
+        "birthDate": "Birth date",
+        "noBirthDate": "No birth date",
+        "age": "years",
+        "group": "Group",
+        "noGroup": "No group assigned",
+        "parents": "Parents / guardians",
+        "noParents": "No parents linked yet.",
+        "attendance": "Overall attendance",
+        "attendanceSummary": "{present}/{total} sessions",
+        "noAttendance": "No attendance records yet.",
+        "recentSessions": "Recent attendance"
+      }
     },
     "attendance": {
       "title": "Attendance",

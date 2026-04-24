@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import { Pencil, Plus } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { AdminNav } from '@/components/admin/admin-nav';
-import { DeleteStudentButton } from '@/components/admin/delete-student-button';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
@@ -101,39 +100,29 @@ export default async function AdminStudentsPage({
           {students.map((s) => {
             const groupName = s.group_id ? (groupNameById.get(s.group_id) ?? null) : null;
             return (
-              <li
-                key={s.id}
-                className="flex items-center gap-3 px-4 py-3 transition hover:bg-slate-50"
-              >
-                <span
-                  className={`grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-semibold ${paletteFor(s.id)}`}
+              <li key={s.id}>
+                <Link
+                  href={`/admin/students/${s.id}`}
+                  className="flex items-center gap-3 px-4 py-3 transition hover:bg-slate-50"
                 >
-                  {initialsOf(s.full_name) || '·'}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-slate-900">{s.full_name}</p>
-                  <p className="truncate text-xs text-slate-500">
-                    {groupName ?? t('admin.students.unassigned')}
-                    {s.birth_date ? ` · ${s.birth_date}` : ''}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Link
-                    href={`/admin/students/${s.id}/edit`}
-                    aria-label={t('common.edit')}
-                    className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50"
+                  <span
+                    className={`grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-semibold ${paletteFor(s.id)}`}
                   >
-                    <Pencil size={15} strokeWidth={2.2} aria-hidden />
-                    <span className="hidden sm:inline">{t('common.edit')}</span>
-                  </Link>
-                  <DeleteStudentButton
-                    id={s.id}
-                    confirmMessage={t('admin.students.deleteConfirm', {
-                      name: s.full_name
-                    })}
-                    label={t('common.delete')}
+                    {initialsOf(s.full_name) || '·'}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-slate-900">{s.full_name}</p>
+                    <p className="truncate text-xs text-slate-500">
+                      {groupName ?? t('admin.students.unassigned')}
+                      {s.birth_date ? ` · ${s.birth_date}` : ''}
+                    </p>
+                  </div>
+                  <ChevronRight
+                    size={18}
+                    className="shrink-0 text-slate-400"
+                    aria-hidden
                   />
-                </div>
+                </Link>
               </li>
             );
           })}

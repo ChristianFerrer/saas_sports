@@ -65,6 +65,20 @@
         "scheduleInvalid": "El horario tiene entradas inválidas. Revisa día, hora y duración."
       },
       "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"?",
+      "detail": {
+        "coach": "Entrenador",
+        "noCoach": "Sin entrenador asignado",
+        "schedule": "Horario semanal",
+        "noSchedule": "Sin horario configurado",
+        "studentsSection": "Alumnos ({count})",
+        "noStudents": "Aún no hay alumnos en este grupo.",
+        "upcomingSessions": "Próximas sesiones",
+        "pastSessions": "Sesiones recientes",
+        "noUpcoming": "No hay sesiones programadas.",
+        "noPast": "Aún no hay sesiones pasadas.",
+        "takeAttendance": "Asistencias",
+        "editGroup": "Editar grupo"
+      },
       "schedule": {
         "title": "Horario semanal",
         "hint": "Días y horas recurrentes de las clases. Esto no genera sesiones automáticamente todavía — se usará como referencia.",
@@ -101,7 +115,21 @@
       "errors": {
         "fullNameRequired": "El nombre es obligatorio."
       },
-      "deleteConfirm": "¿Seguro que quieres eliminar a \"{name}\"?"
+      "deleteConfirm": "¿Seguro que quieres eliminar a \"{name}\"?",
+      "detail": {
+        "editStudent": "Editar alumno",
+        "birthDate": "Fecha de nacimiento",
+        "noBirthDate": "Sin fecha de nacimiento",
+        "age": "años",
+        "group": "Grupo",
+        "noGroup": "Sin grupo asignado",
+        "parents": "Padres / tutores",
+        "noParents": "No hay padres vinculados todavía.",
+        "attendance": "Asistencia global",
+        "attendanceSummary": "{present}/{total} sesiones",
+        "noAttendance": "Sin registros de asistencia todavía.",
+        "recentSessions": "Asistencias recientes"
+      }
     },
     "attendance": {
       "title": "Asistencias",
