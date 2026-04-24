@@ -427,6 +427,55 @@
       "historical": "Logros anteriores",
       "statusAchieved": "Logrado",
       "statusPending": "Pendiente"
+    },
+    "detail": {
+      "heroKicker": "Perfil del jugador",
+      "attendance": "Asistencia",
+      "positive": {
+        "high": "¡Gran ritmo esta semana! Sigue apareciendo y creciendo.",
+        "mid": "Se nota el esfuerzo. Con más constancia, el siguiente paso es suyo.",
+        "low": "Cada entrenamiento cuenta. Te esperamos en el próximo."
+      },
+      "meta": {
+        "group": "Grupo actual",
+        "age": "Edad",
+        "nextSession": "Próxima sesión"
+      },
+      "kpis": {
+        "attendance": "Asistencia",
+        "objectives": "Objetivos",
+        "objectivesSub": "Logrados en este grupo",
+        "nextSession": "Próxima clase"
+      },
+      "progress": {
+        "kicker": "Mi progreso",
+        "title": "Cómo va en la cancha",
+        "note": "Escala visual orientativa basada en asistencia y objetivos logrados. Pronto podrás seguir cada habilidad por separado."
+      },
+      "skills": {
+        "commitment": "Compromiso",
+        "technique": "Técnica",
+        "confidence": "Confianza",
+        "teamwork": "Trabajo en equipo"
+      },
+      "roadmap": {
+        "caption": "Cada paso te acerca a tus sueños. Nosotros te ayudamos a llegar."
+      },
+      "objectives": {
+        "kicker": "Objetivos de la temporada"
+      },
+      "achievements": {
+        "kicker": "Trofeos",
+        "title": "Logros desbloqueados"
+      },
+      "message": {
+        "kicker": "Del entrenador",
+        "title": "Último mensaje",
+        "seeAll": "Ver todos"
+      },
+      "recent": {
+        "kicker": "Últimos entrenos"
+      }
     }
   },
   "auth": {

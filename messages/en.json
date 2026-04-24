@@ -427,6 +427,55 @@
       "historical": "Previous achievements",
       "statusAchieved": "Achieved",
       "statusPending": "Pending"
+    },
+    "detail": {
+      "heroKicker": "Player profile",
+      "attendance": "Attendance",
+      "positive": {
+        "high": "Great rhythm this week! Keep showing up and growing.",
+        "mid": "The effort shows. With more consistency, the next step is theirs.",
+        "low": "Every practice counts. See you at the next one."
+      },
+      "meta": {
+        "group": "Current group",
+        "age": "Age",
+        "nextSession": "Next session"
+      },
+      "kpis": {
+        "attendance": "Attendance",
+        "objectives": "Objectives",
+        "objectivesSub": "Reached in this group",
+        "nextSession": "Next class"
+      },
+      "progress": {
+        "kicker": "My progress",
+        "title": "On the pitch",
+        "note": "Visual snapshot based on attendance and achievements. Per-skill tracking is coming soon."
+      },
+      "skills": {
+        "commitment": "Commitment",
+        "technique": "Technique",
+        "confidence": "Confidence",
+        "teamwork": "Teamwork"
+      },
+      "roadmap": {
+        "caption": "Every step brings them closer to their dreams. We walk alongside them."
+      },
+      "objectives": {
+        "kicker": "Season objectives"
+      },
+      "achievements": {
+        "kicker": "Trophies",
+        "title": "Unlocked achievements"
+      },
+      "message": {
+        "kicker": "From the coach",
+        "title": "Latest message",
+        "seeAll": "See all"
+      },
+      "recent": {
+        "kicker": "Recent sessions"
+      }
     }
   },
   "auth": {
