@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
-import { ParentNav } from '@/components/ui/parent-nav';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -45,25 +44,24 @@ export default async function ParentMessagesPage() {
       title={t('parent.messages.title')}
       role={t('roles.parent')}
       fullName={user.profile.full_name}
-      nav={<ParentNav />}
     >
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-xl font-semibold text-ink-50">
           {t('parent.messages.title')}
         </h2>
         {unread > 0 ? (
-          <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+          <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-gold-300">
             {t('parent.messages.unreadCount', { count: unread })}
           </span>
         ) : null}
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-lg border border-dashed border-white/10 bg-white p-6 text-sm text-ink-300">
           {t('parent.messages.empty')}
         </div>
       ) : (
-        <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+        <ul className="divide-y divide-white/[0.05] rounded-lg border border-white/10 bg-white">
           {rows.map((r) => {
             const c = r.communications!;
             const date = format.dateTime(new Date(c.sent_at ?? c.created_at), {
@@ -74,22 +72,22 @@ export default async function ParentMessagesPage() {
               <li key={c.id}>
                 <Link
                   href={`/parent/messages/${c.id}`}
-                  className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50"
+                  className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.03]"
                 >
                   <div className="min-w-0 flex-1">
                     <p
                       className={
                         r.read_at
-                          ? 'truncate text-slate-700'
-                          : 'truncate font-semibold text-slate-900'
+                          ? 'truncate text-ink-100'
+                          : 'truncate font-semibold text-ink-50'
                       }
                     >
                       {c.subject}
                     </p>
-                    <p className="text-xs text-slate-500">{date}</p>
+                    <p className="text-xs text-ink-300">{date}</p>
                   </div>
                   {!r.read_at ? (
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500/15" />
                   ) : null}
                 </Link>
               </li>

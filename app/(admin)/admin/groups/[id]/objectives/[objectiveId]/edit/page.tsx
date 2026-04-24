@@ -7,7 +7,6 @@ import {
   updateObjective,
   type ObjectiveFormState
 } from '@/app/(admin)/admin/groups/[id]/objectives/actions';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { ObjectiveForm } from '@/components/admin/objective-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -68,17 +67,16 @@ export default async function EditObjectivePage({
       title={t('admin.objectives.edit')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4">
         <Link
           href={`/admin/groups/${group.id}/objectives`}
-          className="inline-flex items-center gap-1 text-xs text-slate-500 transition hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-ink-300 transition hover:text-ink-100"
         >
           <ChevronLeft size={14} strokeWidth={2.2} aria-hidden />
           {t('admin.objectives.sectionTitle')}
         </Link>
-        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink-50">
           {t('admin.objectives.edit')}
         </h2>
       </div>

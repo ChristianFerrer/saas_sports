@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { createSession } from '@/app/(admin)/admin/attendance/actions';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { SessionForm } from '@/components/admin/session-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -36,16 +35,15 @@ export default async function NewSessionPage({
       title={t('admin.attendance.newSession')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4">
         <Link
           href={`/admin/attendance/${g.id}`}
-          className="text-xs text-slate-500 hover:text-slate-700"
+          className="text-xs text-ink-300 hover:text-ink-100"
         >
           ← {g.name}
         </Link>
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-xl font-semibold text-ink-50">
           {t('admin.attendance.newSessionFor', { name: g.name })}
         </h2>
       </div>

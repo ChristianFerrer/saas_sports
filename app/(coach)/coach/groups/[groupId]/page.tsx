@@ -67,14 +67,14 @@ export default async function CoachGroupSessionsPage({
       fullName={user.profile.full_name}
     >
       <div className="mb-4">
-        <Link href="/coach" className="text-xs text-slate-500 hover:text-slate-700">
+        <Link href="/coach" className="text-xs text-ink-300 hover:text-ink-100">
           ← {t('coach.home.title')}
         </Link>
-        <h2 className="text-xl font-semibold text-slate-900">{g.name}</h2>
+        <h2 className="text-xl font-semibold text-ink-50">{g.name}</h2>
       </div>
 
       {sessions.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-lg border border-dashed border-white/10 bg-white p-6 text-sm text-ink-300">
           {t('coach.sessions.empty')}
         </div>
       ) : (
@@ -114,7 +114,7 @@ export default async function CoachGroupSessionsPage({
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-300">
       {children}
     </h3>
   );
@@ -122,7 +122,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function EmptyBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
+    <div className="rounded-lg border border-dashed border-white/10 bg-white p-4 text-sm text-ink-300">
       {children}
     </div>
   );
@@ -142,7 +142,7 @@ function SessionList({
   counts: Map<string, { present: number; total: number }>;
 }) {
   return (
-    <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+    <ul className="divide-y divide-white/[0.05] rounded-lg border border-white/10 bg-white">
       {sessions.map((s) => {
         const date = new Date(s.scheduled_at);
         const display = format.dateTime(date, {
@@ -154,8 +154,8 @@ function SessionList({
         return (
           <li key={s.id} className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="font-medium text-slate-900">{display}</p>
-              <p className="text-xs text-slate-500">
+              <p className="font-medium text-ink-50">{display}</p>
+              <p className="text-xs text-ink-300">
                 {t(`admin.attendance.status.${s.status}`)} · {s.duration_minutes}{' '}
                 {t('admin.attendance.minutes')}
                 {cnt
@@ -168,7 +168,7 @@ function SessionList({
             </div>
             <Link
               href={`/coach/groups/${groupId}/sessions/${s.id}`}
-              className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+              className="text-sm font-medium text-gold-300 hover:text-gold-200"
             >
               {t('admin.attendance.open')}
             </Link>

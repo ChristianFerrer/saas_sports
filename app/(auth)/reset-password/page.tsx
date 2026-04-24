@@ -54,7 +54,7 @@ export default function ResetPasswordPage() {
   return (
     <AuthCard title={t('reset.title')} subtitle={t('reset.subtitle')}>
       {success ? (
-        <div role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
+        <div role="status" className="rounded-xl bg-emerald-500/15 p-4 text-sm text-emerald-200">
           {t('reset.success')}
         </div>
       ) : (
@@ -92,7 +92,7 @@ export default function ResetPasswordPage() {
           </div>
 
           {formError ? (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-300">
               {formError}
             </p>
           ) : null}

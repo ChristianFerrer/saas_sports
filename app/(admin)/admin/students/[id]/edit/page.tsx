@@ -5,7 +5,6 @@ import {
   updateStudent,
   type StudentFormState
 } from '@/app/(admin)/admin/students/actions';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { StudentForm } from '@/components/admin/student-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -63,10 +62,9 @@ export default async function EditStudentPage({
       title={t('admin.students.edit')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="max-w-lg">
-        <h2 className="mb-4 text-xl font-semibold text-slate-900">
+        <h2 className="mb-4 text-xl font-semibold text-ink-50">
           {t('admin.students.edit')}
         </h2>
         <StudentForm

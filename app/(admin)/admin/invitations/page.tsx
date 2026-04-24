@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
-import { AdminNav } from '@/components/admin/admin-nav';
 import { RevokeInvitationButton } from '@/components/admin/revoke-invitation-button';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -53,10 +52,9 @@ export default async function AdminInvitationsPage({
       title={t('admin.invitations.title')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-xl font-semibold text-ink-50">
           {t('admin.invitations.title')}
         </h2>
         <Link
@@ -70,14 +68,14 @@ export default async function AdminInvitationsPage({
       {errorMessage ? (
         <div
           role="alert"
-          className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-800"
+          className="mb-4 rounded-md bg-red-500/15 p-3 text-sm text-red-200"
         >
           {errorMessage}
         </div>
       ) : null}
 
       {invitations.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-lg border border-dashed border-white/10 bg-white p-6 text-sm text-ink-300">
           {t('admin.invitations.empty')}
         </div>
       ) : (
@@ -110,7 +108,7 @@ export default async function AdminInvitationsPage({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-300">
         {title}
       </h3>
       {children}
@@ -120,7 +118,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function EmptyBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
+    <div className="rounded-lg border border-dashed border-white/10 bg-white p-4 text-sm text-ink-300">
       {children}
     </div>
   );
@@ -138,18 +136,18 @@ function InvitationList({
   showRevoke?: boolean;
 }) {
   return (
-    <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+    <ul className="divide-y divide-white/[0.05] rounded-lg border border-white/10 bg-white">
       {rows.map((i) => (
         <li key={i.id} className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <p className="truncate font-medium text-slate-900">
+            <p className="truncate font-medium text-ink-50">
               {i.full_name}{' '}
-              <span className="text-xs font-normal text-slate-500">
+              <span className="text-xs font-normal text-ink-300">
                 · {t(`roles.${i.role}`)}
               </span>
             </p>
-            <p className="truncate text-xs text-slate-500">{i.email}</p>
-            <p className="text-xs text-slate-400">
+            <p className="truncate text-xs text-ink-300">{i.email}</p>
+            <p className="text-xs text-ink-400">
               {i.accepted_at
                 ? t('admin.invitations.acceptedOn', {
                     date: format.dateTime(new Date(i.accepted_at), {

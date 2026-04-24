@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { Mail, Phone, Plus, UserCog } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { AdminNav } from '@/components/admin/admin-nav';
 import { SchoolForm } from '@/components/admin/school-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -25,9 +24,9 @@ type ProfileRow = {
 };
 
 const AVATAR_PALETTE = [
-  'bg-emerald-100 text-emerald-700',
+  'bg-emerald-500/20 text-gold-300',
   'bg-indigo-100 text-indigo-700',
-  'bg-amber-100 text-amber-700',
+  'bg-amber-100 text-amber-300',
   'bg-rose-100 text-rose-700',
   'bg-sky-100 text-sky-700'
 ];
@@ -78,21 +77,20 @@ export default async function AdminSettingsPage() {
       title={t('admin.settings.title')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+        <h2 className="text-2xl font-semibold tracking-tight text-ink-50">
           {t('admin.settings.title')}
         </h2>
-        <p className="mt-1 text-sm text-slate-600">{t('admin.settings.subtitle')}</p>
+        <p className="mt-1 text-sm text-ink-200">{t('admin.settings.subtitle')}</p>
       </div>
 
       <section className="ss-card p-5 sm:p-6">
         <header className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-sm font-semibold text-ink-50">
             {t('admin.settings.schoolSection')}
           </h3>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-ink-300">
             {t('admin.settings.schoolSectionHint')}
           </p>
         </header>
@@ -113,21 +111,21 @@ export default async function AdminSettingsPage() {
 
       <section className="mt-5">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+          <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-ink-300">
             <UserCog size={14} strokeWidth={2.4} aria-hidden />
             {t('admin.settings.coachesSection', { count: coaches.length })}
           </h3>
           <Link
             href="/admin/invitations/new"
-            className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+            className="text-xs font-medium text-gold-300 hover:text-gold-200"
           >
             {t('admin.settings.inviteCoach')}
           </Link>
         </div>
 
         {coaches.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
-            <p className="text-sm text-slate-500">
+          <div className="rounded-2xl border border-dashed border-white/10 bg-white p-6 text-center">
+            <p className="text-sm text-ink-300">
               {t('admin.settings.noCoaches')}
             </p>
             <Link
@@ -139,7 +137,7 @@ export default async function AdminSettingsPage() {
             </Link>
           </div>
         ) : (
-          <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+          <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
             {coaches.map((c) => (
               <li
                 key={c.user_id}
@@ -151,11 +149,11 @@ export default async function AdminSettingsPage() {
                   {initialsOf(c.full_name) || '·'}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-slate-900">
+                  <p className="truncate font-semibold text-ink-50">
                     {c.full_name}
                   </p>
                   {c.phone ? (
-                    <p className="flex items-center gap-1 truncate text-xs text-slate-500">
+                    <p className="flex items-center gap-1 truncate text-xs text-ink-300">
                       <Phone size={12} strokeWidth={2} aria-hidden />
                       {c.phone}
                     </p>
@@ -169,21 +167,21 @@ export default async function AdminSettingsPage() {
 
       {school.contact_phone || school.contact_email ? (
         <section className="mt-5">
-          <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+          <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-ink-300">
             <Mail size={14} strokeWidth={2.4} aria-hidden />
             {t('admin.settings.publicContact')}
           </h3>
           <div className="ss-card p-4">
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-ink-100">
               {school.contact_phone ? (
                 <span className="inline-flex items-center gap-1.5 mr-4">
-                  <Phone size={14} strokeWidth={2.2} className="text-slate-500" aria-hidden />
+                  <Phone size={14} strokeWidth={2.2} className="text-ink-300" aria-hidden />
                   {school.contact_phone}
                 </span>
               ) : null}
               {school.contact_email ? (
                 <span className="inline-flex items-center gap-1.5">
-                  <Mail size={14} strokeWidth={2.2} className="text-slate-500" aria-hidden />
+                  <Mail size={14} strokeWidth={2.2} className="text-ink-300" aria-hidden />
                   {school.contact_email}
                 </span>
               ) : null}

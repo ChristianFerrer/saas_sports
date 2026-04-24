@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { AppShell } from '@/components/ui/app-shell';
-import { ParentNav } from '@/components/ui/parent-nav';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -67,20 +66,19 @@ export default async function ParentMessageDetailPage({
       title={c.subject}
       role={t('roles.parent')}
       fullName={user.profile.full_name}
-      nav={<ParentNav />}
     >
       <div className="mb-4">
         <Link
           href="/parent/messages"
-          className="text-xs text-slate-500 hover:text-slate-700"
+          className="text-xs text-ink-300 hover:text-ink-100"
         >
           ← {t('parent.messages.title')}
         </Link>
-        <h2 className="text-xl font-semibold text-slate-900">{c.subject}</h2>
-        <p className="mt-1 text-xs text-slate-500">{date}</p>
+        <h2 className="text-xl font-semibold text-ink-50">{c.subject}</h2>
+        <p className="mt-1 text-xs text-ink-300">{date}</p>
       </div>
 
-      <article className="whitespace-pre-wrap rounded-lg border border-slate-200 bg-white p-4 text-slate-800">
+      <article className="whitespace-pre-wrap rounded-lg border border-white/10 bg-white p-4 text-ink-50">
         {c.content}
       </article>
     </AppShell>

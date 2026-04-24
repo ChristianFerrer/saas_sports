@@ -120,9 +120,9 @@ export function SessionForm({
       <div className="space-y-1.5">
         <label htmlFor="notes" className="ss-label">
           {t('fields.sessionNotes')}{' '}
-          <span className="text-slate-400">{tCommon('optional')}</span>
+          <span className="text-ink-400">{tCommon('optional')}</span>
         </label>
-        <p className="text-xs text-slate-500">{t('fields.sessionNotesHint')}</p>
+        <p className="text-xs text-ink-300">{t('fields.sessionNotesHint')}</p>
         <input
           id="notes"
           name="notes"
@@ -135,7 +135,7 @@ export function SessionForm({
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}

@@ -64,7 +64,7 @@ export function AcceptInvitationForm({ action }: Props) {
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}

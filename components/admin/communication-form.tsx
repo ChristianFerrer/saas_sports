@@ -69,7 +69,7 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
             {t('fields.group')}
           </label>
           {groups.length === 0 ? (
-            <p className="text-sm text-amber-700">{t('fields.noGroups')}</p>
+            <p className="text-sm text-amber-300">{t('fields.noGroups')}</p>
           ) : (
             <select
               id="group_id"
@@ -119,7 +119,7 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}
@@ -151,8 +151,8 @@ function AudienceChip({
     <label
       className={
         active
-          ? 'flex cursor-pointer items-center gap-2 rounded-xl border border-emerald-500 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-800'
-          : 'flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50'
+          ? 'flex cursor-pointer items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-3 py-2.5 text-sm font-medium text-emerald-200'
+          : 'flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white px-3 py-2.5 text-sm text-ink-100 hover:bg-white/[0.03]'
       }
     >
       <input

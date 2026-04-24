@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
-import { AdminNav } from '@/components/admin/admin-nav';
 import { DeleteGroupButton } from '@/components/admin/delete-group-button';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -50,9 +49,9 @@ type ObjectiveRow = {
 type AchievementCountRow = { objective_id: string };
 
 const AVATAR_PALETTE = [
-  'bg-emerald-100 text-emerald-700',
+  'bg-emerald-500/20 text-gold-300',
   'bg-indigo-100 text-indigo-700',
-  'bg-amber-100 text-amber-700',
+  'bg-amber-100 text-amber-300',
   'bg-rose-100 text-rose-700',
   'bg-sky-100 text-sky-700'
 ];
@@ -176,17 +175,16 @@ export default async function AdminGroupDetailPage({
       title={group.name}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4">
         <Link
           href="/admin/groups"
-          className="inline-flex items-center gap-1 text-xs text-slate-500 transition hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-ink-300 transition hover:text-ink-100"
         >
           <ChevronLeft size={14} strokeWidth={2.2} aria-hidden />
           {t('admin.groups.title')}
         </Link>
-        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink-50">
           {group.name}
         </h2>
       </div>
@@ -207,15 +205,15 @@ export default async function AdminGroupDetailPage({
         />
       </div>
 
-      <section className="ss-card divide-y divide-slate-100 overflow-hidden">
+      <section className="ss-card divide-y divide-white/[0.05] overflow-hidden">
         <InfoRow
           icon={<UserCircle2 size={18} strokeWidth={2.2} aria-hidden />}
           label={t('admin.groups.detail.coach')}
         >
           {coach ? (
-            <span className="font-medium text-slate-900">{coach.full_name}</span>
+            <span className="font-medium text-ink-50">{coach.full_name}</span>
           ) : (
-            <span className="text-slate-400">
+            <span className="text-ink-400">
               {t('admin.groups.detail.noCoach')}
             </span>
           )}
@@ -225,26 +223,26 @@ export default async function AdminGroupDetailPage({
           label={t('admin.groups.detail.cycle')}
         >
           {group.start_date || group.end_date ? (
-            <span className="text-slate-900">
+            <span className="text-ink-50">
               {group.start_date
                 ? format.dateTime(new Date(group.start_date), {
                     dateStyle: 'medium',
                     timeZone: 'UTC'
                   })
                 : '—'}
-              <span className="mx-1 text-slate-400">→</span>
+              <span className="mx-1 text-ink-400">→</span>
               {group.end_date
                 ? format.dateTime(new Date(group.end_date), {
                     dateStyle: 'medium',
                     timeZone: 'UTC'
                   })
                 : '—'}
-              <span className="ml-2 text-slate-500">
+              <span className="ml-2 text-ink-300">
                 · {t('admin.groups.detail.daysPerWeek', { count: schedule.length })}
               </span>
             </span>
           ) : (
-            <span className="text-slate-400">
+            <span className="text-ink-400">
               {t('admin.groups.detail.noCycle')}
             </span>
           )}
@@ -255,17 +253,17 @@ export default async function AdminGroupDetailPage({
           alignTop
         >
           {schedule.length === 0 ? (
-            <span className="text-slate-400">
+            <span className="text-ink-400">
               {t('admin.groups.detail.noSchedule')}
             </span>
           ) : (
             <ul className="space-y-0.5">
               {schedule.map((s, idx) => (
-                <li key={idx} className="text-slate-900">
+                <li key={idx} className="text-ink-50">
                   <span className="font-medium">
                     {t(`admin.groups.schedule.weekdays.${s.weekday}`)}
                   </span>{' '}
-                  <span className="text-slate-600">
+                  <span className="text-ink-200">
                     {s.start_time} · {s.duration_minutes}{' '}
                     {t('admin.attendance.minutes')}
                   </span>
@@ -277,13 +275,13 @@ export default async function AdminGroupDetailPage({
       </section>
 
       <div className="mt-5 mb-2 flex items-center justify-between gap-2">
-        <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+        <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-ink-300">
           <Target size={14} strokeWidth={2.4} aria-hidden />
           {t('admin.objectives.sectionTitle')}
         </h3>
         <Link
           href={`/admin/groups/${group.id}/objectives`}
-          className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+          className="text-xs font-medium text-gold-300 hover:text-gold-200"
         >
           {t('admin.objectives.manage')}
         </Link>
@@ -300,24 +298,24 @@ export default async function AdminGroupDetailPage({
           </Link>
         </EmptyBox>
       ) : (
-        <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+        <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
           {objectives.map((o) => {
             const achieved = achievementsByObjective.get(o.id) ?? 0;
             return (
               <li key={o.id} className="flex items-start gap-3 px-4 py-3">
-                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-500/15 text-gold-300">
                   <Target size={16} strokeWidth={2.2} aria-hidden />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-slate-900">{o.title}</p>
+                  <p className="truncate font-semibold text-ink-50">{o.title}</p>
                   {o.description ? (
-                    <p className="mt-0.5 line-clamp-2 text-sm text-slate-600">
+                    <p className="mt-0.5 line-clamp-2 text-sm text-ink-200">
                       {o.description}
                     </p>
                   ) : null}
                 </div>
                 {students.length > 0 ? (
-                  <span className="ss-pill shrink-0 bg-slate-100 text-slate-600">
+                  <span className="ss-pill shrink-0 bg-white/[0.04] text-ink-200">
                     {t('admin.objectives.achievedRatio', {
                       achieved,
                       total: students.length
@@ -339,24 +337,24 @@ export default async function AdminGroupDetailPage({
       {students.length === 0 ? (
         <EmptyBox>{t('admin.groups.detail.noStudents')}</EmptyBox>
       ) : (
-        <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+        <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
           {students.map((s) => (
             <li key={s.id}>
               <Link
                 href={`/admin/students/${s.id}`}
-                className="flex items-center gap-3 px-4 py-3 transition hover:bg-slate-50"
+                className="flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.03]"
               >
                 <span
                   className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-semibold ${paletteFor(s.id)}`}
                 >
                   {initialsOf(s.full_name) || '·'}
                 </span>
-                <span className="min-w-0 flex-1 truncate font-medium text-slate-900">
+                <span className="min-w-0 flex-1 truncate font-medium text-ink-50">
                   {s.full_name}
                 </span>
                 <ChevronRight
                   size={16}
-                  className="shrink-0 text-slate-400"
+                  className="shrink-0 text-ink-400"
                   aria-hidden
                 />
               </Link>
@@ -413,14 +411,14 @@ function InfoRow({
 }) {
   return (
     <div className={`flex gap-3 px-4 py-3 ${alignTop ? 'items-start' : 'items-center'}`}>
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-600">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/[0.04] text-ink-200">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500">
+        <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-300">
           {label}
         </p>
-        <div className="mt-0.5 text-sm text-slate-700">{children}</div>
+        <div className="mt-0.5 text-sm text-ink-100">{children}</div>
       </div>
     </div>
   );
@@ -434,7 +432,7 @@ function SectionHeader({
   label: string;
 }) {
   return (
-    <h3 className="mt-5 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+    <h3 className="mt-5 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-ink-300">
       {icon}
       {label}
     </h3>
@@ -443,7 +441,7 @@ function SectionHeader({
 
 function EmptyBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-center text-sm text-slate-500">
+    <div className="rounded-2xl border border-dashed border-white/10 bg-white p-4 text-center text-sm text-ink-300">
       {children}
     </div>
   );
@@ -452,11 +450,11 @@ function EmptyBox({ children }: { children: React.ReactNode }) {
 function statusPillClass(status: SessionRow['status']): string {
   switch (status) {
     case 'held':
-      return 'ss-pill bg-emerald-50 text-emerald-700';
+      return 'ss-pill bg-emerald-500/15 text-gold-300';
     case 'cancelled':
-      return 'ss-pill bg-red-50 text-red-700';
+      return 'ss-pill bg-red-500/15 text-red-300';
     default:
-      return 'ss-pill bg-slate-100 text-slate-700';
+      return 'ss-pill bg-white/[0.04] text-ink-100';
   }
 }
 
@@ -474,7 +472,7 @@ function SessionList({
   t: Awaited<ReturnType<typeof getTranslations>>;
 }) {
   return (
-    <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+    <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
       {sessions.map((s) => {
         const display = format.dateTime(new Date(s.scheduled_at), {
           dateStyle: 'medium',
@@ -486,11 +484,11 @@ function SessionList({
           <li key={s.id}>
             <Link
               href={`/admin/attendance/${groupId}/sessions/${s.id}`}
-              className="flex items-start gap-3 px-4 py-3 transition hover:bg-slate-50"
+              className="flex items-start gap-3 px-4 py-3 transition hover:bg-white/[0.03]"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-slate-900">{display}</p>
-                <p className="text-xs text-slate-500">
+                <p className="truncate font-medium text-ink-50">{display}</p>
+                <p className="text-xs text-ink-300">
                   {s.duration_minutes} {t('admin.attendance.minutes')}
                   {cnt
                     ? ` · ${t('admin.attendance.attendanceRatio', {
@@ -500,7 +498,7 @@ function SessionList({
                     : ''}
                 </p>
                 {s.notes ? (
-                  <p className="mt-1 truncate text-xs text-slate-600">{s.notes}</p>
+                  <p className="mt-1 truncate text-xs text-ink-200">{s.notes}</p>
                 ) : null}
               </div>
               <span className={`${statusPillClass(s.status)} shrink-0`}>
@@ -508,7 +506,7 @@ function SessionList({
               </span>
               <ChevronRight
                 size={16}
-                className="mt-1 shrink-0 text-slate-400"
+                className="mt-1 shrink-0 text-ink-400"
                 aria-hidden
               />
             </Link>

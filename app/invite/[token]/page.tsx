@@ -62,7 +62,7 @@ export default async function AcceptInvitationPage({
 function Invalid({ reason }: { reason: string }) {
   return (
     <AuthCard title="SmartSpots" subtitle="">
-      <p className="text-sm text-red-700">{reason}</p>
+      <p className="text-sm text-red-300">{reason}</p>
     </AuthCard>
   );
 }

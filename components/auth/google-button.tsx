@@ -45,7 +45,7 @@ export function GoogleButton({ intent = 'login' }: Props) {
         {t('google')}
       </button>
       {error ? (
-        <p role="alert" className="mt-2 text-sm text-red-600">
+        <p role="alert" className="mt-2 text-sm text-red-300">
           {error}
         </p>
       ) : null}

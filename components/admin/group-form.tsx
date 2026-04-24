@@ -82,7 +82,7 @@ export function GroupForm({
         <div className="space-y-1.5">
           <label htmlFor="coach_id" className="ss-label">
             {t('fields.coach')}{' '}
-            <span className="text-slate-400">{tCommon('optional')}</span>
+            <span className="text-ink-400">{tCommon('optional')}</span>
           </label>
           <select
             id="coach_id"
@@ -104,13 +104,13 @@ export function GroupForm({
         <div className="space-y-2">
           <div className="space-y-0.5">
             <label className="ss-label">{t('fields.cycle')}</label>
-            <p className="text-xs text-slate-500">{t('fields.cycleHint')}</p>
+            <p className="text-xs text-ink-300">{t('fields.cycleHint')}</p>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <label
                 htmlFor="start_date"
-                className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500"
+                className="block text-[11px] font-medium uppercase tracking-[0.06em] text-ink-300"
               >
                 {t('fields.startDate')}
               </label>
@@ -125,7 +125,7 @@ export function GroupForm({
             <div className="space-y-1">
               <label
                 htmlFor="end_date"
-                className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500"
+                className="block text-[11px] font-medium uppercase tracking-[0.06em] text-ink-300"
               >
                 {t('fields.endDate')}
               </label>
@@ -163,7 +163,7 @@ export function GroupForm({
       {showSchedule ? <ScheduleEditor defaultSchedule={defaultSchedule} /> : null}
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}

@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
 import { createStudent } from '@/app/(admin)/admin/students/actions';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { StudentForm } from '@/components/admin/student-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -24,10 +23,9 @@ export default async function NewStudentPage() {
       title={t('admin.students.new')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="max-w-lg">
-        <h2 className="mb-4 text-xl font-semibold text-slate-900">
+        <h2 className="mb-4 text-xl font-semibold text-ink-50">
           {t('admin.students.new')}
         </h2>
         <StudentForm

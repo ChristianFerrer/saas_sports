@@ -70,7 +70,7 @@ export function StudentForm({
       <div className="space-y-1.5">
         <label htmlFor="birth_date" className="ss-label">
           {t('fields.birthDate')}{' '}
-          <span className="text-slate-400">{tCommon('optional')}</span>
+          <span className="text-ink-400">{tCommon('optional')}</span>
         </label>
         <input
           id="birth_date"
@@ -84,7 +84,7 @@ export function StudentForm({
       <div className="space-y-1.5">
         <label htmlFor="group_id" className="ss-label">
           {t('fields.group')}{' '}
-          <span className="text-slate-400">{tCommon('optional')}</span>
+          <span className="text-ink-400">{tCommon('optional')}</span>
         </label>
         <select
           id="group_id"
@@ -214,7 +214,7 @@ export function StudentForm({
           <div className="space-y-1">
             <label
               htmlFor="enrolled_at"
-              className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500"
+              className="block text-[11px] font-medium uppercase tracking-[0.06em] text-ink-300"
             >
               {t('fields.enrolledAt')}
             </label>
@@ -229,10 +229,10 @@ export function StudentForm({
           <div className="space-y-1">
             <label
               htmlFor="left_at"
-              className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500"
+              className="block text-[11px] font-medium uppercase tracking-[0.06em] text-ink-300"
             >
               {t('fields.leftAt')}{' '}
-              <span className="text-slate-400 normal-case">{tCommon('optional')}</span>
+              <span className="text-ink-400 normal-case">{tCommon('optional')}</span>
             </label>
             <input
               id="left_at"
@@ -246,7 +246,7 @@ export function StudentForm({
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}

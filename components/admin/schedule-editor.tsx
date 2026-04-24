@@ -65,13 +65,13 @@ export function ScheduleEditor({ defaultSchedule }: Props) {
     <div className="space-y-3">
       <div className="space-y-0.5">
         <label className="ss-label">{t('title')}</label>
-        <p className="text-xs text-slate-500">{t('hint')}</p>
+        <p className="text-xs text-ink-300">{t('hint')}</p>
       </div>
 
       <input type="hidden" name="schedule_json" value={serialize(items)} />
 
       {items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-4 text-center text-xs text-slate-500">
+        <div className="rounded-xl border border-dashed border-white/10 bg-white p-4 text-center text-xs text-ink-300">
           {t('empty')}
         </div>
       ) : (
@@ -79,7 +79,7 @@ export function ScheduleEditor({ defaultSchedule }: Props) {
           {items.map((it, i) => (
             <li
               key={i}
-              className="rounded-xl border border-slate-200 bg-white p-3"
+              className="rounded-xl border border-white/10 bg-white p-3"
             >
               <div className="flex items-end gap-2">
                 <SlotField label={t('weekday')} className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ export function ScheduleEditor({ defaultSchedule }: Props) {
                   onClick={() => removeItem(i)}
                   aria-label={t('remove')}
                   title={t('remove')}
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-red-600 transition hover:bg-red-50 active:scale-95"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-red-300 transition hover:bg-red-500/15 active:scale-95"
                 >
                   <X size={16} strokeWidth={2.2} aria-hidden />
                 </button>
@@ -161,7 +161,7 @@ function SlotField({
 }) {
   return (
     <label className={`block space-y-1 ${className ?? ''}`}>
-      <span className="block text-[11px] font-medium uppercase tracking-[0.06em] text-slate-500">
+      <span className="block text-[11px] font-medium uppercase tracking-[0.06em] text-ink-300">
         {label}
       </span>
       {children}

@@ -51,7 +51,7 @@ export function ObjectiveForm({ action, defaults, cancelHref, submitLabel }: Pro
       <div className="space-y-1.5">
         <label htmlFor="description" className="ss-label">
           {t('fields.description')}{' '}
-          <span className="text-slate-400">{tCommon('optional')}</span>
+          <span className="text-ink-400">{tCommon('optional')}</span>
         </label>
         <textarea
           id="description"
@@ -65,7 +65,7 @@ export function ObjectiveForm({ action, defaults, cancelHref, submitLabel }: Pro
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}

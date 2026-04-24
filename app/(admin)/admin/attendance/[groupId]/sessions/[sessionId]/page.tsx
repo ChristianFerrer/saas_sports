@@ -4,7 +4,6 @@ import { Pencil } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { saveAttendance } from '@/app/(admin)/admin/attendance/actions';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { AttendanceSheet } from '@/components/admin/attendance-sheet';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -83,17 +82,16 @@ export default async function AttendanceSheetPage({
       title={display}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4">
         <Link
           href={`/admin/attendance/${g.id}`}
-          className="text-xs text-slate-500 hover:text-slate-700"
+          className="text-xs text-ink-300 hover:text-ink-100"
         >
           ← {g.name}
         </Link>
         <div className="mt-1 flex items-start justify-between gap-2">
-          <h2 className="text-xl font-semibold text-slate-900">
+          <h2 className="text-xl font-semibold text-ink-50">
             {t('admin.attendance.sheetTitle')}
           </h2>
           <Link
@@ -104,17 +102,17 @@ export default async function AttendanceSheetPage({
             <span>{t('admin.attendance.editSession')}</span>
           </Link>
         </div>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-ink-200">
           {display} · {s.duration_minutes} {t('admin.attendance.minutes')} ·{' '}
           {t(`admin.attendance.status.${s.status}`)}
         </p>
         {s.notes ? (
-          <p className="mt-1 text-sm text-slate-700">{s.notes}</p>
+          <p className="mt-1 text-sm text-ink-100">{s.notes}</p>
         ) : null}
       </div>
 
       {students.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-lg border border-dashed border-white/10 bg-white p-6 text-sm text-ink-300">
           {t('admin.attendance.noStudentsInGroup')}
         </div>
       ) : (

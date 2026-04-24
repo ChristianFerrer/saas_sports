@@ -85,7 +85,7 @@ export default function SignupPage() {
       footer={
         <p>
           {t('signup.haveAccount')}{' '}
-          <Link href="/login" className="font-medium text-emerald-700 hover:text-emerald-800">
+          <Link href="/login" className="font-medium text-gold-300 hover:text-gold-200">
             {t('signup.loginLink')}
           </Link>
         </p>
@@ -94,10 +94,10 @@ export default function SignupPage() {
       <div className="space-y-4">
         <GoogleButton intent="signup" />
 
-        <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
-          <span className="flex-1 border-t border-slate-200" />
+        <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em] text-ink-400">
+          <span className="flex-1 border-t border-white/10" />
           {t('or')}
-          <span className="flex-1 border-t border-slate-200" />
+          <span className="flex-1 border-t border-white/10" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -144,7 +144,7 @@ export default function SignupPage() {
         />
 
         {formError ? (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-red-300">
             {formError}
           </p>
         ) : null}

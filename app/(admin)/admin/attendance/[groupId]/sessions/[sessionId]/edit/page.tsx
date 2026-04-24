@@ -7,7 +7,6 @@ import {
   editSession,
   type SessionFormState
 } from '@/app/(admin)/admin/attendance/actions';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { SessionForm } from '@/components/admin/session-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -74,17 +73,16 @@ export default async function EditSessionPage({
       title={t('admin.attendance.editSession')}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4">
         <Link
           href={`/admin/attendance/${group.id}/sessions/${session.id}`}
-          className="inline-flex items-center gap-1 text-xs text-slate-500 transition hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-ink-300 transition hover:text-ink-100"
         >
           <ChevronLeft size={14} strokeWidth={2.2} aria-hidden />
           {group.name}
         </Link>
-        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink-50">
           {t('admin.attendance.editSession')}
         </h2>
       </div>

@@ -753,7 +753,7 @@ export default async function AdminStudentDetailPage({
                         ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-ink-300'
                         : att.present
                           ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500/20 text-emerald-300'
-                          : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-500/20 text-red-300'
+                          : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-500/15/20 text-red-300'
                     }
                   >
                     {!att ? (

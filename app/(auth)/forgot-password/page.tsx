@@ -45,14 +45,14 @@ export default function ForgotPasswordPage() {
       footer={
         <Link
           href="/login"
-          className="font-medium text-emerald-700 hover:text-emerald-800"
+          className="font-medium text-gold-300 hover:text-gold-200"
         >
           {t('forgot.backToLogin')}
         </Link>
       }
     >
       {sent ? (
-        <div role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
+        <div role="status" className="rounded-xl bg-emerald-500/15 p-4 text-sm text-emerald-200">
           {t('forgot.sent', { email })}
         </div>
       ) : (
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           {formError ? (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-300">
               {formError}
             </p>
           ) : null}

@@ -67,7 +67,7 @@ function LoginForm() {
           {t('login.noAccount')}{' '}
           <Link
             href="/signup"
-            className="font-semibold text-emerald-700 hover:text-emerald-800"
+            className="font-semibold text-gold-300 hover:text-gold-200"
           >
             {t('login.signupLink')}
           </Link>
@@ -77,14 +77,14 @@ function LoginForm() {
       <div className="space-y-4">
         <GoogleButton intent="login" />
 
-        <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
-          <span className="flex-1 border-t border-slate-200" />
+        <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em] text-ink-400">
+          <span className="flex-1 border-t border-white/10" />
           {t('or')}
-          <span className="flex-1 border-t border-slate-200" />
+          <span className="flex-1 border-t border-white/10" />
         </div>
 
         {queryErrorMessage && !formError ? (
-          <div role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">
+          <div role="alert" className="rounded-xl bg-red-500/15 p-3 text-sm text-red-200">
             {queryErrorMessage}
           </div>
         ) : null}
@@ -113,7 +113,7 @@ function LoginForm() {
               </label>
               <Link
                 href="/forgot-password"
-                className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+                className="text-xs font-medium text-gold-300 hover:text-gold-200"
               >
                 {t('login.forgot')}
               </Link>
@@ -130,7 +130,7 @@ function LoginForm() {
           </div>
 
           {formError ? (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-300">
               {formError}
             </p>
           ) : null}

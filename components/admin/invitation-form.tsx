@@ -46,11 +46,11 @@ export function InvitationForm({ students, submitLabel }: Props) {
   if (state.createdLink) {
     return (
       <div className="space-y-4">
-        <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
+        <div className="flex items-start gap-3 rounded-2xl bg-emerald-500/15 p-4 text-sm text-emerald-200">
           <CheckCircle2 size={20} strokeWidth={2.2} className="mt-0.5 shrink-0" aria-hidden />
           <div>
             <p className="font-semibold">{t('success.title')}</p>
-            <p className="mt-1 text-emerald-800">
+            <p className="mt-1 text-emerald-200">
               {state.emailStatus === 'sent'
                 ? t('success.emailSent')
                 : state.emailStatus === 'skipped'
@@ -130,7 +130,7 @@ export function InvitationForm({ students, submitLabel }: Props) {
             {t('fields.student')}
           </label>
           {students.length === 0 ? (
-            <p className="text-sm text-amber-700">{t('fields.noStudents')}</p>
+            <p className="text-sm text-amber-300">{t('fields.noStudents')}</p>
           ) : (
             <select
               id="student_id"
@@ -153,7 +153,7 @@ export function InvitationForm({ students, submitLabel }: Props) {
       ) : null}
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}
@@ -185,8 +185,8 @@ function RoleChip({
     <label
       className={
         active
-          ? 'flex cursor-pointer items-center gap-2 rounded-xl border border-emerald-500 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-800'
-          : 'flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50'
+          ? 'flex cursor-pointer items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-3 py-2.5 text-sm font-medium text-emerald-200'
+          : 'flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white px-3 py-2.5 text-sm text-ink-100 hover:bg-white/[0.03]'
       }
     >
       <input

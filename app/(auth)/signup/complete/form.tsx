@@ -49,7 +49,7 @@ export function CompleteSignupForm({ defaultFullName }: { defaultFullName: strin
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}

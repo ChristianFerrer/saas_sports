@@ -82,21 +82,21 @@ export default async function CoachAttendanceSheetPage({
       <div className="mb-4">
         <Link
           href={`/coach/groups/${g.id}`}
-          className="text-xs text-slate-500 hover:text-slate-700"
+          className="text-xs text-ink-300 hover:text-ink-100"
         >
           ← {g.name}
         </Link>
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-xl font-semibold text-ink-50">
           {t('admin.attendance.sheetTitle')}
         </h2>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-ink-200">
           {display} · {s.duration_minutes} {t('admin.attendance.minutes')} ·{' '}
           {t(`admin.attendance.status.${s.status}`)}
         </p>
       </div>
 
       {students.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+        <div className="rounded-lg border border-dashed border-white/10 bg-white p-6 text-sm text-ink-300">
           {t('admin.attendance.noStudentsInGroup')}
         </div>
       ) : (

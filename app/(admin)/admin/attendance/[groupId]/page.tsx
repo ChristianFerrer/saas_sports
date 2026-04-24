@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { DeleteSessionButton } from '@/components/admin/delete-session-button';
-import { AdminNav } from '@/components/admin/admin-nav';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
@@ -81,17 +80,16 @@ export default async function AdminAttendanceGroupPage({
       title={g.name}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4 flex items-center justify-between">
         <div>
           <Link
             href="/admin/attendance"
-            className="text-xs text-slate-500 hover:text-slate-700"
+            className="text-xs text-ink-300 hover:text-ink-100"
           >
             ← {t('admin.attendance.title')}
           </Link>
-          <h2 className="text-xl font-semibold text-slate-900">
+          <h2 className="text-xl font-semibold text-ink-50">
             {t('admin.attendance.groupTitle', { name: g.name })}
           </h2>
         </div>
@@ -106,14 +104,14 @@ export default async function AdminAttendanceGroupPage({
       {errorMessage ? (
         <div
           role="alert"
-          className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-800"
+          className="mb-4 rounded-md bg-red-500/15 p-3 text-sm text-red-200"
         >
           {errorMessage}
         </div>
       ) : null}
 
       {studentCount === 0 ? (
-        <div className="mb-4 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="mb-4 rounded-md bg-amber-500/15 p-3 text-sm text-amber-200">
           {t('admin.attendance.noStudentsWarning')}
         </div>
       ) : null}
@@ -153,7 +151,7 @@ export default async function AdminAttendanceGroupPage({
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-300">
       {children}
     </h3>
   );
@@ -161,7 +159,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function EmptyBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
+    <div className="rounded-lg border border-dashed border-white/10 bg-white p-4 text-sm text-ink-300">
       {children}
     </div>
   );
@@ -170,11 +168,11 @@ function EmptyBox({ children }: { children: React.ReactNode }) {
 function statusPillClass(status: SessionRow['status']): string {
   switch (status) {
     case 'held':
-      return 'ss-pill bg-emerald-50 text-emerald-700';
+      return 'ss-pill bg-emerald-500/15 text-gold-300';
     case 'cancelled':
-      return 'ss-pill bg-red-50 text-red-700';
+      return 'ss-pill bg-red-500/15 text-red-300';
     default:
-      return 'ss-pill bg-slate-100 text-slate-700';
+      return 'ss-pill bg-white/[0.04] text-ink-100';
   }
 }
 
@@ -194,7 +192,7 @@ function SessionList({
   confirmDelete: (name: string) => string;
 }) {
   return (
-    <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+    <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
       {sessions.map((s) => {
         const date = new Date(s.scheduled_at);
         const display = format.dateTime(date, {
@@ -209,8 +207,8 @@ function SessionList({
             className="flex items-start justify-between gap-3 px-4 py-3"
           >
             <div className="min-w-0 flex-1">
-              <p className="font-medium text-slate-900">{display}</p>
-              <p className="text-xs text-slate-500">
+              <p className="font-medium text-ink-50">{display}</p>
+              <p className="text-xs text-ink-300">
                 {s.duration_minutes} {t('admin.attendance.minutes')}
                 {cnt
                   ? ` · ${t('admin.attendance.attendanceRatio', {
@@ -220,7 +218,7 @@ function SessionList({
                   : ''}
               </p>
               {s.notes ? (
-                <p className="mt-1 truncate text-xs text-slate-600">{s.notes}</p>
+                <p className="mt-1 truncate text-xs text-ink-200">{s.notes}</p>
               ) : null}
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1.5">
@@ -230,7 +228,7 @@ function SessionList({
               <div className="flex items-center gap-2">
                 <Link
                   href={`/admin/attendance/${groupId}/sessions/${s.id}`}
-                  className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+                  className="text-sm font-medium text-gold-300 hover:text-gold-200"
                 >
                   {t('admin.attendance.open')}
                 </Link>

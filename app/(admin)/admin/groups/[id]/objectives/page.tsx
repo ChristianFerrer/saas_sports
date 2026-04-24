@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { ChevronLeft, Pencil, Plus, Target } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { AdminNav } from '@/components/admin/admin-nav';
 import { DeleteObjectiveButton } from '@/components/admin/delete-objective-button';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
@@ -54,18 +53,17 @@ export default async function GroupObjectivesPage({
       title={t('admin.objectives.title', { group: group.name })}
       role={t('roles.admin')}
       fullName={user.profile.full_name}
-      nav={<AdminNav />}
     >
       <div className="mb-4">
         <Link
           href={`/admin/groups/${group.id}`}
-          className="inline-flex items-center gap-1 text-xs text-slate-500 transition hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-ink-300 transition hover:text-ink-100"
         >
           <ChevronLeft size={14} strokeWidth={2.2} aria-hidden />
           {group.name}
         </Link>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-semibold tracking-tight text-ink-50">
             {t('admin.objectives.sectionTitle')}
           </h2>
           <Link
@@ -76,7 +74,7 @@ export default async function GroupObjectivesPage({
             <span>{t('admin.objectives.new')}</span>
           </Link>
         </div>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-ink-200">
           {t('admin.objectives.sectionHint')}
         </p>
       </div>
@@ -84,15 +82,15 @@ export default async function GroupObjectivesPage({
       {searchParams.error ? (
         <div
           role="alert"
-          className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-800"
+          className="mb-4 rounded-2xl bg-red-500/15 p-3 text-sm text-red-200"
         >
           {searchParams.error}
         </div>
       ) : null}
 
       {objectives.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-          <p className="text-sm text-slate-500">{t('admin.objectives.empty')}</p>
+        <div className="rounded-2xl border border-dashed border-white/10 bg-white p-8 text-center">
+          <p className="text-sm text-ink-300">{t('admin.objectives.empty')}</p>
           <Link
             href={`/admin/groups/${group.id}/objectives/new`}
             className="ss-btn-primary mt-3"
@@ -102,26 +100,26 @@ export default async function GroupObjectivesPage({
           </Link>
         </div>
       ) : (
-        <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+        <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
           {objectives.map((o) => (
             <li
               key={o.id}
-              className="flex items-start gap-3 px-4 py-3 transition hover:bg-slate-50"
+              className="flex items-start gap-3 px-4 py-3 transition hover:bg-white/[0.03]"
             >
-              <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+              <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-500/15 text-gold-300">
                 <Target size={18} strokeWidth={2.2} aria-hidden />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-slate-900">{o.title}</p>
+                <p className="truncate font-semibold text-ink-50">{o.title}</p>
                 {o.description ? (
-                  <p className="mt-0.5 text-sm text-slate-600">{o.description}</p>
+                  <p className="mt-0.5 text-sm text-ink-200">{o.description}</p>
                 ) : null}
               </div>
               <div className="flex items-center gap-1">
                 <Link
                   href={`/admin/groups/${group.id}/objectives/${o.id}/edit`}
                   aria-label={t('common.edit')}
-                  className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50"
+                  className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-gold-300 transition hover:bg-gold-500/100/15"
                 >
                   <Pencil size={15} strokeWidth={2.2} aria-hidden />
                   <span className="hidden sm:inline">{t('common.edit')}</span>

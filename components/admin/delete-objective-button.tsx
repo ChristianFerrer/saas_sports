@@ -30,7 +30,7 @@ export function DeleteObjectiveButton({
           start(() => deleteObjective(groupId, objectiveId));
         }
       }}
-      className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-red-300 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Trash2 size={15} strokeWidth={2.2} aria-hidden />
       <span className="hidden sm:inline">{label}</span>

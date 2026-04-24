@@ -61,7 +61,7 @@ export function SchoolForm({ defaults, profiles }: Props) {
         <div className="space-y-1.5">
           <label htmlFor="contact_phone" className="ss-label">
             {t('fields.contactPhone')}{' '}
-            <span className="text-slate-400">{tCommon('optional')}</span>
+            <span className="text-ink-400">{tCommon('optional')}</span>
           </label>
           <input
             id="contact_phone"
@@ -78,7 +78,7 @@ export function SchoolForm({ defaults, profiles }: Props) {
         <div className="space-y-1.5">
           <label htmlFor="contact_email" className="ss-label">
             {t('fields.contactEmail')}{' '}
-            <span className="text-slate-400">{tCommon('optional')}</span>
+            <span className="text-ink-400">{tCommon('optional')}</span>
           </label>
           <input
             id="contact_email"
@@ -96,9 +96,9 @@ export function SchoolForm({ defaults, profiles }: Props) {
       <div className="space-y-1.5">
         <label htmlFor="comms_responsible" className="ss-label">
           {t('fields.commsResponsible')}{' '}
-          <span className="text-slate-400">{tCommon('optional')}</span>
+          <span className="text-ink-400">{tCommon('optional')}</span>
         </label>
-        <p className="text-xs text-slate-500">{t('fields.commsResponsibleHint')}</p>
+        <p className="text-xs text-ink-300">{t('fields.commsResponsibleHint')}</p>
         <select
           id="comms_responsible"
           name="comms_responsible"
@@ -115,7 +115,7 @@ export function SchoolForm({ defaults, profiles }: Props) {
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}
@@ -123,7 +123,7 @@ export function SchoolForm({ defaults, profiles }: Props) {
       <div className="flex items-center gap-3">
         <SubmitButton label={tCommon('save')} />
         {state.savedAt ? (
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-gold-300">
             <Check size={16} strokeWidth={2.6} aria-hidden />
             {t('saved')}
           </span>

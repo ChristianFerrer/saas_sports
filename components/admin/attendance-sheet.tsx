@@ -48,17 +48,17 @@ export function AttendanceSheet({
 
   return (
     <form action={formAction} className="space-y-4">
-      <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+      <ul className="ss-card divide-y divide-white/[0.05] overflow-hidden">
         {students.map((s) => (
           <li key={s.id} className="p-3 sm:p-4">
             <label
               htmlFor={`present_${s.id}`}
               className="flex items-center gap-3"
             >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/[0.04] text-sm font-semibold text-ink-100">
                 {initialsOf(s.fullName) || '·'}
               </span>
-              <span className="flex-1 text-sm font-medium text-slate-900">
+              <span className="flex-1 text-sm font-medium text-ink-50">
                 {s.fullName}
               </span>
               <PresenceToggle id={s.id} defaultChecked={s.present} />
@@ -68,14 +68,14 @@ export function AttendanceSheet({
               name={`notes_${s.id}`}
               defaultValue={s.notes}
               placeholder={t('fields.notesPlaceholder')}
-              className="mt-2.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              className="mt-2.5 block w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-ink-50 placeholder:text-ink-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             />
           </li>
         ))}
       </ul>
 
       {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-300">
           {errorMessage}
         </p>
       ) : null}
@@ -86,7 +86,7 @@ export function AttendanceSheet({
       >
         <SubmitButton>{submitLabel}</SubmitButton>
         {state.savedAt ? (
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-gold-300">
             <Check size={16} strokeWidth={2.6} aria-hidden />
             {savedLabel}
           </span>
@@ -108,7 +108,7 @@ function PresenceToggle({ id, defaultChecked }: { id: string; defaultChecked: bo
       />
       <span
         aria-hidden
-        className="absolute inset-0 rounded-full bg-slate-200 transition peer-checked:bg-emerald-500 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500/40 peer-focus-visible:ring-offset-2"
+        className="absolute inset-0 rounded-full bg-slate-200 transition peer-checked:bg-emerald-500/15 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500/40 peer-focus-visible:ring-offset-2"
       />
       <span
         aria-hidden
