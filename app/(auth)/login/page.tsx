@@ -47,7 +47,9 @@ function LoginForm() {
 
     if (error) {
       const mapped = mapAuthError(error);
-      setFormError(mapped.key ? t(`errors.${mapped.key}`) : mapped.fallback ?? t('errors.generic'));
+      setFormError(
+        mapped.key ? t(`errors.${mapped.key}`) : (mapped.fallback ?? t('errors.generic'))
+      );
       setPending(false);
       return;
     }
@@ -61,84 +63,83 @@ function LoginForm() {
       title={t('login.title')}
       subtitle={t('login.subtitle')}
       footer={
-        <>
-          <p>
-            {t('login.noAccount')}{' '}
-            <Link href="/signup" className="font-medium text-emerald-700 hover:text-emerald-800">
-              {t('login.signupLink')}
-            </Link>
-          </p>
-        </>
+        <p>
+          {t('login.noAccount')}{' '}
+          <Link
+            href="/signup"
+            className="font-semibold text-emerald-700 hover:text-emerald-800"
+          >
+            {t('login.signupLink')}
+          </Link>
+        </p>
       }
     >
-      <GoogleButton intent="login" />
+      <div className="space-y-4">
+        <GoogleButton intent="login" />
 
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
-        <span className="flex-1 border-t border-slate-200" />
-        {t('or')}
-        <span className="flex-1 border-t border-slate-200" />
-      </div>
-
-      {queryErrorMessage && !formError ? (
-        <div role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-800">
-          {queryErrorMessage}
-        </div>
-      ) : null}
-
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        <div className="space-y-1">
-          <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-            {t('fields.email')}
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
+        <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
+          <span className="flex-1 border-t border-slate-200" />
+          {t('or')}
+          <span className="flex-1 border-t border-slate-200" />
         </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-              {t('fields.password')}
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
-            >
-              {t('login.forgot')}
-            </Link>
+        {queryErrorMessage && !formError ? (
+          <div role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">
+            {queryErrorMessage}
           </div>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
-
-        {formError ? (
-          <p role="alert" className="text-sm text-red-600">
-            {formError}
-          </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex w-full items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {pending ? t('login.submitting') : t('login.submit')}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="ss-label">
+              {t('fields.email')}
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="ss-input"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="ss-label">
+                {t('fields.password')}
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+              >
+                {t('login.forgot')}
+              </Link>
+            </div>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="ss-input"
+            />
+          </div>
+
+          {formError ? (
+            <p role="alert" className="text-sm text-red-600">
+              {formError}
+            </p>
+          ) : null}
+
+          <button type="submit" disabled={pending} className="ss-btn-primary w-full">
+            {pending ? t('login.submitting') : t('login.submit')}
+          </button>
+        </form>
+      </div>
     </AuthCard>
   );
 }

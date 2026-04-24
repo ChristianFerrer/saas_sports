@@ -54,16 +54,13 @@ export default function ResetPasswordPage() {
   return (
     <AuthCard title={t('reset.title')} subtitle={t('reset.subtitle')}>
       {success ? (
-        <div
-          role="status"
-          className="rounded-md bg-emerald-50 p-4 text-sm text-emerald-900"
-        >
+        <div role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
           {t('reset.success')}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <div className="space-y-1">
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="ss-label">
               {t('fields.newPassword')}
             </label>
             <input
@@ -74,15 +71,12 @@ export default function ResetPasswordPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="ss-input"
             />
           </div>
 
-          <div className="space-y-1">
-            <label
-              htmlFor="password_confirm"
-              className="block text-sm font-medium text-slate-700"
-            >
+          <div className="space-y-1.5">
+            <label htmlFor="password_confirm" className="ss-label">
               {t('fields.passwordConfirm')}
             </label>
             <input
@@ -93,7 +87,7 @@ export default function ResetPasswordPage() {
               required
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="ss-input"
             />
           </div>
 
@@ -103,11 +97,7 @@ export default function ResetPasswordPage() {
             </p>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="flex w-full items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="submit" disabled={pending} className="ss-btn-primary w-full">
             {pending ? t('reset.submitting') : t('reset.submit')}
           </button>
         </form>

@@ -39,7 +39,7 @@ export function GoogleButton({ intent = 'login' }: Props) {
         type="button"
         onClick={handleClick}
         disabled={pending}
-        className="flex w-full items-center justify-center gap-3 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="ss-btn-secondary w-full"
       >
         <GoogleIcon />
         {t('google')}

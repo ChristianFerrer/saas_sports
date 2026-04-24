@@ -91,15 +91,16 @@ export default function SignupPage() {
         </p>
       }
     >
-      <GoogleButton intent="signup" />
+      <div className="space-y-4">
+        <GoogleButton intent="signup" />
 
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
-        <span className="flex-1 border-t border-slate-200" />
-        {t('or')}
-        <span className="flex-1 border-t border-slate-200" />
-      </div>
+        <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
+          <span className="flex-1 border-t border-slate-200" />
+          {t('or')}
+          <span className="flex-1 border-t border-slate-200" />
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <Field
           id="full_name"
           label={t('fields.fullName')}
@@ -148,14 +149,11 @@ export default function SignupPage() {
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex w-full items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={pending} className="ss-btn-primary w-full">
           {pending ? t('signup.submitting') : t('signup.submit')}
         </button>
-      </form>
+        </form>
+      </div>
     </AuthCard>
   );
 }
@@ -172,8 +170,8 @@ type FieldProps = {
 
 function Field({ id, label, type, value, onChange, autoComplete, minLength }: FieldProps) {
   return (
-    <div className="space-y-1">
-      <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="ss-label">
         {label}
       </label>
       <input
@@ -185,7 +183,7 @@ function Field({ id, label, type, value, onChange, autoComplete, minLength }: Fi
         required
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        className="ss-input"
       />
     </div>
   );

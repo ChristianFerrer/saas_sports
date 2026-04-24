@@ -52,19 +52,13 @@ export default function ForgotPasswordPage() {
       }
     >
       {sent ? (
-        <div
-          role="status"
-          className="rounded-md bg-emerald-50 p-4 text-sm text-emerald-900"
-        >
+        <div role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">
           {t('forgot.sent', { email })}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <div className="space-y-1">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-700"
-            >
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="ss-label">
               {t('fields.email')}
             </label>
             <input
@@ -74,7 +68,7 @@ export default function ForgotPasswordPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="ss-input"
             />
           </div>
 
@@ -84,11 +78,7 @@ export default function ForgotPasswordPage() {
             </p>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="flex w-full items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="submit" disabled={pending} className="ss-btn-primary w-full">
             {pending ? t('forgot.submitting') : t('forgot.submit')}
           </button>
         </form>
