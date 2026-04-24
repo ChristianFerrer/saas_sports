@@ -11,6 +11,7 @@ import {
   LogOut as LogOutIcon,
   Pencil,
   Phone,
+  Sparkles,
   Target,
   Trophy,
   UsersRound,
@@ -23,6 +24,7 @@ import {
   StudentObjectivesList,
   type ObjectiveItem
 } from '@/components/admin/student-objectives-list';
+import { StudentSkillsEditor } from '@/components/admin/student-skills-editor';
 import { AppShell } from '@/components/ui/app-shell';
 import { PremiumAchievementBadge } from '@/components/ui/premium-achievement-badge';
 import { PremiumProfileHero } from '@/components/ui/premium-profile-hero';
@@ -34,6 +36,7 @@ import {
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
 import { requireRole } from '@/lib/auth/guards';
+import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
 type StudentRow = {
@@ -150,7 +153,8 @@ export default async function AdminStudentDetailPage({
     sessionsResult,
     currentObjectivesResult,
     achievementsResult,
-    schoolGroupsResult
+    schoolGroupsResult,
+    skillsResult
   ] = await Promise.all([
     student.group_id
       ? supabase
@@ -198,7 +202,11 @@ export default async function AdminStudentDetailPage({
       .select('id, name, created_at, display_order')
       .eq('school_id', user.profile.school_id)
       .order('display_order', { ascending: true })
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('student_skills')
+      .select('skill, value')
+      .eq('student_id', student.id)
   ]);
 
   const group = groupResult.data as {
@@ -229,6 +237,12 @@ export default async function AdminStudentDetailPage({
     created_at: string;
     display_order: number;
   }>;
+  const skillRows = (skillsResult.data ?? []) as Array<{
+    skill: string;
+    value: number;
+  }>;
+  const skillsByKey = new Map<string, number>();
+  for (const s of skillRows) skillsByKey.set(s.skill, s.value);
 
   // Scope sessions to the enrollment window.
   const enrolledMs = student.enrolled_at
@@ -521,6 +535,28 @@ export default async function AdminStudentDetailPage({
           toggleHint={t('admin.students.detail.toggleHint')}
         />
       )}
+
+      {/* Habilidades (per-skill) */}
+      <PremiumSectionTitle
+        icon={<Sparkles size={14} strokeWidth={2.4} aria-hidden />}
+        kicker={t('admin.students.detail.skills.kicker')}
+        title={t('admin.students.detail.skills.title')}
+      />
+      <section className="ss-card p-4 sm:p-5">
+        <StudentSkillsEditor
+          studentId={student.id}
+          entries={SKILL_KEYS.map((k: SkillKey) => ({
+            key: k,
+            label: t(`parent.detail.skills.${k}` as const),
+            value: skillsByKey.get(k) ?? 0
+          }))}
+          saveLabel={t('common.save')}
+          savedLabel={t('admin.attendance.saved')}
+        />
+        <p className="mt-4 text-xs text-ink-400">
+          {t('admin.students.detail.skills.hint')}
+        </p>
+      </section>
 
       {/* Logros anteriores */}
       {historicalAchievements.length > 0 ? (

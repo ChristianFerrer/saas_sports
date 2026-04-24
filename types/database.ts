@@ -289,6 +289,28 @@ export type Database = {
           notes: string | null;
         }>;
       };
+      student_skills: {
+        Row: {
+          student_id: UUID;
+          skill: string;
+          value: number;
+          notes: string | null;
+          updated_by: UUID | null;
+          updated_at: Timestamp;
+        };
+        Insert: {
+          student_id: UUID;
+          skill: string;
+          value: number;
+          notes?: string | null;
+          updated_by?: UUID | null;
+        };
+        Update: Partial<{
+          value: number;
+          notes: string | null;
+          updated_by: UUID | null;
+        }>;
+      };
       invitations: {
         Row: {
           id: UUID;

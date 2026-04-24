@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { requireRole } from '@/lib/auth/guards';
+import { isSkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
 export type StudentFormState = { error?: string };
@@ -210,4 +211,52 @@ export async function toggleStudentObjective(
 
   revalidatePath(`/admin/students/${studentId}`);
   revalidatePath(`/admin/groups`);
+}
+
+export type StudentSkillsFormState = { error?: string; savedAt?: number };
+
+/**
+ * Upserts every skill row for a student in one call. The form passes
+ * each skill key as `skill_<key>` with a 0..100 integer value; unknown
+ * keys are ignored and out-of-range values are clamped to 0..100.
+ */
+export async function saveStudentSkills(
+  studentId: string,
+  _prev: StudentSkillsFormState,
+  formData: FormData
+): Promise<StudentSkillsFormState> {
+  const user = await requireRole('admin');
+  const supabase = createUntypedClient();
+
+  type Row = {
+    student_id: string;
+    skill: string;
+    value: number;
+    updated_by: string;
+  };
+  const rows: Row[] = [];
+  for (const [key, raw] of formData.entries()) {
+    if (!key.startsWith('skill_')) continue;
+    const skill = key.slice('skill_'.length);
+    if (!isSkillKey(skill)) continue;
+    const parsed = Number.parseInt(String(raw), 10);
+    if (!Number.isFinite(parsed)) continue;
+    const value = Math.max(0, Math.min(100, parsed));
+    rows.push({ student_id: studentId, skill, value, updated_by: user.id });
+  }
+
+  if (rows.length === 0) return { error: 'noSkills' };
+
+  const { error } = await supabase
+    .from('student_skills')
+    .upsert(rows, { onConflict: 'student_id,skill' });
+
+  if (error) {
+    console.error('[saveStudentSkills] upsert failed', { studentId, error });
+    return { error: error.message };
+  }
+
+  revalidatePath(`/admin/students/${studentId}`);
+  revalidatePath(`/parent/children/${studentId}`);
+  return { savedAt: Date.now() };
 }

@@ -25,6 +25,7 @@ import {
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
 import { requireRole } from '@/lib/auth/guards';
+import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
 type StudentRow = {
@@ -135,7 +136,8 @@ export default async function ParentChildPage({
     attendanceResult,
     currentObjectivesResult,
     achievementsResult,
-    messagesResult
+    messagesResult,
+    skillsResult
   ] = await Promise.all([
     s.group_id
       ? supabase
@@ -177,7 +179,8 @@ export default async function ParentChildPage({
       )
       .eq('parent_user_id', user.id)
       .order('communication_id', { ascending: false })
-      .limit(3)
+      .limit(3),
+    supabase.from('student_skills').select('skill, value').eq('student_id', s.id)
   ]);
 
   const group = groupResult.data as {
@@ -283,38 +286,64 @@ export default async function ParentChildPage({
           ? t('parent.detail.positive.mid')
           : t('parent.detail.positive.low');
 
-  // Categorical progress bars — no schema for these yet, so we synthesise
-  // from real signals: attendance drives "Compromiso", achieved
-  // objectives drives "Técnica / Juego", and a soft constant keeps the
-  // profile from looking empty until we add per-skill tracking.
+  // Categorical progress bars — prefer real values from student_skills
+  // when present; fall back to a single synthesised "Compromiso" signal
+  // derived from attendance so the card never looks empty pre-onboarding.
   const totalObj = currentObjectives.length;
   const reachedObjCurrent = currentObjectives.filter((o) =>
     achievedIds.has(o.id)
   ).length;
   const objectivesPct =
     totalObj === 0 ? null : Math.round((reachedObjCurrent / totalObj) * 100);
-  const categories: Array<{ label: string; value: number; tone: 'gold' | 'cyan' | 'emerald' | 'amber' }> = [
-    {
-      label: t('parent.detail.skills.commitment'),
-      value: pct ?? 65,
-      tone: 'cyan'
-    },
-    {
-      label: t('parent.detail.skills.technique'),
-      value: objectivesPct ?? 60,
-      tone: 'gold'
-    },
-    {
-      label: t('parent.detail.skills.confidence'),
-      value: Math.min(100, (pct ?? 50) + (achievements.length > 0 ? 10 : 0)),
-      tone: 'emerald'
-    },
-    {
-      label: t('parent.detail.skills.teamwork'),
-      value: 70,
-      tone: 'amber'
-    }
+
+  const skillRows = (skillsResult.data ?? []) as Array<{
+    skill: string;
+    value: number;
+  }>;
+  const skillByKey = new Map<string, number>();
+  for (const sr of skillRows) skillByKey.set(sr.skill, sr.value);
+
+  const TONES: Array<'cyan' | 'gold' | 'emerald' | 'amber' | 'red'> = [
+    'gold',
+    'cyan',
+    'emerald',
+    'amber',
+    'red'
   ];
+
+  const hasRealSkills = skillRows.length > 0;
+  const categories: Array<{
+    label: string;
+    value: number;
+    tone: 'gold' | 'cyan' | 'emerald' | 'amber' | 'red';
+  }> = hasRealSkills
+    ? SKILL_KEYS.map((k: SkillKey, i) => ({
+        label: t(`parent.detail.skills.${k}` as const),
+        value: skillByKey.get(k) ?? 0,
+        tone: TONES[i % TONES.length]
+      }))
+    : [
+        {
+          label: t('parent.detail.skills.technique'),
+          value: objectivesPct ?? 60,
+          tone: 'gold'
+        },
+        {
+          label: t('parent.detail.skills.physical'),
+          value: pct ?? 65,
+          tone: 'cyan'
+        },
+        {
+          label: t('parent.detail.skills.mental'),
+          value: Math.min(100, (pct ?? 50) + (achievements.length > 0 ? 10 : 0)),
+          tone: 'emerald'
+        },
+        {
+          label: t('parent.detail.skills.social'),
+          value: 70,
+          tone: 'amber'
+        }
+      ];
 
   const age = ageFromBirth(s.birth_date);
 

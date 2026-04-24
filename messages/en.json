@@ -199,6 +199,11 @@
         "achievements": {
           "kicker": "Trophies"
         },
+        "skills": {
+          "kicker": "Skills",
+          "title": "Rating by area",
+          "hint": "0 (learning) — 100 (mastered). Appears on the player profile and parent view."
+        },
         "contactInfo": {
           "kicker": "Record",
           "title": "Basic info"
@@ -473,10 +478,11 @@
         "note": "Visual snapshot based on attendance and achievements. Per-skill tracking is coming soon."
       },
       "skills": {
-        "commitment": "Commitment",
         "technique": "Technique",
-        "confidence": "Confidence",
-        "teamwork": "Teamwork"
+        "physical": "Physical",
+        "tactical": "Tactical",
+        "mental": "Mental",
+        "social": "Social"
       },
       "roadmap": {
         "caption": "Every step brings them closer to their dreams. We walk alongside them."

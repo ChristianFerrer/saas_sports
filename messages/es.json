@@ -199,6 +199,11 @@
         "achievements": {
           "kicker": "Trofeos"
         },
+        "skills": {
+          "kicker": "Habilidades",
+          "title": "Valoración por área",
+          "hint": "0 (en proceso) — 100 (dominado). Se ve en la ficha del alumno y en la vista de los padres."
+        },
         "contactInfo": {
           "kicker": "Ficha",
           "title": "Datos básicos"
@@ -473,10 +478,11 @@
         "note": "Escala visual orientativa basada en asistencia y objetivos logrados. Pronto podrás seguir cada habilidad por separado."
       },
       "skills": {
-        "commitment": "Compromiso",
         "technique": "Técnica",
-        "confidence": "Confianza",
-        "teamwork": "Trabajo en equipo"
+        "physical": "Físico",
+        "tactical": "Táctico",
+        "mental": "Mental",
+        "social": "Social"
       },
       "roadmap": {
         "caption": "Cada paso te acerca a tus sueños. Nosotros te ayudamos a llegar."
