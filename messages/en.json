@@ -25,15 +25,26 @@
       "communications": "Messages"
     },
     "home": {
-      "title": "Admin dashboard",
-      "welcome": "Welcome, {name}.",
+      "title": "Dashboard",
+      "greetingKicker": "Hi",
+      "welcome": "Hi, {name}",
+      "tagline": "Manage groups, attendance, parents and messages from here.",
+      "quickActions": "Quick actions",
       "stats": {
         "groups": "Groups",
         "students": "Students"
       },
       "actions": {
-        "newGroup": "Create group",
-        "newStudent": "Add student"
+        "newGroup": "New group",
+        "newGroupHint": "Create a new team or category.",
+        "newStudent": "Add student",
+        "newStudentHint": "Quick add with name and group.",
+        "takeAttendance": "Take attendance",
+        "takeAttendanceHint": "Mark who's in today.",
+        "invite": "Invite user",
+        "inviteHint": "Coach or parent via link.",
+        "message": "Send message",
+        "messageHint": "Reach parents from a group or the school."
       }
     },
     "groups": {
@@ -228,7 +239,10 @@
   "coach": {
     "home": {
       "title": "My groups",
-      "welcome": "Hi, {name}.",
+      "greetingKicker": "Hi",
+      "welcome": "Hi, {name}",
+      "tagline": "Track attendance for your groups.",
+      "yourGroups": "Your groups",
       "empty": "No groups assigned yet. Ask your admin to assign you one."
     },
     "sessions": {
@@ -246,7 +260,10 @@
     },
     "home": {
       "title": "My children",
-      "welcome": "Hi, {name}.",
+      "greetingKicker": "Hi",
+      "welcome": "Hi, {name}",
+      "tagline": "Follow attendance and school messages.",
+      "yourChildren": "Your children",
       "empty": "No students linked to your account. The admin needs to send you an invitation."
     },
     "messages": {

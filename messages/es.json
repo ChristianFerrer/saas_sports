@@ -25,15 +25,26 @@
       "communications": "Comunicaciones"
     },
     "home": {
-      "title": "Panel de administración",
-      "welcome": "Bienvenida/o, {name}.",
+      "title": "Panel",
+      "greetingKicker": "Hola",
+      "welcome": "Hola, {name}",
+      "tagline": "Gestiona grupos, asistencias, padres y comunicaciones desde aquí.",
+      "quickActions": "Acciones rápidas",
       "stats": {
         "groups": "Grupos",
         "students": "Alumnos"
       },
       "actions": {
         "newGroup": "Crear grupo",
-        "newStudent": "Añadir alumno"
+        "newGroupHint": "Da de alta un nuevo equipo o categoría.",
+        "newStudent": "Añadir alumno",
+        "newStudentHint": "Alta rápida con nombre y grupo.",
+        "takeAttendance": "Pasar lista",
+        "takeAttendanceHint": "Registra presentes y ausentes de una sesión.",
+        "invite": "Invitar usuario",
+        "inviteHint": "Entrenador o padre/madre con enlace.",
+        "message": "Enviar mensaje",
+        "messageHint": "Comunícate con padres del grupo o escuela."
       }
     },
     "groups": {
@@ -228,7 +239,10 @@
   "coach": {
     "home": {
       "title": "Mis grupos",
-      "welcome": "Hola, {name}.",
+      "greetingKicker": "Hola",
+      "welcome": "Hola, {name}",
+      "tagline": "Gestiona las asistencias de tus grupos.",
+      "yourGroups": "Tus grupos",
       "empty": "No tienes grupos asignados todavía. Pide al administrador que te asigne uno."
     },
     "sessions": {
@@ -246,7 +260,10 @@
     },
     "home": {
       "title": "Mis hijos",
-      "welcome": "Hola, {name}.",
+      "greetingKicker": "Hola",
+      "welcome": "Hola, {name}",
+      "tagline": "Sigue la asistencia y los mensajes de la escuela.",
+      "yourChildren": "Tus hijos",
       "empty": "No hay alumnos vinculados a tu cuenta. El administrador debe enviarte una invitación."
     },
     "messages": {
