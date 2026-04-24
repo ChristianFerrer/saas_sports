@@ -46,9 +46,29 @@
       },
       "errors": {
         "nameRequired": "El nombre es obligatorio.",
-        "hasStudents": "No se puede eliminar un grupo con alumnos asignados. Muévelos antes."
+        "hasStudents": "No se puede eliminar un grupo con alumnos asignados. Muévelos antes.",
+        "scheduleInvalid": "El horario tiene entradas inválidas. Revisa día, hora y duración."
       },
-      "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"?"
+      "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"?",
+      "schedule": {
+        "title": "Horario semanal",
+        "hint": "Días y horas recurrentes de las clases. Esto no genera sesiones automáticamente todavía — se usará como referencia.",
+        "empty": "Aún no hay horario configurado.",
+        "weekday": "Día",
+        "start": "Inicio",
+        "duration": "Duración (min)",
+        "add": "+ Añadir franja",
+        "remove": "Quitar",
+        "weekdays": {
+          "0": "Domingo",
+          "1": "Lunes",
+          "2": "Martes",
+          "3": "Miércoles",
+          "4": "Jueves",
+          "5": "Viernes",
+          "6": "Sábado"
+        }
+      }
     },
     "students": {
       "title": "Alumnos",

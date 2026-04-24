@@ -7,6 +7,13 @@ import { GroupForm } from '@/components/admin/group-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
+import type { GroupScheduleEntry } from '@/types/database';
+
+type GroupRow = {
+  id: string;
+  name: string;
+  schedule: GroupScheduleEntry[] | null;
+};
 
 export default async function EditGroupPage({
   params
@@ -19,11 +26,11 @@ export default async function EditGroupPage({
 
   const { data: groupData } = await supabase
     .from('groups')
-    .select('id, name')
+    .select('id, name, schedule')
     .eq('id', params.id)
     .maybeSingle();
 
-  const group = groupData as { id: string; name: string } | null;
+  const group = groupData as GroupRow | null;
   if (!group) notFound();
 
   const boundUpdate = async (
@@ -48,6 +55,8 @@ export default async function EditGroupPage({
         <GroupForm
           action={boundUpdate}
           defaultName={group.name}
+          defaultSchedule={Array.isArray(group.schedule) ? group.schedule : []}
+          showSchedule
           submitLabel={t('common.save')}
         />
       </div>

@@ -46,9 +46,29 @@
       },
       "errors": {
         "nameRequired": "Name is required.",
-        "hasStudents": "Can't delete a group with assigned students. Move them first."
+        "hasStudents": "Can't delete a group with assigned students. Move them first.",
+        "scheduleInvalid": "The schedule has invalid entries. Check weekday, time and duration."
       },
-      "deleteConfirm": "Delete \"{name}\"?"
+      "deleteConfirm": "Delete \"{name}\"?",
+      "schedule": {
+        "title": "Weekly schedule",
+        "hint": "Recurring class days and times. Sessions are not auto-generated from this yet — it's used as reference.",
+        "empty": "No schedule configured yet.",
+        "weekday": "Day",
+        "start": "Start",
+        "duration": "Duration (min)",
+        "add": "+ Add slot",
+        "remove": "Remove",
+        "weekdays": {
+          "0": "Sunday",
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday"
+        }
+      }
     },
     "students": {
       "title": "Students",

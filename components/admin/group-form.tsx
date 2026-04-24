@@ -5,22 +5,37 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
 import type { GroupFormState } from '@/app/(admin)/admin/groups/actions';
+import type { GroupScheduleEntry } from '@/types/database';
+
+import { ScheduleEditor } from './schedule-editor';
 
 type GroupFormProps = {
   action: (state: GroupFormState, formData: FormData) => Promise<GroupFormState>;
   defaultName?: string;
+  defaultSchedule?: GroupScheduleEntry[];
+  showSchedule?: boolean;
   submitLabel: string;
 };
 
 const INITIAL: GroupFormState = {};
 
-export function GroupForm({ action, defaultName = '', submitLabel }: GroupFormProps) {
+export function GroupForm({
+  action,
+  defaultName = '',
+  defaultSchedule = [],
+  showSchedule = false,
+  submitLabel
+}: GroupFormProps) {
   const t = useTranslations('admin.groups');
   const tCommon = useTranslations('common');
   const [state, formAction] = useFormState(action, INITIAL);
 
   const errorMessage =
-    state.error === 'nameRequired' ? t('errors.nameRequired') : state.error;
+    state.error === 'nameRequired'
+      ? t('errors.nameRequired')
+      : state.error === 'scheduleInvalid'
+        ? t('errors.scheduleInvalid')
+        : state.error;
 
   return (
     <form action={formAction} className="space-y-4">
@@ -38,6 +53,8 @@ export function GroupForm({ action, defaultName = '', submitLabel }: GroupFormPr
           className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
+
+      {showSchedule ? <ScheduleEditor defaultSchedule={defaultSchedule} /> : null}
 
       {errorMessage ? (
         <p role="alert" className="text-sm text-red-600">
