@@ -27,15 +27,24 @@ export type Database = {
           id: UUID;
           name: string;
           timezone: string;
+          contact_phone: string | null;
+          contact_email: string | null;
+          comms_responsible: UUID | null;
         } & WithTimestamps;
         Insert: {
           id?: UUID;
           name: string;
           timezone?: string;
+          contact_phone?: string | null;
+          contact_email?: string | null;
+          comms_responsible?: UUID | null;
         };
         Update: Partial<{
           name: string;
           timezone: string;
+          contact_phone: string | null;
+          contact_email: string | null;
+          comms_responsible: UUID | null;
         }>;
       };
       profiles: {

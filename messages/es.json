@@ -22,7 +22,8 @@
       "students": "Alumnos",
       "attendance": "Asistencias",
       "invitations": "Invitaciones",
-      "communications": "Comunicaciones"
+      "communications": "Comunicaciones",
+      "settings": "Ajustes"
     },
     "home": {
       "title": "Panel",
@@ -250,6 +251,30 @@
         "studentRequired": "Selecciona el alumno que vinculará este padre/madre.",
         "studentNotFound": "El alumno seleccionado no existe.",
         "alreadyInvited": "Ya existe una invitación pendiente para ese email."
+      }
+    },
+    "settings": {
+      "title": "Ajustes de la escuela",
+      "subtitle": "Información pública, contacto y personas responsables.",
+      "schoolSection": "Datos de la escuela",
+      "schoolSectionHint": "Nombre, teléfono y email que verán padres e invitados.",
+      "coachesSection": "{count, plural, =0 {Entrenadores} =1 {Entrenadores (1)} other {Entrenadores (#)}}",
+      "noCoaches": "Aún no hay entrenadores. Invita al primero.",
+      "inviteCoach": "Invitar entrenador",
+      "publicContact": "Contacto público",
+      "saved": "Guardado ✓",
+      "fields": {
+        "name": "Nombre de la escuela",
+        "contactPhone": "Teléfono de contacto",
+        "contactEmail": "Email de contacto",
+        "commsResponsible": "Responsable de comunicaciones",
+        "commsResponsibleHint": "Persona a cargo de mensajes e invitaciones. Cualquier admin o entrenador de la escuela.",
+        "commsResponsibleNone": "— Sin asignar —"
+      },
+      "errors": {
+        "nameRequired": "El nombre de la escuela es obligatorio.",
+        "emailInvalid": "El email de contacto no es válido.",
+        "commsResponsibleInvalid": "El responsable seleccionado no es válido."
       }
     },
     "communications": {

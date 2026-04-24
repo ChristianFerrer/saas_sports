@@ -6,6 +6,7 @@ import {
   CheckSquare,
   LayoutGrid,
   Mail,
+  Settings,
   UserPlus,
   Users,
   Layers,
@@ -15,7 +16,14 @@ import { useTranslations } from 'next-intl';
 
 type NavItem = {
   href: string;
-  key: 'dashboard' | 'groups' | 'students' | 'attendance' | 'invitations' | 'communications';
+  key:
+    | 'dashboard'
+    | 'groups'
+    | 'students'
+    | 'attendance'
+    | 'invitations'
+    | 'communications'
+    | 'settings';
   exact: boolean;
   Icon: LucideIcon;
 };
@@ -26,7 +34,8 @@ const LINKS: readonly NavItem[] = [
   { href: '/admin/students', key: 'students', exact: false, Icon: Users },
   { href: '/admin/attendance', key: 'attendance', exact: false, Icon: CheckSquare },
   { href: '/admin/invitations', key: 'invitations', exact: false, Icon: UserPlus },
-  { href: '/admin/communications', key: 'communications', exact: false, Icon: Mail }
+  { href: '/admin/communications', key: 'communications', exact: false, Icon: Mail },
+  { href: '/admin/settings', key: 'settings', exact: false, Icon: Settings }
 ] as const;
 
 export function AdminNav() {

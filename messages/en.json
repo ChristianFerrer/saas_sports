@@ -22,7 +22,8 @@
       "students": "Students",
       "attendance": "Attendance",
       "invitations": "Invitations",
-      "communications": "Messages"
+      "communications": "Messages",
+      "settings": "Settings"
     },
     "home": {
       "title": "Dashboard",
@@ -250,6 +251,30 @@
         "studentRequired": "Pick the student this parent will be linked to.",
         "studentNotFound": "Selected student not found.",
         "alreadyInvited": "There is already a pending invitation for that email."
+      }
+    },
+    "settings": {
+      "title": "School settings",
+      "subtitle": "Public info, contact details and responsible people.",
+      "schoolSection": "School profile",
+      "schoolSectionHint": "Name, phone and email visible to parents and invitees.",
+      "coachesSection": "{count, plural, =0 {Coaches} =1 {Coaches (1)} other {Coaches (#)}}",
+      "noCoaches": "No coaches yet. Invite the first one.",
+      "inviteCoach": "Invite coach",
+      "publicContact": "Public contact",
+      "saved": "Saved ✓",
+      "fields": {
+        "name": "School name",
+        "contactPhone": "Contact phone",
+        "contactEmail": "Contact email",
+        "commsResponsible": "Communications lead",
+        "commsResponsibleHint": "Person in charge of messages and invites. Any admin or coach of the school.",
+        "commsResponsibleNone": "— Not assigned —"
+      },
+      "errors": {
+        "nameRequired": "School name is required.",
+        "emailInvalid": "Contact email is not valid.",
+        "commsResponsibleInvalid": "The selected responsible is not valid."
       }
     },
     "communications": {
