@@ -35,12 +35,9 @@ export function StudentForm({
     state.error === 'fullNameRequired' ? t('errors.fullNameRequired') : state.error;
 
   return (
-    <form action={formAction} className="space-y-4">
-      <div className="space-y-1">
-        <label
-          htmlFor="full_name"
-          className="block text-sm font-medium text-slate-700"
-        >
+    <form action={formAction} className="space-y-5">
+      <div className="space-y-1.5">
+        <label htmlFor="full_name" className="ss-label">
           {t('fields.fullName')}
         </label>
         <input
@@ -50,15 +47,12 @@ export function StudentForm({
           required
           defaultValue={defaults?.fullName ?? ''}
           placeholder={t('fields.fullNamePlaceholder')}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input"
         />
       </div>
 
-      <div className="space-y-1">
-        <label
-          htmlFor="birth_date"
-          className="block text-sm font-medium text-slate-700"
-        >
+      <div className="space-y-1.5">
+        <label htmlFor="birth_date" className="ss-label">
           {t('fields.birthDate')}{' '}
           <span className="text-slate-400">{tCommon('optional')}</span>
         </label>
@@ -67,12 +61,12 @@ export function StudentForm({
           name="birth_date"
           type="date"
           defaultValue={defaults?.birthDate ?? ''}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input"
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="group_id" className="block text-sm font-medium text-slate-700">
+      <div className="space-y-1.5">
+        <label htmlFor="group_id" className="ss-label">
           {t('fields.group')}{' '}
           <span className="text-slate-400">{tCommon('optional')}</span>
         </label>
@@ -80,7 +74,7 @@ export function StudentForm({
           id="group_id"
           name="group_id"
           defaultValue={defaults?.groupId ?? ''}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input"
         >
           <option value="">{t('fields.groupNone')}</option>
           {groups.map((g) => (
@@ -99,10 +93,7 @@ export function StudentForm({
 
       <div className="flex items-center gap-2">
         <SubmitButton>{submitLabel}</SubmitButton>
-        <Link
-          href="/admin/students"
-          className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+        <Link href="/admin/students" className="ss-btn-secondary">
           {tCommon('cancel')}
         </Link>
       </div>
@@ -113,11 +104,7 @@ export function StudentForm({
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="ss-btn-primary">
       {children}
     </button>
   );

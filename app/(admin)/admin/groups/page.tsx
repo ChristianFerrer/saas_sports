@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Layers, Pencil, Plus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { AdminNav } from '@/components/admin/admin-nav';
@@ -19,7 +20,11 @@ export default async function AdminGroupsPage({
   const supabase = createUntypedClient();
 
   const [groupsResult, studentsResult] = await Promise.all([
-    supabase.from('groups').select('id, name').order('name', { ascending: true }),
+    supabase
+      .from('groups')
+      .select('id, name')
+      .eq('school_id', user.profile.school_id)
+      .order('name', { ascending: true }),
     supabase.from('students').select('group_id')
   ]);
 
@@ -44,49 +49,58 @@ export default async function AdminGroupsPage({
       fullName={user.profile.full_name}
       nav={<AdminNav />}
     >
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-slate-900">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
           {t('admin.groups.title')}
         </h2>
-        <Link
-          href="/admin/groups/new"
-          className="inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
-        >
-          {t('admin.groups.new')}
+        <Link href="/admin/groups/new" className="ss-btn-primary">
+          <Plus size={16} strokeWidth={2.4} aria-hidden />
+          <span>{t('admin.groups.new')}</span>
         </Link>
       </div>
 
       {errorMessage ? (
         <div
           role="alert"
-          className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-800"
+          className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-800"
         >
           {errorMessage}
         </div>
       ) : null}
 
       {groups.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
-          {t('admin.groups.empty')}
-        </div>
+        <EmptyState message={t('admin.groups.empty')}>
+          <Link href="/admin/groups/new" className="ss-btn-primary mt-3">
+            <Plus size={16} strokeWidth={2.4} aria-hidden />
+            {t('admin.groups.new')}
+          </Link>
+        </EmptyState>
       ) : (
-        <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+        <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
           {groups.map((g) => {
             const count = countByGroup.get(g.id) ?? 0;
             return (
-              <li key={g.id} className="flex items-center justify-between px-4 py-3">
-                <div>
-                  <p className="font-medium text-slate-900">{g.name}</p>
+              <li
+                key={g.id}
+                className="flex items-center gap-3 px-4 py-3 transition hover:bg-slate-50"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <Layers size={18} strokeWidth={2.2} aria-hidden />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-slate-900">{g.name}</p>
                   <p className="text-xs text-slate-500">
                     {t('admin.groups.studentsCount', { count })}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <Link
                     href={`/admin/groups/${g.id}/edit`}
-                    className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+                    aria-label={t('common.edit')}
+                    className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50"
                   >
-                    {t('common.edit')}
+                    <Pencil size={15} strokeWidth={2.2} aria-hidden />
+                    <span className="hidden sm:inline">{t('common.edit')}</span>
                   </Link>
                   <DeleteGroupButton
                     id={g.id}
@@ -100,5 +114,20 @@ export default async function AdminGroupsPage({
         </ul>
       )}
     </AppShell>
+  );
+}
+
+function EmptyState({
+  message,
+  children
+}: {
+  message: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+      <p className="text-sm text-slate-500">{message}</p>
+      {children}
+    </div>
   );
 }

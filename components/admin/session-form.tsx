@@ -39,13 +39,10 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
             : state.error;
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="space-y-1">
-          <label
-            htmlFor="scheduled_at_date"
-            className="block text-sm font-medium text-slate-700"
-          >
+        <div className="space-y-1.5">
+          <label htmlFor="scheduled_at_date" className="ss-label">
             {t('fields.date')}
           </label>
           <input
@@ -54,15 +51,12 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
             type="date"
             required
             defaultValue={todayIsoDate()}
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="ss-input"
           />
         </div>
 
-        <div className="space-y-1">
-          <label
-            htmlFor="scheduled_at_time"
-            className="block text-sm font-medium text-slate-700"
-          >
+        <div className="space-y-1.5">
+          <label htmlFor="scheduled_at_time" className="ss-label">
             {t('fields.time')}
           </label>
           <input
@@ -71,16 +65,13 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
             type="time"
             required
             defaultValue="17:00"
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="ss-input"
           />
         </div>
       </div>
 
-      <div className="space-y-1">
-        <label
-          htmlFor="duration_minutes"
-          className="block text-sm font-medium text-slate-700"
-        >
+      <div className="space-y-1.5">
+        <label htmlFor="duration_minutes" className="ss-label">
           {t('fields.duration')}
         </label>
         <input
@@ -92,7 +83,7 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
           step={5}
           required
           defaultValue={60}
-          className="block w-full max-w-[9rem] rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input max-w-[9rem]"
         />
       </div>
 
@@ -104,10 +95,7 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
 
       <div className="flex items-center gap-2">
         <SubmitButton>{submitLabel}</SubmitButton>
-        <Link
-          href={cancelHref}
-          className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+        <Link href={cancelHref} className="ss-btn-secondary">
           {tCommon('cancel')}
         </Link>
       </div>
@@ -118,11 +106,7 @@ export function SessionForm({ action, cancelHref, submitLabel }: SessionFormProp
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="ss-btn-primary">
       {children}
     </button>
   );

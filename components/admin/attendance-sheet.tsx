@@ -1,5 +1,6 @@
 'use client';
 
+import { Check } from 'lucide-react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
@@ -24,6 +25,15 @@ type AttendanceSheetProps = {
 
 const INITIAL: AttendanceFormState = {};
 
+function initialsOf(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
 export function AttendanceSheet({
   action,
   students,
@@ -34,36 +44,31 @@ export function AttendanceSheet({
   const [state, formAction] = useFormState(action, INITIAL);
 
   const errorMessage =
-    state.error === 'noStudents'
-      ? t('errors.noStudents')
-      : state.error;
+    state.error === 'noStudents' ? t('errors.noStudents') : state.error;
 
   return (
-    <form action={formAction} className="space-y-3">
-      <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+    <form action={formAction} className="space-y-4">
+      <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
         {students.map((s) => (
-          <li key={s.id} className="p-3">
-            <div className="flex items-center gap-3">
-              <input
-                id={`present_${s.id}`}
-                name={`present_${s.id}`}
-                type="checkbox"
-                defaultChecked={s.present}
-                className="h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <label
-                htmlFor={`present_${s.id}`}
-                className="flex-1 text-sm font-medium text-slate-900"
-              >
+          <li key={s.id} className="p-3 sm:p-4">
+            <label
+              htmlFor={`present_${s.id}`}
+              className="flex items-center gap-3"
+            >
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
+                {initialsOf(s.fullName) || '·'}
+              </span>
+              <span className="flex-1 text-sm font-medium text-slate-900">
                 {s.fullName}
-              </label>
-            </div>
+              </span>
+              <PresenceToggle id={s.id} defaultChecked={s.present} />
+            </label>
             <input
               type="text"
               name={`notes_${s.id}`}
               defaultValue={s.notes}
               placeholder={t('fields.notesPlaceholder')}
-              className="mt-2 block w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="mt-2.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             />
           </li>
         ))}
@@ -75,24 +80,48 @@ export function AttendanceSheet({
         </p>
       ) : null}
 
-      <div className="flex items-center gap-3">
+      <div
+        className="sticky bottom-4 flex items-center gap-3 rounded-2xl bg-white/80 p-2 shadow-pop backdrop-blur"
+        style={{ backdropFilter: 'saturate(180%) blur(14px)' }}
+      >
         <SubmitButton>{submitLabel}</SubmitButton>
         {state.savedAt ? (
-          <span className="text-sm text-emerald-700">{savedLabel}</span>
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
+            <Check size={16} strokeWidth={2.6} aria-hidden />
+            {savedLabel}
+          </span>
         ) : null}
       </div>
     </form>
   );
 }
 
+function PresenceToggle({ id, defaultChecked }: { id: string; defaultChecked: boolean }) {
+  return (
+    <span className="relative inline-block h-[30px] w-[52px] shrink-0">
+      <input
+        id={`present_${id}`}
+        name={`present_${id}`}
+        type="checkbox"
+        defaultChecked={defaultChecked}
+        className="peer sr-only"
+      />
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-full bg-slate-200 transition peer-checked:bg-emerald-500 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500/40 peer-focus-visible:ring-offset-2"
+      />
+      <span
+        aria-hidden
+        className="absolute left-[3px] top-[3px] h-[24px] w-[24px] rounded-full bg-white shadow transition peer-checked:translate-x-[22px]"
+      />
+    </span>
+  );
+}
+
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="ss-btn-primary">
       {children}
     </button>
   );

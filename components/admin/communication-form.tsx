@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { Building2, Layers } from 'lucide-react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
@@ -41,38 +42,30 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
                 : state.error;
 
   return (
-    <form action={formAction} className="space-y-4">
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700">
-          {t('fields.audience')}
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {(['school', 'group'] as const).map((a) => (
-            <label
-              key={a}
-              className={
-                audience === a
-                  ? 'cursor-pointer rounded-md border border-emerald-500 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800'
-                  : 'cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50'
-              }
-            >
-              <input
-                type="radio"
-                name="audience"
-                value={a}
-                checked={audience === a}
-                onChange={() => setAudience(a)}
-                className="sr-only"
-              />
-              {t(`audiences.${a}`)}
-            </label>
-          ))}
+    <form action={formAction} className="space-y-5">
+      <div className="space-y-2">
+        <label className="ss-label">{t('fields.audience')}</label>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <AudienceChip
+            value="school"
+            active={audience === 'school'}
+            onSelect={() => setAudience('school')}
+            Icon={Building2}
+            label={t('audiences.school')}
+          />
+          <AudienceChip
+            value="group"
+            active={audience === 'group'}
+            onSelect={() => setAudience('group')}
+            Icon={Layers}
+            label={t('audiences.group')}
+          />
         </div>
       </div>
 
       {audience === 'group' ? (
-        <div className="space-y-1">
-          <label htmlFor="group_id" className="block text-sm font-medium text-slate-700">
+        <div className="space-y-1.5">
+          <label htmlFor="group_id" className="ss-label">
             {t('fields.group')}
           </label>
           {groups.length === 0 ? (
@@ -83,7 +76,7 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
               name="group_id"
               required
               defaultValue=""
-              className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="ss-input"
             >
               <option value="" disabled>
                 {t('fields.groupPlaceholder')}
@@ -98,8 +91,8 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
         </div>
       ) : null}
 
-      <div className="space-y-1">
-        <label htmlFor="subject" className="block text-sm font-medium text-slate-700">
+      <div className="space-y-1.5">
+        <label htmlFor="subject" className="ss-label">
           {t('fields.subject')}
         </label>
         <input
@@ -108,12 +101,12 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
           type="text"
           required
           maxLength={200}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input"
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="content" className="block text-sm font-medium text-slate-700">
+      <div className="space-y-1.5">
+        <label htmlFor="content" className="ss-label">
           {t('fields.content')}
         </label>
         <textarea
@@ -121,7 +114,7 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
           name="content"
           required
           rows={6}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input resize-y"
         />
       </div>
 
@@ -133,10 +126,7 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
 
       <div className="flex items-center gap-2">
         <SubmitButton>{submitLabel}</SubmitButton>
-        <Link
-          href="/admin/communications"
-          className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+        <Link href="/admin/communications" className="ss-btn-secondary">
           {tCommon('cancel')}
         </Link>
       </div>
@@ -144,14 +134,45 @@ export function CommunicationForm({ groups, submitLabel }: Props) {
   );
 }
 
+function AudienceChip({
+  value,
+  active,
+  onSelect,
+  Icon,
+  label
+}: {
+  value: string;
+  active: boolean;
+  onSelect: () => void;
+  Icon: typeof Building2;
+  label: string;
+}) {
+  return (
+    <label
+      className={
+        active
+          ? 'flex cursor-pointer items-center gap-2 rounded-xl border border-emerald-500 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-800'
+          : 'flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50'
+      }
+    >
+      <input
+        type="radio"
+        name="audience"
+        value={value}
+        checked={active}
+        onChange={onSelect}
+        className="sr-only"
+      />
+      <Icon size={18} strokeWidth={active ? 2.4 : 2} aria-hidden />
+      <span>{label}</span>
+    </label>
+  );
+}
+
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="ss-btn-primary">
       {children}
     </button>
   );

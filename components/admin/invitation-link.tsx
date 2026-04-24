@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 
 type Props = {
@@ -22,23 +23,35 @@ export function InvitationLink({ url, label, copiedLabel }: Props) {
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-stretch gap-2">
-        <input
-          type="text"
-          value={url}
-          readOnly
-          onFocus={(e) => e.currentTarget.select()}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm"
-        />
-        <button
-          type="button"
-          onClick={copy}
-          className="shrink-0 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          {copied ? copiedLabel : label}
-        </button>
-      </div>
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+      <input
+        type="text"
+        value={url}
+        readOnly
+        onFocus={(e) => e.currentTarget.select()}
+        className="ss-input font-mono text-[13px]"
+      />
+      <button
+        type="button"
+        onClick={copy}
+        className={
+          copied
+            ? 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition'
+            : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 active:scale-[0.98]'
+        }
+      >
+        {copied ? (
+          <>
+            <Check size={16} strokeWidth={2.6} aria-hidden />
+            {copiedLabel}
+          </>
+        ) : (
+          <>
+            <Copy size={16} strokeWidth={2.2} aria-hidden />
+            {label}
+          </>
+        )}
+      </button>
     </div>
   );
 }

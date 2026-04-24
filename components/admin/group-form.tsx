@@ -46,9 +46,9 @@ export function GroupForm({
         : state.error;
 
   return (
-    <form action={formAction} className="space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+    <form action={formAction} className="space-y-5">
+      <div className="space-y-1.5">
+        <label htmlFor="name" className="ss-label">
           {t('fields.name')}
         </label>
         <input
@@ -58,13 +58,13 @@ export function GroupForm({
           required
           defaultValue={defaultName}
           placeholder={t('fields.namePlaceholder')}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="ss-input"
         />
       </div>
 
       {showCoach ? (
-        <div className="space-y-1">
-          <label htmlFor="coach_id" className="block text-sm font-medium text-slate-700">
+        <div className="space-y-1.5">
+          <label htmlFor="coach_id" className="ss-label">
             {t('fields.coach')}{' '}
             <span className="text-slate-400">{tCommon('optional')}</span>
           </label>
@@ -72,7 +72,7 @@ export function GroupForm({
             id="coach_id"
             name="coach_id"
             defaultValue={defaultCoachId ?? ''}
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="ss-input"
           >
             <option value="">{t('fields.coachNone')}</option>
             {coaches.map((c) => (
@@ -94,10 +94,7 @@ export function GroupForm({
 
       <div className="flex items-center gap-2">
         <SubmitButton>{submitLabel}</SubmitButton>
-        <Link
-          href="/admin/groups"
-          className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+        <Link href="/admin/groups" className="ss-btn-secondary">
           {tCommon('cancel')}
         </Link>
       </div>
@@ -108,11 +105,7 @@ export function GroupForm({
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="ss-btn-primary">
       {children}
     </button>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { Trash2 } from 'lucide-react';
 import { useTransition } from 'react';
 
 import { deleteStudent } from '@/app/(admin)/admin/students/actions';
@@ -17,15 +18,17 @@ export function DeleteStudentButton({ id, confirmMessage, label }: Props) {
     <button
       type="button"
       disabled={pending}
+      aria-label={label}
       onClick={() => {
         if (!window.confirm(confirmMessage)) return;
         startTransition(() => {
           void deleteStudent(id);
         });
       }}
-      className="text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {label}
+      <Trash2 size={15} strokeWidth={2.2} aria-hidden />
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }
