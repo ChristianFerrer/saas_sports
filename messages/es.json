@@ -180,6 +180,28 @@
         "noStudents": "No hay alumnos en este grupo."
       }
     },
+    "objectives": {
+      "title": "Objetivos — {group}",
+      "sectionTitle": "Objetivos",
+      "sectionHint": "Hitos que los alumnos pueden ir alcanzando en este grupo (por ejemplo: chutar el balón, regate, cabeceo…).",
+      "manage": "Gestionar",
+      "new": "Nuevo objetivo",
+      "newHint": "Añade un hito que los alumnos del grupo \"{group}\" pueden alcanzar.",
+      "edit": "Editar objetivo",
+      "empty": "Aún no hay objetivos en este grupo.",
+      "achievedRatio": "{achieved}/{total} logrados",
+      "deleteConfirm": "¿Eliminar el objetivo \"{title}\"? Se borrarán también las marcas de logro de los alumnos.",
+      "fields": {
+        "title": "Título",
+        "titlePlaceholder": "Ej. Chutar el balón con la derecha",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Qué se evalúa o cuándo se considera logrado."
+      },
+      "errors": {
+        "titleRequired": "El título es obligatorio.",
+        "insertFailed": "No se pudo crear el objetivo. Inténtalo de nuevo."
+      }
+    },
     "invitations": {
       "title": "Invitaciones",
       "new": "Nueva invitación",

@@ -7,6 +7,8 @@ import {
   ChevronRight,
   ChevronLeft,
   Pencil,
+  Plus,
+  Target,
   UserCircle2,
   Users
 } from 'lucide-react';
@@ -38,6 +40,13 @@ type SessionRow = {
   status: 'scheduled' | 'held' | 'cancelled';
 };
 type AttendanceCountRow = { session_id: string; present: boolean };
+type ObjectiveRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  display_order: number;
+};
+type AchievementCountRow = { objective_id: string };
 
 const AVATAR_PALETTE = [
   'bg-emerald-100 text-emerald-700',
@@ -82,32 +91,62 @@ export default async function AdminGroupDetailPage({
   const group = groupData as GroupRow | null;
   if (!group || group.school_id !== user.profile.school_id) notFound();
 
-  const [coachResult, studentsResult, sessionsResult, attendanceResult] =
-    await Promise.all([
-      group.coach_id
-        ? supabase
-            .from('profiles')
-            .select('user_id, full_name')
-            .eq('user_id', group.coach_id)
-            .maybeSingle()
-        : Promise.resolve({ data: null as CoachRow | null }),
-      supabase
-        .from('students')
-        .select('id, full_name')
-        .eq('group_id', group.id)
-        .order('full_name', { ascending: true }),
-      supabase
-        .from('class_sessions')
-        .select('id, scheduled_at, duration_minutes, status')
-        .eq('group_id', group.id)
-        .order('scheduled_at', { ascending: false }),
-      supabase.from('attendances').select('session_id, present')
-    ]);
+  const [
+    coachResult,
+    studentsResult,
+    sessionsResult,
+    attendanceResult,
+    objectivesResult
+  ] = await Promise.all([
+    group.coach_id
+      ? supabase
+          .from('profiles')
+          .select('user_id, full_name')
+          .eq('user_id', group.coach_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null as CoachRow | null }),
+    supabase
+      .from('students')
+      .select('id, full_name')
+      .eq('group_id', group.id)
+      .order('full_name', { ascending: true }),
+    supabase
+      .from('class_sessions')
+      .select('id, scheduled_at, duration_minutes, status')
+      .eq('group_id', group.id)
+      .order('scheduled_at', { ascending: false }),
+    supabase.from('attendances').select('session_id, present'),
+    supabase
+      .from('objectives')
+      .select('id, title, description, display_order')
+      .eq('group_id', group.id)
+      .order('display_order', { ascending: true })
+      .order('created_at', { ascending: true })
+  ]);
 
   const coach = coachResult.data as CoachRow | null;
   const students = (studentsResult.data ?? []) as StudentRow[];
   const sessions = (sessionsResult.data ?? []) as SessionRow[];
   const attendance = (attendanceResult.data ?? []) as AttendanceCountRow[];
+  const objectives = (objectivesResult.data ?? []) as ObjectiveRow[];
+
+  const studentIds = students.map((s) => s.id);
+  const objectiveIds = objectives.map((o) => o.id);
+
+  const achievementsByObjective = new Map<string, number>();
+  if (objectiveIds.length > 0 && studentIds.length > 0) {
+    const { data: achievementsData } = await supabase
+      .from('student_objectives')
+      .select('objective_id')
+      .in('objective_id', objectiveIds)
+      .in('student_id', studentIds);
+    for (const a of (achievementsData ?? []) as AchievementCountRow[]) {
+      achievementsByObjective.set(
+        a.objective_id,
+        (achievementsByObjective.get(a.objective_id) ?? 0) + 1
+      );
+    }
+  }
 
   const presentBySession = new Map<string, { present: number; total: number }>();
   for (const a of attendance) {
@@ -229,6 +268,60 @@ export default async function AdminGroupDetailPage({
           )}
         </InfoRow>
       </section>
+
+      <div className="mt-5 mb-2 flex items-center justify-between gap-2">
+        <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+          <Target size={14} strokeWidth={2.4} aria-hidden />
+          {t('admin.objectives.sectionTitle')}
+        </h3>
+        <Link
+          href={`/admin/groups/${group.id}/objectives`}
+          className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+        >
+          {t('admin.objectives.manage')}
+        </Link>
+      </div>
+      {objectives.length === 0 ? (
+        <EmptyBox>
+          <span className="block">{t('admin.objectives.empty')}</span>
+          <Link
+            href={`/admin/groups/${group.id}/objectives/new`}
+            className="ss-btn-primary mt-3"
+          >
+            <Plus size={16} strokeWidth={2.4} aria-hidden />
+            {t('admin.objectives.new')}
+          </Link>
+        </EmptyBox>
+      ) : (
+        <ul className="ss-card divide-y divide-slate-100 overflow-hidden">
+          {objectives.map((o) => {
+            const achieved = achievementsByObjective.get(o.id) ?? 0;
+            return (
+              <li key={o.id} className="flex items-start gap-3 px-4 py-3">
+                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <Target size={16} strokeWidth={2.2} aria-hidden />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-slate-900">{o.title}</p>
+                  {o.description ? (
+                    <p className="mt-0.5 line-clamp-2 text-sm text-slate-600">
+                      {o.description}
+                    </p>
+                  ) : null}
+                </div>
+                {students.length > 0 ? (
+                  <span className="ss-pill shrink-0 bg-slate-100 text-slate-600">
+                    {t('admin.objectives.achievedRatio', {
+                      achieved,
+                      total: students.length
+                    })}
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       <SectionHeader
         icon={<Users size={14} strokeWidth={2.4} aria-hidden />}

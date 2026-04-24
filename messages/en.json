@@ -180,6 +180,28 @@
         "noStudents": "This group has no students."
       }
     },
+    "objectives": {
+      "title": "Objectives — {group}",
+      "sectionTitle": "Objectives",
+      "sectionHint": "Milestones students can reach in this group (e.g. kicking the ball, dribbling, heading).",
+      "manage": "Manage",
+      "new": "New objective",
+      "newHint": "Add a milestone students in \"{group}\" can reach.",
+      "edit": "Edit objective",
+      "empty": "No objectives in this group yet.",
+      "achievedRatio": "{achieved}/{total} reached",
+      "deleteConfirm": "Delete the objective \"{title}\"? Student achievements for it will also be removed.",
+      "fields": {
+        "title": "Title",
+        "titlePlaceholder": "e.g. Kicking the ball with the right foot",
+        "description": "Description",
+        "descriptionPlaceholder": "What is evaluated or when it counts as reached."
+      },
+      "errors": {
+        "titleRequired": "Title is required.",
+        "insertFailed": "Could not create the objective. Try again."
+      }
+    },
     "invitations": {
       "title": "Invitations",
       "new": "New invitation",
