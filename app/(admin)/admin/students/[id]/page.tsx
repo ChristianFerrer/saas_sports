@@ -28,7 +28,8 @@ import { StudentSkillsEditor } from '@/components/admin/student-skills-editor';
 import { AppShell } from '@/components/ui/app-shell';
 import { PremiumAchievementBadge } from '@/components/ui/premium-achievement-badge';
 import { PremiumLineChart } from '@/components/ui/premium-line-chart';
-import { PremiumProfileHero } from '@/components/ui/premium-profile-hero';
+import { PremiumPlayerCard } from '@/components/ui/premium-player-card';
+import { PremiumProgressPanel } from '@/components/ui/premium-progress-panel';
 import { PremiumProgressRing } from '@/components/ui/premium-progress-ring';
 import { PremiumSectionTitle } from '@/components/ui/premium-section-title';
 import { PremiumStatCard } from '@/components/ui/premium-stat-card';
@@ -37,7 +38,9 @@ import {
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
 import { requireRole } from '@/lib/auth/guards';
+import { ageYearsMonths } from '@/lib/students/age';
 import { buildMonthlyAttendanceSeries } from '@/lib/students/attendance-series';
+import { buildMonthlySkillSeries, seasonLabel } from '@/lib/students/skill-series';
 import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -105,17 +108,6 @@ function initialsOf(name: string): string {
     .join('');
 }
 
-function ageFromBirth(birthDate: string | null): number | null {
-  if (!birthDate) return null;
-  const b = new Date(birthDate);
-  if (Number.isNaN(b.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - b.getFullYear();
-  const m = now.getMonth() - b.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age -= 1;
-  return age;
-}
-
 function dominantFootLabel(
   t: Awaited<ReturnType<typeof getTranslations>>,
   v: 'left' | 'right' | 'both' | null
@@ -156,7 +148,8 @@ export default async function AdminStudentDetailPage({
     currentObjectivesResult,
     achievementsResult,
     schoolGroupsResult,
-    skillsResult
+    skillsResult,
+    snapshotsResult
   ] = await Promise.all([
     student.group_id
       ? supabase
@@ -208,7 +201,12 @@ export default async function AdminStudentDetailPage({
     supabase
       .from('student_skills')
       .select('skill, value')
+      .eq('student_id', student.id),
+    supabase
+      .from('student_skill_snapshots')
+      .select('captured_month, value')
       .eq('student_id', student.id)
+      .order('captured_month', { ascending: true })
   ]);
 
   const group = groupResult.data as {
@@ -245,6 +243,10 @@ export default async function AdminStudentDetailPage({
   }>;
   const skillsByKey = new Map<string, number>();
   for (const s of skillRows) skillsByKey.set(s.skill, s.value);
+  const snapshots = (snapshotsResult.data ?? []) as Array<{
+    captured_month: string;
+    value: number;
+  }>;
 
   // Scope sessions to the enrollment window.
   const enrolledMs = student.enrolled_at
@@ -319,70 +321,90 @@ export default async function AdminStudentDetailPage({
     });
   }
 
-  const age = ageFromBirth(student.birth_date);
   const dorsal = student.dorsal_number ?? null;
   const footLabel = dominantFootLabel(t, student.dominant_foot);
+  const ageYM = ageYearsMonths(student.birth_date);
 
-  // Hero meta — prefer real player-card data, fall back to context pieces.
-  const metaItems: Array<{ label: string; value: React.ReactNode }> = [];
-  if (student.position) {
-    metaItems.push({
-      label: t('admin.students.detail.position'),
-      value: student.position
-    });
+  // Hero meta lines (left panel): "Position · Sub-X" + "DD month YYYY (X años Y meses)" + "Grupo X".
+  const playerMetaLines: string[] = [];
+  if (student.position || group) {
+    playerMetaLines.push(
+      [student.position, group?.name].filter(Boolean).join(' · ')
+    );
   }
-  if (age !== null) {
-    metaItems.push({
-      label: t('admin.students.detail.age'),
-      value: `${age} ${t('admin.students.detail.age')}`
+  if (student.birth_date) {
+    const dob = format.dateTime(new Date(student.birth_date), {
+      dateStyle: 'long',
+      timeZone: 'UTC'
     });
+    if (ageYM) {
+      const parts: string[] = [];
+      if (ageYM.years > 0)
+        parts.push(
+          ageYM.years === 1
+            ? t('admin.students.detail.ageYearOne')
+            : t('admin.students.detail.ageYearOther', { count: ageYM.years })
+        );
+      if (ageYM.months > 0)
+        parts.push(
+          ageYM.months === 1
+            ? t('admin.students.detail.ageMonthOne')
+            : t('admin.students.detail.ageMonthOther', { count: ageYM.months })
+        );
+      const ageStr = parts.length > 0 ? ` (${parts.join(' ')})` : '';
+      playerMetaLines.push(`${dob}${ageStr}`);
+    } else {
+      playerMetaLines.push(dob);
+    }
   }
   if (group) {
-    metaItems.push({
-      label: t('admin.students.detail.group'),
-      value: (
-        <Link
-          href={`/admin/groups/${group.id}`}
-          className="hover:text-gold-200"
-        >
-          {group.name}
-        </Link>
-      )
-    });
+    playerMetaLines.push(t('admin.students.detail.groupLine', { group: group.name }));
   }
-  if (footLabel) {
-    metaItems.push({
-      label: t('admin.students.detail.dominantFoot'),
-      value: footLabel
-    });
-  }
+
+  // Stats grid (Altura / Peso / Pierna) — only render the cells with data.
+  const playerStats: Array<{ label: string; value: React.ReactNode }> = [];
   if (student.height_cm) {
-    metaItems.push({
+    playerStats.push({
       label: t('admin.students.detail.height'),
       value: `${student.height_cm} cm`
     });
   }
   if (student.weight_kg) {
-    metaItems.push({
+    playerStats.push({
       label: t('admin.students.detail.weight'),
       value: `${student.weight_kg} kg`
     });
   }
-  if (coach) {
-    metaItems.push({
-      label: t('admin.groups.detail.coach'),
-      value: coach.full_name
+  if (footLabel) {
+    playerStats.push({
+      label: t('admin.students.detail.dominantFoot'),
+      value: footLabel
     });
   }
-  if (student.enrolled_at) {
-    metaItems.push({
-      label: t('admin.students.detail.enrolledAt'),
-      value: format.dateTime(new Date(student.enrolled_at), {
-        dateStyle: 'medium',
-        timeZone: 'UTC'
-      })
-    });
-  }
+
+  // Mi progreso — current per-skill values + global average + monthly series.
+  const skillItems = SKILL_KEYS.map((k: SkillKey) => ({
+    key: k,
+    label: t(`parent.detail.skills.${k}` as const),
+    value: skillsByKey.get(k) ?? 0
+  }));
+  const skillsWithValue = skillItems.filter((s) => s.value > 0);
+  const globalScore =
+    skillsWithValue.length === 0
+      ? null
+      : Math.round(
+          skillsWithValue.reduce((sum, s) => sum + s.value, 0) /
+            skillsWithValue.length
+        );
+  const skillSeries = buildMonthlySkillSeries(snapshots, 10);
+  const encouragingLine =
+    globalScore !== null && globalScore >= 70
+      ? t('admin.students.detail.progress.encouragingHigh')
+      : globalScore !== null && globalScore >= 50
+        ? t('admin.students.detail.progress.encouragingMid')
+        : globalScore !== null
+          ? t('admin.students.detail.progress.encouragingLow')
+          : null;
 
   return (
     <AppShell
@@ -417,28 +439,35 @@ export default async function AdminStudentDetailPage({
         {t('admin.students.title')}
       </Link>
 
-      <PremiumProfileHero
-        kicker={isInactive ? t('admin.students.detail.inactive') : t('admin.students.detail.hero.kicker')}
-        title={student.full_name}
-        subtitle={
-          group
-            ? t('admin.students.detail.hero.subtitle', { group: group.name })
-            : undefined
-        }
-        initials={initialsOf(student.full_name)}
-        photoUrl={student.photo_url}
-        dorsal={dorsal}
-        meta={metaItems}
-        rightSlot={
-          <PremiumProgressRing
-            value={attendancePct}
-            size={148}
-            strokeWidth={14}
-            variant="cyan"
-            sublabel={t('admin.students.detail.attendance')}
-          />
-        }
-      />
+      <div className="grid items-stretch gap-4 lg:grid-cols-2">
+        <PremiumPlayerCard
+          fullName={student.full_name}
+          initials={initialsOf(student.full_name)}
+          photoUrl={student.photo_url}
+          meta={playerMetaLines}
+          dorsal={dorsal}
+          dorsalLabel={t('admin.students.detail.dorsalLabel')}
+          stats={playerStats}
+        />
+        <PremiumProgressPanel
+          title={t('admin.students.detail.progress.title')}
+          seasonLabel={t('admin.students.detail.progress.season', {
+            season: seasonLabel()
+          })}
+          globalScore={globalScore}
+          globalLabel={t('admin.students.detail.progress.global')}
+          skills={skillItems}
+          series={skillSeries}
+          encouragingLine={encouragingLine}
+          emptyHint={t('admin.students.detail.progress.emptySeries')}
+        />
+      </div>
+
+      {isInactive ? (
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-300">
+          {t('admin.students.detail.inactive')}
+        </p>
+      ) : null}
 
       {/* Monthly attendance trend */}
       {(() => {
@@ -632,9 +661,19 @@ export default async function AdminStudentDetailPage({
                 dateStyle: 'long',
                 timeZone: 'UTC'
               })}
-              {age !== null ? (
+              {ageYM ? (
                 <span className="ml-2 text-ink-300">
-                  ({age} {t('admin.students.detail.age')})
+                  ({ageYM.years > 0
+                    ? ageYM.years === 1
+                      ? t('admin.students.detail.ageYearOne')
+                      : t('admin.students.detail.ageYearOther', { count: ageYM.years })
+                    : ''}
+                  {ageYM.years > 0 && ageYM.months > 0 ? ' ' : ''}
+                  {ageYM.months > 0
+                    ? ageYM.months === 1
+                      ? t('admin.students.detail.ageMonthOne')
+                      : t('admin.students.detail.ageMonthOther', { count: ageYM.months })
+                    : ''})
                 </span>
               ) : null}
             </>

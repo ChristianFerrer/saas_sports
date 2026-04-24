@@ -311,6 +311,27 @@ export type Database = {
           updated_by: UUID | null;
         }>;
       };
+      student_skill_snapshots: {
+        Row: {
+          student_id: UUID;
+          captured_month: string; // YYYY-MM-01
+          skill: string;
+          value: number;
+          captured_by: UUID | null;
+          captured_at: Timestamp;
+        };
+        Insert: {
+          student_id: UUID;
+          captured_month: string;
+          skill: string;
+          value: number;
+          captured_by?: UUID | null;
+        };
+        Update: Partial<{
+          value: number;
+          captured_by: UUID | null;
+        }>;
+      };
       invitations: {
         Row: {
           id: UUID;

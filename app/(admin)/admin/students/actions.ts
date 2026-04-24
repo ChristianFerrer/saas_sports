@@ -256,6 +256,32 @@ export async function saveStudentSkills(
     return { error: error.message };
   }
 
+  // Snapshot for the current month so the parent / admin trend chart
+  // gets a real data point. Same (student, captured_month, skill)
+  // overwrites the value if the coach saves again this month.
+  const now = new Date();
+  const capturedMonth = `${now.getUTCFullYear()}-${String(
+    now.getUTCMonth() + 1
+  ).padStart(2, '0')}-01`;
+  const snapshots = rows.map((r) => ({
+    student_id: r.student_id,
+    captured_month: capturedMonth,
+    skill: r.skill,
+    value: r.value,
+    captured_by: r.updated_by
+  }));
+  const { error: snapErr } = await supabase
+    .from('student_skill_snapshots')
+    .upsert(snapshots, { onConflict: 'student_id,captured_month,skill' });
+  if (snapErr) {
+    // Non-fatal: the user's save already succeeded. Log so we notice
+    // schema or RLS regressions without blocking the UI.
+    console.error('[saveStudentSkills] snapshot upsert failed', {
+      studentId,
+      error: snapErr
+    });
+  }
+
   revalidatePath(`/admin/students/${studentId}`);
   revalidatePath(`/parent/children/${studentId}`);
   return { savedAt: Date.now() };

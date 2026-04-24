@@ -210,6 +210,21 @@
           "title": "Asistencia mensual",
           "lastMonths": "Últimos {count} meses"
         },
+        "dorsalLabel": "Dorsal",
+        "groupLine": "{group}",
+        "ageYearOne": "1 año",
+        "ageYearOther": "{count} años",
+        "ageMonthOne": "1 mes",
+        "ageMonthOther": "{count} meses",
+        "progress": {
+          "title": "Mi progreso",
+          "season": "Temporada {season}",
+          "global": "Global",
+          "emptySeries": "Aún no hay valoraciones mensuales. Cuando el coach guarde las habilidades, este gráfico mostrará la evolución.",
+          "encouragingHigh": "¡Sigue así! Estás por encima del promedio de tu categoría.",
+          "encouragingMid": "Vas progresando. Constancia y enfoque te acercan al siguiente nivel.",
+          "encouragingLow": "Cada entreno cuenta. Vamos por más esta semana."
+        },
         "contactInfo": {
           "kicker": "Ficha",
           "title": "Datos básicos"

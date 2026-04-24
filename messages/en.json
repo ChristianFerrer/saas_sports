@@ -210,6 +210,21 @@
           "title": "Monthly attendance",
           "lastMonths": "Last {count} months"
         },
+        "dorsalLabel": "Jersey",
+        "groupLine": "{group}",
+        "ageYearOne": "1 year",
+        "ageYearOther": "{count} years",
+        "ageMonthOne": "1 month",
+        "ageMonthOther": "{count} months",
+        "progress": {
+          "title": "My progress",
+          "season": "Season {season}",
+          "global": "Global",
+          "emptySeries": "No monthly ratings yet. Once the coach saves skills, this chart will show the trend.",
+          "encouragingHigh": "Keep it up! You're above your category's average.",
+          "encouragingMid": "Solid progress. Consistency and focus take you to the next level.",
+          "encouragingLow": "Every practice counts. Let's push more this week."
+        },
         "contactInfo": {
           "kicker": "Record",
           "title": "Basic info"
