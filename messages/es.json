@@ -19,7 +19,8 @@
     "nav": {
       "dashboard": "Panel",
       "groups": "Grupos",
-      "students": "Alumnos"
+      "students": "Alumnos",
+      "attendance": "Asistencias"
     },
     "home": {
       "title": "Panel de administración",
@@ -66,6 +67,46 @@
         "fullNameRequired": "El nombre es obligatorio."
       },
       "deleteConfirm": "¿Seguro que quieres eliminar a \"{name}\"?"
+    },
+    "attendance": {
+      "title": "Asistencias",
+      "pickGroup": "Elige un grupo para gestionar sus asistencias.",
+      "emptyGroups": "Crea un grupo antes de registrar asistencias.",
+      "groupTitle": "Asistencias — {name}",
+      "newSession": "Nueva sesión",
+      "newSessionFor": "Nueva sesión — {name}",
+      "upcoming": "Próximas",
+      "past": "Historial",
+      "noUpcoming": "No hay sesiones programadas.",
+      "noPast": "Aún no hay sesiones pasadas.",
+      "noStudentsWarning": "Este grupo no tiene alumnos asignados. Añade alumnos para poder registrar asistencias.",
+      "noStudentsInGroup": "Este grupo no tiene alumnos. Añade alumnos al grupo para registrar asistencias.",
+      "sessionsSummary": "{scheduled, plural, =0 {sin sesiones pendientes} =1 {1 pendiente} other {# pendientes}} · {held, plural, =0 {0 realizadas} =1 {1 realizada} other {# realizadas}}",
+      "attendanceRatio": "{present}/{total} presentes",
+      "statusLabel": "Estado",
+      "status": {
+        "scheduled": "Programada",
+        "held": "Realizada",
+        "cancelled": "Cancelada"
+      },
+      "minutes": "min",
+      "open": "Abrir",
+      "sheetTitle": "Hoja de asistencia",
+      "saved": "Guardado ✓",
+      "deleteConfirm": "¿Eliminar la sesión del {name}?",
+      "fields": {
+        "date": "Fecha",
+        "time": "Hora",
+        "duration": "Duración (minutos)",
+        "notesPlaceholder": "Notas del entrenador (opcional)"
+      },
+      "errors": {
+        "dateTimeRequired": "Fecha y hora son obligatorias.",
+        "durationInvalid": "La duración debe ser un número positivo de minutos.",
+        "duplicateSession": "Ya existe una sesión en esa fecha y hora para este grupo.",
+        "insertFailed": "No se pudo crear la sesión. Inténtalo de nuevo.",
+        "noStudents": "No hay alumnos en este grupo."
+      }
     }
   },
   "coach": {

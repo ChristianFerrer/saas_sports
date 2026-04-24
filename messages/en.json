@@ -19,7 +19,8 @@
     "nav": {
       "dashboard": "Dashboard",
       "groups": "Groups",
-      "students": "Students"
+      "students": "Students",
+      "attendance": "Attendance"
     },
     "home": {
       "title": "Admin dashboard",
@@ -66,6 +67,46 @@
         "fullNameRequired": "Name is required."
       },
       "deleteConfirm": "Delete \"{name}\"?"
+    },
+    "attendance": {
+      "title": "Attendance",
+      "pickGroup": "Pick a group to manage attendance.",
+      "emptyGroups": "Create a group before tracking attendance.",
+      "groupTitle": "Attendance — {name}",
+      "newSession": "New session",
+      "newSessionFor": "New session — {name}",
+      "upcoming": "Upcoming",
+      "past": "History",
+      "noUpcoming": "No upcoming sessions.",
+      "noPast": "No past sessions yet.",
+      "noStudentsWarning": "This group has no students. Add students to be able to record attendance.",
+      "noStudentsInGroup": "This group has no students. Add students to the group to record attendance.",
+      "sessionsSummary": "{scheduled, plural, =0 {no pending} =1 {1 pending} other {# pending}} · {held, plural, =0 {0 held} =1 {1 held} other {# held}}",
+      "attendanceRatio": "{present}/{total} present",
+      "statusLabel": "Status",
+      "status": {
+        "scheduled": "Scheduled",
+        "held": "Held",
+        "cancelled": "Cancelled"
+      },
+      "minutes": "min",
+      "open": "Open",
+      "sheetTitle": "Attendance sheet",
+      "saved": "Saved ✓",
+      "deleteConfirm": "Delete the session on {name}?",
+      "fields": {
+        "date": "Date",
+        "time": "Time",
+        "duration": "Duration (minutes)",
+        "notesPlaceholder": "Coach notes (optional)"
+      },
+      "errors": {
+        "dateTimeRequired": "Date and time are required.",
+        "durationInvalid": "Duration must be a positive number of minutes.",
+        "duplicateSession": "A session for this group at that date/time already exists.",
+        "insertFailed": "Could not create the session. Try again.",
+        "noStudents": "This group has no students."
+      }
     }
   },
   "coach": {

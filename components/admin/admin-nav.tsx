@@ -7,7 +7,8 @@ import { useTranslations } from 'next-intl';
 const LINKS = [
   { href: '/admin', key: 'dashboard', exact: true },
   { href: '/admin/groups', key: 'groups', exact: false },
-  { href: '/admin/students', key: 'students', exact: false }
+  { href: '/admin/students', key: 'students', exact: false },
+  { href: '/admin/attendance', key: 'attendance', exact: false }
 ] as const;
 
 export function AdminNav() {
