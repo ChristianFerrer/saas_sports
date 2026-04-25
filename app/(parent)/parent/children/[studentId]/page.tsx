@@ -16,9 +16,9 @@ import { getFormatter, getTranslations } from 'next-intl/server';
 import { AppShell } from '@/components/ui/app-shell';
 import { PremiumAchievementBadge } from '@/components/ui/premium-achievement-badge';
 import { PremiumLineChart } from '@/components/ui/premium-line-chart';
-import { PremiumProfileHero } from '@/components/ui/premium-profile-hero';
+import { PremiumPlayerCard } from '@/components/ui/premium-player-card';
 import { PremiumProgressBar } from '@/components/ui/premium-progress-bar';
-import { PremiumProgressRing } from '@/components/ui/premium-progress-ring';
+import { PremiumProgressPanel } from '@/components/ui/premium-progress-panel';
 import { PremiumSectionTitle } from '@/components/ui/premium-section-title';
 import { PremiumStatCard } from '@/components/ui/premium-stat-card';
 import {
@@ -26,7 +26,9 @@ import {
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
 import { requireRole } from '@/lib/auth/guards';
+import { ageYearsMonths } from '@/lib/students/age';
 import { buildMonthlyAttendanceSeries } from '@/lib/students/attendance-series';
+import { buildMonthlySkillSeries, seasonLabel } from '@/lib/students/skill-series';
 import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
@@ -39,6 +41,9 @@ type StudentRow = {
   left_at: string | null;
   dorsal_number: number | null;
   position: string | null;
+  dominant_foot: 'left' | 'right' | 'both' | null;
+  height_cm: number | null;
+  weight_kg: number | null;
   photo_url: string | null;
 };
 
@@ -91,17 +96,6 @@ function initialsOf(name: string): string {
     .join('');
 }
 
-function ageFromBirth(birthDate: string | null): number | null {
-  if (!birthDate) return null;
-  const b = new Date(birthDate);
-  if (Number.isNaN(b.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - b.getFullYear();
-  const m = now.getMonth() - b.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age -= 1;
-  return age;
-}
-
 export default async function ParentChildPage({
   params
 }: {
@@ -124,7 +118,7 @@ export default async function ParentChildPage({
     .from('students')
     .select(
       'id, full_name, group_id, birth_date, enrolled_at, left_at, ' +
-        'dorsal_number, position, photo_url'
+        'dorsal_number, position, dominant_foot, height_cm, weight_kg, photo_url'
     )
     .eq('id', params.studentId)
     .maybeSingle();
@@ -139,7 +133,8 @@ export default async function ParentChildPage({
     currentObjectivesResult,
     achievementsResult,
     messagesResult,
-    skillsResult
+    skillsResult,
+    snapshotsResult
   ] = await Promise.all([
     s.group_id
       ? supabase
@@ -182,7 +177,12 @@ export default async function ParentChildPage({
       .eq('parent_user_id', user.id)
       .order('communication_id', { ascending: false })
       .limit(3),
-    supabase.from('student_skills').select('skill, value').eq('student_id', s.id)
+    supabase.from('student_skills').select('skill, value').eq('student_id', s.id),
+    supabase
+      .from('student_skill_snapshots')
+      .select('captured_month, value')
+      .eq('student_id', s.id)
+      .order('captured_month', { ascending: true })
   ]);
 
   const group = groupResult.data as {
@@ -347,31 +347,95 @@ export default async function ParentChildPage({
         }
       ];
 
-  const age = ageFromBirth(s.birth_date);
+  const ageYM = ageYearsMonths(s.birth_date);
 
-  const metaItems: Array<{ label: string; value: React.ReactNode }> = [];
+  // Player-card meta lines for the left panel.
+  const playerMetaLines: string[] = [];
+  if (s.position || group) {
+    playerMetaLines.push([s.position, group?.name].filter(Boolean).join(' · '));
+  }
+  if (s.birth_date) {
+    const dob = format.dateTime(new Date(s.birth_date), {
+      dateStyle: 'long',
+      timeZone: 'UTC'
+    });
+    if (ageYM) {
+      const parts: string[] = [];
+      if (ageYM.years > 0)
+        parts.push(
+          ageYM.years === 1
+            ? t('admin.students.detail.ageYearOne')
+            : t('admin.students.detail.ageYearOther', { count: ageYM.years })
+        );
+      if (ageYM.months > 0)
+        parts.push(
+          ageYM.months === 1
+            ? t('admin.students.detail.ageMonthOne')
+            : t('admin.students.detail.ageMonthOther', { count: ageYM.months })
+        );
+      const ageStr = parts.length > 0 ? ` (${parts.join(' ')})` : '';
+      playerMetaLines.push(`${dob}${ageStr}`);
+    } else {
+      playerMetaLines.push(dob);
+    }
+  }
   if (group) {
-    metaItems.push({
-      label: t('parent.detail.meta.group'),
-      value: group.name
+    playerMetaLines.push(t('admin.students.detail.groupLine', { group: group.name }));
+  }
+
+  const playerStats: Array<{ label: string; value: React.ReactNode }> = [];
+  if (s.height_cm) {
+    playerStats.push({
+      label: t('admin.students.detail.height'),
+      value: `${s.height_cm} cm`
     });
   }
-  if (age !== null) {
-    metaItems.push({
-      label: t('parent.detail.meta.age'),
-      value: `${age} ${t('admin.students.detail.age')}`
+  if (s.weight_kg) {
+    playerStats.push({
+      label: t('admin.students.detail.weight'),
+      value: `${s.weight_kg} kg`
     });
   }
-  if (nextSession) {
-    metaItems.push({
-      label: t('parent.detail.meta.nextSession'),
-      value: format.dateTime(new Date(nextSession.scheduled_at), {
-        dateStyle: 'short',
-        timeStyle: 'short',
-        timeZone: 'UTC'
-      })
+  if (s.dominant_foot) {
+    playerStats.push({
+      label: t('admin.students.detail.dominantFoot'),
+      value:
+        s.dominant_foot === 'right'
+          ? t('admin.students.fields.dominantFootRight')
+          : s.dominant_foot === 'left'
+            ? t('admin.students.fields.dominantFootLeft')
+            : t('admin.students.fields.dominantFootBoth')
     });
   }
+
+  // Mi progreso for parent — same shape as admin, but read-only and
+  // averaged across the 5 skills.
+  const snapshots = (snapshotsResult.data ?? []) as Array<{
+    captured_month: string;
+    value: number;
+  }>;
+  const skillItems = SKILL_KEYS.map((k: SkillKey) => ({
+    key: k,
+    label: t(`parent.detail.skills.${k}` as const),
+    value: skillByKey.get(k) ?? 0
+  }));
+  const skillsWithValue = skillItems.filter((sk) => sk.value > 0);
+  const globalScore =
+    skillsWithValue.length === 0
+      ? null
+      : Math.round(
+          skillsWithValue.reduce((sum, sk) => sum + sk.value, 0) /
+            skillsWithValue.length
+        );
+  const progressSeries = buildMonthlySkillSeries(snapshots, 10);
+  const encouragingScore =
+    globalScore !== null && globalScore >= 70
+      ? t('admin.students.detail.progress.encouragingHigh')
+      : globalScore !== null && globalScore >= 50
+        ? t('admin.students.detail.progress.encouragingMid')
+        : globalScore !== null
+          ? t('admin.students.detail.progress.encouragingLow')
+          : null;
 
   return (
     <AppShell
@@ -388,24 +452,35 @@ export default async function ParentChildPage({
         {t('parent.home.title')}
       </Link>
 
-      <PremiumProfileHero
-        kicker={s.position ?? t('parent.detail.heroKicker')}
-        title={s.full_name}
-        subtitle={positiveMessage}
-        initials={initialsOf(s.full_name)}
-        photoUrl={s.photo_url}
-        dorsal={s.dorsal_number ?? undefined}
-        meta={metaItems}
-        rightSlot={
-          <PremiumProgressRing
-            value={pct}
-            size={148}
-            strokeWidth={14}
-            variant="gold"
-            sublabel={t('parent.detail.attendance')}
-          />
-        }
-      />
+      <div className="grid items-stretch gap-4 lg:grid-cols-2">
+        <PremiumPlayerCard
+          fullName={s.full_name}
+          initials={initialsOf(s.full_name)}
+          photoUrl={s.photo_url}
+          meta={playerMetaLines}
+          dorsal={s.dorsal_number ?? null}
+          dorsalLabel={t('admin.students.detail.dorsalLabel')}
+          stats={playerStats}
+        />
+        <PremiumProgressPanel
+          title={t('admin.students.detail.progress.title')}
+          seasonLabel={t('admin.students.detail.progress.season', {
+            season: seasonLabel()
+          })}
+          globalScore={globalScore}
+          globalLabel={t('admin.students.detail.progress.global')}
+          skills={skillItems}
+          series={progressSeries}
+          encouragingLine={encouragingScore ?? positiveMessage}
+          emptyHint={t('admin.students.detail.progress.emptySeries')}
+        />
+      </div>
+
+      {s.left_at ? (
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-300">
+          {t('admin.students.detail.inactive')}
+        </p>
+      ) : null}
 
       {/* Monthly attendance trend */}
       {(() => {
@@ -660,7 +735,7 @@ export default async function ParentChildPage({
                         ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-ink-300'
                         : att.present
                           ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500/20 text-emerald-300'
-                          : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-500/15/20 text-red-300'
+                          : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-500/20 text-red-300'
                     }
                   >
                     {!att ? (
