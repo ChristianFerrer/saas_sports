@@ -1,16 +1,20 @@
 'use client';
 
-import { Check } from 'lucide-react';
+import { Check, Frown, Meh, Smile } from 'lucide-react';
 import { useFormState, useFormStatus } from 'react-dom';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { AttendanceFormState } from '@/app/(admin)/admin/attendance/actions';
+
+type Mood = 0 | 1 | 2 | null;
 
 type StudentEntry = {
   id: string;
   fullName: string;
   present: boolean;
   notes: string;
+  mood: Mood;
 };
 
 type AttendanceSheetProps = {
@@ -70,6 +74,17 @@ export function AttendanceSheet({
               placeholder={t('fields.notesPlaceholder')}
               className="mt-2.5 block w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-ink-50 placeholder:text-ink-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             />
+            <MoodPicker
+              id={s.id}
+              defaultValue={s.mood}
+              legend={t('fields.moodLegend')}
+              labels={{
+                happy: t('mood.happy'),
+                neutral: t('mood.neutral'),
+                sad: t('mood.sad'),
+                clear: t('mood.clear')
+              }}
+            />
           </li>
         ))}
       </ul>
@@ -117,6 +132,65 @@ function PresenceToggle({ id, defaultChecked }: { id: string; defaultChecked: bo
     </span>
   );
 }
+
+function MoodPicker({
+  id,
+  defaultValue,
+  legend,
+  labels
+}: {
+  id: string;
+  defaultValue: Mood;
+  legend: string;
+  labels: { happy: string; neutral: string; sad: string; clear: string };
+}) {
+  const [value, setValue] = useState<Mood>(defaultValue);
+  const options: Array<{ v: 0 | 1 | 2; label: string; icon: ReactIcon }> = [
+    { v: 2, label: labels.happy, icon: Smile },
+    { v: 1, label: labels.neutral, icon: Meh },
+    { v: 0, label: labels.sad, icon: Frown }
+  ];
+  return (
+    <div className="mt-2.5 flex items-center gap-2">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-300">
+        {legend}
+      </span>
+      <input type="hidden" name={`mood_${id}`} value={value == null ? '' : String(value)} />
+      <div className="flex items-center gap-1">
+        {options.map((opt) => {
+          const Icon = opt.icon;
+          const active = value === opt.v;
+          const cls = active
+            ? 'inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-gold-300 to-gold-500 text-navy-900 shadow-gold-glow'
+            : 'inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-ink-300 hover:text-ink-100';
+          return (
+            <button
+              key={opt.v}
+              type="button"
+              onClick={() => setValue(active ? null : opt.v)}
+              className={cls}
+              aria-label={opt.label}
+              title={opt.label}
+            >
+              <Icon size={14} strokeWidth={2.4} aria-hidden />
+            </button>
+          );
+        })}
+        {value != null ? (
+          <button
+            type="button"
+            onClick={() => setValue(null)}
+            className="ml-1 text-[10px] font-medium text-ink-400 hover:text-ink-200"
+          >
+            {labels.clear}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+type ReactIcon = typeof Smile;
 
 function SubmitButton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();

@@ -4,6 +4,7 @@
 
 export type UserRole = 'admin' | 'coach' | 'parent';
 export type SessionStatus = 'scheduled' | 'held' | 'cancelled';
+export type LkLevel = 'little_kicks' | 'junior' | 'mighty' | 'mega';
 
 export type GroupScheduleEntry = {
   weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -79,6 +80,7 @@ export type Database = {
           start_date: string | null;
           end_date: string | null;
           display_order: number;
+          lk_level: LkLevel | null;
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -89,6 +91,7 @@ export type Database = {
           start_date?: string | null;
           end_date?: string | null;
           display_order?: number;
+          lk_level?: LkLevel | null;
         };
         Update: Partial<{
           coach_id: UUID | null;
@@ -97,6 +100,7 @@ export type Database = {
           start_date: string | null;
           end_date: string | null;
           display_order: number;
+          lk_level: LkLevel | null;
         }>;
       };
       students: {
@@ -114,6 +118,8 @@ export type Database = {
           dominant_foot: 'left' | 'right' | 'both' | null;
           height_cm: number | null;
           weight_kg: number | null;
+          english_vocab_known: string[];
+          english_vocab_used: string[];
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -129,6 +135,8 @@ export type Database = {
           dominant_foot?: 'left' | 'right' | 'both' | null;
           height_cm?: number | null;
           weight_kg?: number | null;
+          english_vocab_known?: string[];
+          english_vocab_used?: string[];
         };
         Update: Partial<{
           group_id: UUID | null;
@@ -142,6 +150,8 @@ export type Database = {
           dominant_foot: 'left' | 'right' | 'both' | null;
           height_cm: number | null;
           weight_kg: number | null;
+          english_vocab_known: string[];
+          english_vocab_used: string[];
         }>;
       };
       student_parents: {
@@ -166,6 +176,7 @@ export type Database = {
           duration_minutes: number;
           status: SessionStatus;
           notes: string | null;
+          target_vocabulary: string[];
         } & WithTimestamps;
         Insert: {
           id?: UUID;
@@ -174,12 +185,14 @@ export type Database = {
           duration_minutes?: number;
           status?: SessionStatus;
           notes?: string | null;
+          target_vocabulary?: string[];
         };
         Update: Partial<{
           scheduled_at: Timestamp;
           duration_minutes: number;
           status: SessionStatus;
           notes: string | null;
+          target_vocabulary: string[];
         }>;
       };
       attendances: {
@@ -189,6 +202,7 @@ export type Database = {
           student_id: UUID;
           present: boolean;
           coach_notes: string | null;
+          mood: number | null;
           created_by: UUID;
         } & WithTimestamps;
         Insert: {
@@ -197,11 +211,13 @@ export type Database = {
           student_id: UUID;
           present: boolean;
           coach_notes?: string | null;
+          mood?: number | null;
           created_by: UUID;
         };
         Update: Partial<{
           present: boolean;
           coach_notes: string | null;
+          mood: number | null;
         }>;
       };
       communications: {

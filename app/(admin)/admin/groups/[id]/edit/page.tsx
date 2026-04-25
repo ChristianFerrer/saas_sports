@@ -6,7 +6,7 @@ import { GroupForm } from '@/components/admin/group-form';
 import { AppShell } from '@/components/ui/app-shell';
 import { requireRole } from '@/lib/auth/guards';
 import { createUntypedClient } from '@/lib/supabase/server';
-import type { GroupScheduleEntry } from '@/types/database';
+import type { GroupScheduleEntry, LkLevel } from '@/types/database';
 
 type GroupRow = {
   id: string;
@@ -16,6 +16,7 @@ type GroupRow = {
   start_date: string | null;
   end_date: string | null;
   display_order: number;
+  lk_level: LkLevel | null;
 };
 
 type CoachRow = { user_id: string; full_name: string };
@@ -32,7 +33,9 @@ export default async function EditGroupPage({
   const [{ data: groupData }, { data: coachesData }] = await Promise.all([
     supabase
       .from('groups')
-      .select('id, name, schedule, coach_id, start_date, end_date, display_order')
+      .select(
+        'id, name, schedule, coach_id, start_date, end_date, display_order, lk_level'
+      )
       .eq('id', params.id)
       .maybeSingle(),
     supabase
@@ -73,11 +76,13 @@ export default async function EditGroupPage({
           defaultStartDate={group.start_date}
           defaultEndDate={group.end_date}
           defaultDisplayOrder={group.display_order ?? 0}
+          defaultLkLevel={group.lk_level}
           coaches={coaches.map((c) => ({ id: c.user_id, fullName: c.full_name }))}
           showSchedule
           showCoach
           showCycle
           showOrder
+          showLkLevel
           submitLabel={t('common.save')}
         />
       </div>

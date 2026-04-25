@@ -37,11 +37,17 @@ export async function saveCoachAttendance(
 
   const rows = (students ?? []).map((s: { id: string }) => {
     const rawNotes = String(formData.get(`notes_${s.id}`) ?? '').trim();
+    const rawMood = String(formData.get(`mood_${s.id}`) ?? '');
+    let mood: number | null = null;
+    if (rawMood === '0' || rawMood === '1' || rawMood === '2') {
+      mood = Number.parseInt(rawMood, 10);
+    }
     return {
       session_id: sessionId,
       student_id: s.id,
       present: formData.get(`present_${s.id}`) === 'on',
       coach_notes: rawNotes === '' ? null : rawNotes,
+      mood,
       created_by: user.id
     };
   });

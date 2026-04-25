@@ -16,12 +16,22 @@ type Props = {
   photoUrl?: string | null;
   /** Lines of meta below the name (e.g. "Delantero · Sub 6"). */
   meta: string[];
-  /** Big jersey number; if null/undefined the block is hidden. */
-  dorsal?: number | null;
+  /**
+   * Big highlighted block on the left. Originally the jersey number;
+   * also used for the LK trimester tag (e.g. "Q3"). Accepts numbers
+   * or short strings. If null/undefined the block is hidden.
+   */
+  dorsal?: ReactNode;
   dorsalLabel: string;
   /** 1-3 stat cells rendered along the bottom (Altura / Peso / Pierna…). */
   stats?: Stat[];
 };
+
+function isHiddenDorsal(d: ReactNode): boolean {
+  if (d == null) return true;
+  if (d === 0 || d === '0' || d === '') return true;
+  return false;
+}
 
 /**
  * Player-card hero used at the top of the student detail (admin and
@@ -60,7 +70,7 @@ export function PremiumPlayerCard({
             ) : null}
           </div>
 
-          {dorsal != null && dorsal !== 0 ? (
+          {!isHiddenDorsal(dorsal) ? (
             <div className="mt-1">
               <p className="font-display text-5xl font-extrabold leading-none text-gradient-gold sm:text-6xl">
                 {dorsal}

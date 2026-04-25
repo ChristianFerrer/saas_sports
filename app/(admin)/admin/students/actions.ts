@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { requireRole } from '@/lib/auth/guards';
-import { isSkillKey } from '@/lib/students/skills';
+import { isAnySkillKey } from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
 
 export type StudentFormState = { error?: string };
@@ -238,7 +238,7 @@ export async function saveStudentSkills(
   for (const [key, raw] of formData.entries()) {
     if (!key.startsWith('skill_')) continue;
     const skill = key.slice('skill_'.length);
-    if (!isSkillKey(skill)) continue;
+    if (!isAnySkillKey(skill)) continue;
     const parsed = Number.parseInt(String(raw), 10);
     if (!Number.isFinite(parsed)) continue;
     const value = Math.max(0, Math.min(100, parsed));

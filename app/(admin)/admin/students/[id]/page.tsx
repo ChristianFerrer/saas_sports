@@ -7,10 +7,13 @@ import {
   CheckSquare,
   ChevronLeft,
   ChevronRight,
+  Frown,
   Layers,
   LogOut as LogOutIcon,
+  Meh,
   Pencil,
   Phone,
+  Smile,
   Sparkles,
   Target,
   Trophy,
@@ -30,19 +33,27 @@ import { PremiumAchievementBadge } from '@/components/ui/premium-achievement-bad
 import { PremiumLineChart } from '@/components/ui/premium-line-chart';
 import { PremiumPlayerCard } from '@/components/ui/premium-player-card';
 import { PremiumProgressPanel } from '@/components/ui/premium-progress-panel';
-import { PremiumProgressRing } from '@/components/ui/premium-progress-ring';
 import { PremiumSectionTitle } from '@/components/ui/premium-section-title';
 import { PremiumStatCard } from '@/components/ui/premium-stat-card';
 import {
   PremiumTimelineRoadmap,
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
+import { SoftSkillsPanel } from '@/components/ui/soft-skills-panel';
+import { VocabularyPanel } from '@/components/ui/vocabulary-panel';
 import { requireRole } from '@/lib/auth/guards';
 import { ageYearsMonths } from '@/lib/students/age';
 import { buildMonthlyAttendanceSeries } from '@/lib/students/attendance-series';
-import { buildMonthlySkillSeries, seasonLabel } from '@/lib/students/skill-series';
-import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
+import { LK_LEVELS, lkLevelFromAge, lkLevelOrder } from '@/lib/students/lk-levels';
+import { buildMonthlySkillSeries } from '@/lib/students/skill-series';
+import {
+  SKILL_KEYS,
+  SOFT_SKILL_KEYS,
+  type SkillKey,
+  type SoftSkillKey
+} from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
+import type { LkLevel } from '@/types/database';
 
 type StudentRow = {
   id: string;
@@ -58,9 +69,9 @@ type StudentRow = {
   height_cm: number | null;
   weight_kg: number | null;
   photo_url: string | null;
+  english_vocab_known: string[] | null;
+  english_vocab_used: string[] | null;
 };
-
-type GroupRow = { id: string; name: string };
 
 type ParentLinkRow = {
   parent_user_id: string;
@@ -72,6 +83,7 @@ type AttendanceRow = {
   session_id: string;
   present: boolean;
   coach_notes: string | null;
+  mood: number | null;
 };
 
 type SessionRow = {
@@ -79,6 +91,7 @@ type SessionRow = {
   scheduled_at: string;
   duration_minutes: number;
   status: 'scheduled' | 'held' | 'cancelled';
+  target_vocabulary: string[] | null;
 };
 
 type CurrentObjectiveRow = {
@@ -132,7 +145,8 @@ export default async function AdminStudentDetailPage({
     .from('students')
     .select(
       'id, school_id, group_id, full_name, birth_date, enrolled_at, left_at, ' +
-        'dorsal_number, position, dominant_foot, height_cm, weight_kg, photo_url'
+        'dorsal_number, position, dominant_foot, height_cm, weight_kg, photo_url, ' +
+        'english_vocab_known, english_vocab_used'
     )
     .eq('id', params.id)
     .maybeSingle();
@@ -154,11 +168,18 @@ export default async function AdminStudentDetailPage({
     student.group_id
       ? supabase
           .from('groups')
-          .select('id, name, coach_id')
+          .select('id, name, coach_id, lk_level, start_date, end_date')
           .eq('id', student.group_id)
           .maybeSingle()
       : Promise.resolve({
-          data: null as { id: string; name: string; coach_id: string | null } | null
+          data: null as {
+            id: string;
+            name: string;
+            coach_id: string | null;
+            lk_level: LkLevel | null;
+            start_date: string | null;
+            end_date: string | null;
+          } | null
         }),
     supabase
       .from('student_parents')
@@ -168,12 +189,12 @@ export default async function AdminStudentDetailPage({
       .eq('student_id', student.id),
     supabase
       .from('attendances')
-      .select('session_id, present, coach_notes')
+      .select('session_id, present, coach_notes, mood')
       .eq('student_id', student.id),
     student.group_id
       ? supabase
           .from('class_sessions')
-          .select('id, scheduled_at, duration_minutes, status')
+          .select('id, scheduled_at, duration_minutes, status, target_vocabulary')
           .eq('group_id', student.group_id)
           .order('scheduled_at', { ascending: false })
       : Promise.resolve({ data: [] as SessionRow[] }),
@@ -194,7 +215,7 @@ export default async function AdminStudentDetailPage({
       .order('achieved_at', { ascending: false }),
     supabase
       .from('groups')
-      .select('id, name, created_at, display_order')
+      .select('id, name, created_at, display_order, lk_level')
       .eq('school_id', user.profile.school_id)
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: true }),
@@ -213,6 +234,9 @@ export default async function AdminStudentDetailPage({
     id: string;
     name: string;
     coach_id: string | null;
+    lk_level: LkLevel | null;
+    start_date: string | null;
+    end_date: string | null;
   } | null;
 
   // Coach is a second fetch because it depends on group.coach_id.
@@ -236,6 +260,7 @@ export default async function AdminStudentDetailPage({
     name: string;
     created_at: string;
     display_order: number;
+    lk_level: LkLevel | null;
   }>;
   const skillRows = (skillsResult.data ?? []) as Array<{
     skill: string;
@@ -299,38 +324,66 @@ export default async function AdminStudentDetailPage({
     .slice()
     .reverse()[0];
 
-  // Roadmap: derive from schoolGroups + student's historical + current
+  // LK roadmap (fixed 4 programmes + Graduación). Current level comes from
+  // the student's group lk_level; if null, we fall back to age. Past levels
+  // are inferred from previously completed groups that had a lk_level.
   const pastGroupIds = new Set<string>();
   for (const a of historicalAchievements) {
     if (a.objectives?.group_id) pastGroupIds.add(a.objectives.group_id);
   }
-  const currentGroupId = student.group_id ?? null;
-  const roadmapSteps: RoadmapStep[] = schoolGroups.map((g) => {
-    let state: RoadmapStep['state'];
-    if (g.id === currentGroupId) state = 'current';
-    else if (pastGroupIds.has(g.id)) state = 'done';
-    else state = 'upcoming';
-    return { label: g.name, state };
-  });
-  // Append a final "Futuro" step if we have any steps.
-  if (roadmapSteps.length > 0) {
-    roadmapSteps.push({
-      label: t('admin.students.detail.futureLabel'),
-      sub: t('admin.students.detail.futureSub'),
-      state: 'dream'
-    });
+  const pastLevels = new Set<LkLevel>();
+  for (const g of schoolGroups) {
+    if (g.lk_level && pastGroupIds.has(g.id)) pastLevels.add(g.lk_level);
   }
+  const currentLkLevel: LkLevel | null =
+    group?.lk_level ?? lkLevelFromAge(student.birth_date);
+  const currentOrder = currentLkLevel ? lkLevelOrder(currentLkLevel) : -1;
+  const roadmapSteps: RoadmapStep[] = LK_LEVELS.map((lvl) => {
+    let state: RoadmapStep['state'];
+    if (currentLkLevel && lvl.key === currentLkLevel) state = 'current';
+    else if (pastLevels.has(lvl.key)) state = 'done';
+    else if (currentOrder >= 0 && lkLevelOrder(lvl.key) < currentOrder)
+      state = 'done';
+    else state = 'upcoming';
+    return {
+      label: t(`admin.students.detail.lkLevel.${lvl.key}` as const),
+      sub: t(`admin.students.detail.lkLevelAge.${lvl.key}` as const),
+      state
+    };
+  });
+  roadmapSteps.push({
+    label: t('admin.students.detail.lkLevel.graduation'),
+    sub: t('admin.students.detail.futureSub'),
+    state: 'dream'
+  });
+  const completedTermsCount = pastLevels.size;
 
-  const dorsal = student.dorsal_number ?? null;
   const footLabel = dominantFootLabel(t, student.dominant_foot);
   const ageYM = ageYearsMonths(student.birth_date);
 
-  // Hero meta lines (left panel): "Position · Sub-X" + "DD month YYYY (X años Y meses)" + "Grupo X".
+  // Trimester window from group cycle dates → "Oct – Dic" pill on the
+  // big block. The label localises both ends if present.
+  const termRange =
+    group?.start_date && group?.end_date
+      ? format.dateTime(new Date(group.start_date), {
+          month: 'short',
+          timeZone: 'UTC'
+        }) +
+        ' – ' +
+        format.dateTime(new Date(group.end_date), {
+          month: 'short',
+          timeZone: 'UTC'
+        })
+      : null;
+  const termTag = termRange ?? '—';
+
+  // Hero meta lines: "Programa LK · Grupo" → "DOB (X años Y meses)" → "Coach: …"
   const playerMetaLines: string[] = [];
-  if (student.position || group) {
-    playerMetaLines.push(
-      [student.position, group?.name].filter(Boolean).join(' · ')
-    );
+  const lkLevelLabel = currentLkLevel
+    ? t(`admin.students.detail.lkLevel.${currentLkLevel}` as const)
+    : null;
+  if (lkLevelLabel || group) {
+    playerMetaLines.push([lkLevelLabel, group?.name].filter(Boolean).join(' · '));
   }
   if (student.birth_date) {
     const dob = format.dateTime(new Date(student.birth_date), {
@@ -357,12 +410,24 @@ export default async function AdminStudentDetailPage({
       playerMetaLines.push(dob);
     }
   }
-  if (group) {
-    playerMetaLines.push(t('admin.students.detail.groupLine', { group: group.name }));
-  }
 
-  // Stats grid (Altura / Peso / Pierna) — only render the cells with data.
+  // Stats grid: First class + Trimestres completados always, plus
+  // height / weight / foot when populated.
   const playerStats: Array<{ label: string; value: React.ReactNode }> = [];
+  if (student.enrolled_at) {
+    playerStats.push({
+      label: t('admin.students.detail.firstClass'),
+      value: format.dateTime(new Date(student.enrolled_at), {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC'
+      })
+    });
+  }
+  playerStats.push({
+    label: t('admin.students.detail.completedTerms'),
+    value: String(completedTermsCount)
+  });
   if (student.height_cm) {
     playerStats.push({
       label: t('admin.students.detail.height'),
@@ -382,29 +447,70 @@ export default async function AdminStudentDetailPage({
     });
   }
 
-  // Mi progreso — current per-skill values + global average + monthly series.
+  // Mi progreso — 5 LK skills + monthly perception line. The big ring
+  // shows the % of badge sub-skills unlocked this term, not the skill
+  // average (that's the LK methodology).
   const skillItems = SKILL_KEYS.map((k: SkillKey) => ({
     key: k,
     label: t(`parent.detail.skills.${k}` as const),
     value: skillsByKey.get(k) ?? 0
   }));
-  const skillsWithValue = skillItems.filter((s) => s.value > 0);
-  const globalScore =
-    skillsWithValue.length === 0
+  const softSkillItems = SOFT_SKILL_KEYS.map((k: SoftSkillKey) => ({
+    key: k,
+    label: t(`admin.students.detail.softSkillsValues.${k}` as const),
+    value: skillsByKey.get(k) ?? 0
+  }));
+  const badgePct =
+    currentObjectivesTotal === 0
       ? null
-      : Math.round(
-          skillsWithValue.reduce((sum, s) => sum + s.value, 0) /
-            skillsWithValue.length
-        );
+      : Math.round((currentAchievedCount / currentObjectivesTotal) * 100);
   const skillSeries = buildMonthlySkillSeries(snapshots, 10);
   const encouragingLine =
-    globalScore !== null && globalScore >= 70
+    badgePct !== null && badgePct >= 70
       ? t('admin.students.detail.progress.encouragingHigh')
-      : globalScore !== null && globalScore >= 50
+      : badgePct !== null && badgePct >= 50
         ? t('admin.students.detail.progress.encouragingMid')
-        : globalScore !== null
+        : badgePct !== null
           ? t('admin.students.detail.progress.encouragingLow')
           : null;
+
+  // Mood average (0..2) across recorded attendances within the
+  // enrollment window. Drives the new disfrute KPI.
+  const moodValues: number[] = [];
+  for (const a of attendance) {
+    if (a.mood === 0 || a.mood === 1 || a.mood === 2) moodValues.push(a.mood);
+  }
+  const moodAvg =
+    moodValues.length === 0
+      ? null
+      : moodValues.reduce((s, v) => s + v, 0) / moodValues.length;
+  const moodLabel =
+    moodAvg === null
+      ? '—'
+      : moodAvg >= 1.5
+        ? t('admin.students.detail.mood.averageHigh')
+        : moodAvg >= 0.8
+          ? t('admin.students.detail.mood.averageMid')
+          : t('admin.students.detail.mood.averageLow');
+  const moodIcon =
+    moodAvg === null ? Meh : moodAvg >= 1.5 ? Smile : moodAvg >= 0.8 ? Meh : Frown;
+  const MoodIcon = moodIcon;
+
+  // Vocabulary aggregates (union of session targets) and the latest
+  // session's words → "this week".
+  const termWords = Array.from(
+    new Set(
+      sessions.flatMap((ss) =>
+        Array.isArray(ss.target_vocabulary) ? ss.target_vocabulary : []
+      )
+    )
+  );
+  const lastSessionWithWords = sessions.find(
+    (ss) => Array.isArray(ss.target_vocabulary) && ss.target_vocabulary.length > 0
+  );
+  const weekWords = lastSessionWithWords?.target_vocabulary ?? [];
+  const knownWords = student.english_vocab_known ?? [];
+  const usedWords = student.english_vocab_used ?? [];
 
   return (
     <AppShell
@@ -445,16 +551,16 @@ export default async function AdminStudentDetailPage({
           initials={initialsOf(student.full_name)}
           photoUrl={student.photo_url}
           meta={playerMetaLines}
-          dorsal={dorsal}
+          dorsal={termTag}
           dorsalLabel={t('admin.students.detail.dorsalLabel')}
           stats={playerStats}
         />
         <PremiumProgressPanel
           title={t('admin.students.detail.progress.title')}
-          seasonLabel={t('admin.students.detail.progress.season', {
-            season: seasonLabel()
+          seasonLabel={t('admin.students.detail.progress.term', {
+            label: termRange ?? t('admin.students.detail.termNoDates')
           })}
-          globalScore={globalScore}
+          globalScore={badgePct}
           globalLabel={t('admin.students.detail.progress.global')}
           skills={skillItems}
           series={skillSeries}
@@ -498,15 +604,15 @@ export default async function AdminStudentDetailPage({
         );
       })()}
 
-      {/* KPI row */}
+      {/* KPI row — Disfrute medio · Sub-skills del badge · Próxima sesión */}
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <PremiumStatCard
-          kicker={t('admin.students.detail.kpis.attendance')}
-          icon={<CheckSquare size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('parent.detail.kpis.mood')}
+          icon={<MoodIcon size={18} strokeWidth={2.2} aria-hidden />}
           accent="cyan"
-          value={attendancePct === null ? '—' : `${attendancePct}%`}
+          value={moodLabel}
           sub={
-            totalRecorded === 0
+            attendancePct === null
               ? t('admin.students.detail.noAttendance')
               : t('admin.students.detail.attendanceSummary', {
                   present: presentCount,
@@ -515,7 +621,7 @@ export default async function AdminStudentDetailPage({
           }
         />
         <PremiumStatCard
-          kicker={t('admin.students.detail.kpis.objectives')}
+          kicker={t('parent.detail.kpis.objectives')}
           icon={<Target size={18} strokeWidth={2.2} aria-hidden />}
           accent="gold"
           value={
@@ -526,7 +632,7 @@ export default async function AdminStudentDetailPage({
           sub={
             currentObjectivesTotal === 0
               ? t('admin.students.detail.objectivesEmpty')
-              : t('admin.students.detail.kpis.objectivesSub')
+              : t('parent.detail.kpis.objectivesSub')
           }
         />
         <PremiumStatCard
@@ -549,6 +655,44 @@ export default async function AdminStudentDetailPage({
           }
         />
       </div>
+
+      {/* English vocabulary tracker */}
+      <PremiumSectionTitle
+        kicker={t('admin.students.detail.vocabulary.kicker')}
+        title={t('admin.students.detail.vocabulary.title')}
+      />
+      <VocabularyPanel
+        kicker={t('admin.students.detail.vocabulary.kicker')}
+        title={t('admin.students.detail.vocabulary.title')}
+        termWords={termWords}
+        knownWords={knownWords}
+        usedWords={usedWords}
+        weekWords={weekWords}
+        weekLabel={t('admin.students.detail.vocabulary.wordsThisWeek')}
+        trackerLabel={
+          termWords.length === 0
+            ? t('admin.students.detail.vocabulary.trackerEmpty')
+            : t('admin.students.detail.vocabulary.tracker', {
+                known: knownWords.length,
+                total: termWords.length
+              })
+        }
+        knownLegend={t('admin.students.detail.vocabulary.knownLabel')}
+        usedLegend={t('admin.students.detail.vocabulary.usedLabel')}
+        emptyHint={t('admin.students.detail.vocabulary.noTarget')}
+      />
+
+      {/* Soft skills (Independencia / Confianza social / Sigue al coach) */}
+      <PremiumSectionTitle
+        kicker={t('admin.students.detail.softSkills.kicker')}
+        title={t('admin.students.detail.softSkills.title')}
+      />
+      <SoftSkillsPanel
+        kicker={t('admin.students.detail.softSkills.kicker')}
+        title={t('admin.students.detail.softSkills.title')}
+        hint={t('admin.students.detail.softSkills.hint')}
+        items={softSkillItems}
+      />
 
       {/* Camino formativo */}
       {roadmapSteps.length > 0 ? (
@@ -610,6 +754,12 @@ export default async function AdminStudentDetailPage({
             label: t(`parent.detail.skills.${k}` as const),
             value: skillsByKey.get(k) ?? 0
           }))}
+          softEntries={SOFT_SKILL_KEYS.map((k: SoftSkillKey) => ({
+            key: k,
+            label: t(`admin.students.detail.softSkillsValues.${k}` as const),
+            value: skillsByKey.get(k) ?? 0
+          }))}
+          softTitle={t('admin.students.detail.softSkills.title')}
           saveLabel={t('common.save')}
           savedLabel={t('admin.attendance.saved')}
         />
@@ -780,6 +930,22 @@ export default async function AdminStudentDetailPage({
                 timeStyle: 'short',
                 timeZone: 'UTC'
               });
+              const RowMoodIcon =
+                att?.mood === 2
+                  ? Smile
+                  : att?.mood === 1
+                    ? Meh
+                    : att?.mood === 0
+                      ? Frown
+                      : null;
+              const moodTitle =
+                att?.mood === 2
+                  ? t('admin.students.detail.mood.happy')
+                  : att?.mood === 1
+                    ? t('admin.students.detail.mood.neutral')
+                    : att?.mood === 0
+                      ? t('admin.students.detail.mood.sad')
+                      : '';
               return (
                 <li
                   key={s.id}
@@ -792,7 +958,7 @@ export default async function AdminStudentDetailPage({
                         ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-ink-300'
                         : att.present
                           ? 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-500/20 text-emerald-300'
-                          : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-500/15/20 text-red-300'
+                          : 'mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-500/20 text-red-300'
                     }
                   >
                     {!att ? (
@@ -808,11 +974,29 @@ export default async function AdminStudentDetailPage({
                     <p className="text-xs text-ink-300">
                       {t(`admin.attendance.status.${s.status}`)} ·{' '}
                       {s.duration_minutes} {t('admin.attendance.minutes')}
+                      {Array.isArray(s.target_vocabulary) &&
+                      s.target_vocabulary.length > 0 ? (
+                        <>
+                          {' · '}
+                          <span className="text-gold-300">
+                            {s.target_vocabulary.slice(0, 4).join(' · ')}
+                          </span>
+                        </>
+                      ) : null}
                     </p>
                     {att?.coach_notes ? (
                       <p className="mt-1 text-sm text-ink-200">{att.coach_notes}</p>
                     ) : null}
                   </div>
+                  {RowMoodIcon ? (
+                    <span
+                      title={moodTitle}
+                      aria-label={moodTitle}
+                      className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-ink-200"
+                    >
+                      <RowMoodIcon size={14} strokeWidth={2.4} aria-hidden />
+                    </span>
+                  ) : null}
                   <span
                     className={
                       !att

@@ -18,6 +18,8 @@ type SkillEntry = {
 type Props = {
   studentId: string;
   entries: SkillEntry[];
+  softEntries?: SkillEntry[];
+  softTitle?: string;
   saveLabel: string;
   savedLabel: string;
 };
@@ -32,6 +34,8 @@ const INITIAL: StudentSkillsFormState = {};
 export function StudentSkillsEditor({
   studentId,
   entries,
+  softEntries,
+  softTitle,
   saveLabel,
   savedLabel
 }: Props) {
@@ -40,44 +44,56 @@ export function StudentSkillsEditor({
   const [values, setValues] = useState<Record<string, number>>(() => {
     const out: Record<string, number> = {};
     for (const e of entries) out[e.key] = e.value;
+    for (const e of softEntries ?? []) out[e.key] = e.value;
     return out;
   });
 
+  const renderRow = (e: SkillEntry) => {
+    const v = values[e.key] ?? 0;
+    return (
+      <li key={e.key}>
+        <div className="flex items-center justify-between gap-2">
+          <label
+            htmlFor={`skill_${e.key}`}
+            className="text-[13px] font-medium text-ink-100"
+          >
+            {e.label}
+          </label>
+          <span className="tabular-nums text-sm font-semibold text-gold-300">
+            {v}
+          </span>
+        </div>
+        <input
+          id={`skill_${e.key}`}
+          name={`skill_${e.key}`}
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={v}
+          onChange={(evt) =>
+            setValues((curr) => ({ ...curr, [e.key]: Number(evt.target.value) }))
+          }
+          className="mt-1 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.08] accent-gold-400"
+        />
+      </li>
+    );
+  };
+
   return (
     <form action={formAction} className="space-y-4">
-      <ul className="space-y-4">
-        {entries.map((e) => {
-          const v = values[e.key] ?? 0;
-          return (
-            <li key={e.key}>
-              <div className="flex items-center justify-between gap-2">
-                <label
-                  htmlFor={`skill_${e.key}`}
-                  className="text-[13px] font-medium text-ink-100"
-                >
-                  {e.label}
-                </label>
-                <span className="tabular-nums text-sm font-semibold text-gold-300">
-                  {v}
-                </span>
-              </div>
-              <input
-                id={`skill_${e.key}`}
-                name={`skill_${e.key}`}
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={v}
-                onChange={(evt) =>
-                  setValues((curr) => ({ ...curr, [e.key]: Number(evt.target.value) }))
-                }
-                className="mt-1 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.08] accent-gold-400"
-              />
-            </li>
-          );
-        })}
-      </ul>
+      <ul className="space-y-4">{entries.map(renderRow)}</ul>
+
+      {softEntries && softEntries.length > 0 ? (
+        <div className="border-t border-white/[0.06] pt-4">
+          {softTitle ? (
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-300">
+              {softTitle}
+            </p>
+          ) : null}
+          <ul className="space-y-4">{softEntries.map(renderRow)}</ul>
+        </div>
+      ) : null}
 
       {state.error ? (
         <p role="alert" className="text-sm text-red-300">

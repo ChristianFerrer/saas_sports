@@ -9,6 +9,21 @@ import { createUntypedClient } from '@/lib/supabase/server';
 export type SessionFormState = { error?: string };
 export type AttendanceFormState = { error?: string; savedAt?: number };
 
+/**
+ * Splits "ball, kick run; jump" → ["ball","kick","run","jump"], trimmed
+ * and lowercased, deduped, capped at 12 entries to keep the UI sane.
+ */
+function parseVocabulary(raw: string): string[] {
+  return Array.from(
+    new Set(
+      raw
+        .split(/[\s,;]+/)
+        .map((w) => w.trim().toLowerCase())
+        .filter(Boolean)
+    )
+  ).slice(0, 12);
+}
+
 export async function createSession(
   groupId: string,
   _prev: SessionFormState,
@@ -21,6 +36,7 @@ export async function createSession(
   const durationStr = String(formData.get('duration_minutes') ?? '60').trim();
   const statusRaw = String(formData.get('status') ?? 'scheduled').trim();
   const notesRaw = String(formData.get('notes') ?? '').trim();
+  const vocabRaw = String(formData.get('target_vocabulary') ?? '').trim();
 
   if (!dateStr || !timeStr) return { error: 'dateTimeRequired' };
 
@@ -43,7 +59,8 @@ export async function createSession(
       scheduled_at: scheduledAt,
       duration_minutes: duration,
       status,
-      notes: notesRaw === '' ? null : notesRaw
+      notes: notesRaw === '' ? null : notesRaw,
+      target_vocabulary: parseVocabulary(vocabRaw)
     })
     .select('id')
     .single();
@@ -81,11 +98,17 @@ export async function saveAttendance(
 
   const rows = (students ?? []).map((s: { id: string }) => {
     const rawNotes = String(formData.get(`notes_${s.id}`) ?? '').trim();
+    const rawMood = String(formData.get(`mood_${s.id}`) ?? '');
+    let mood: number | null = null;
+    if (rawMood === '0' || rawMood === '1' || rawMood === '2') {
+      mood = Number.parseInt(rawMood, 10);
+    }
     return {
       session_id: sessionId,
       student_id: s.id,
       present: formData.get(`present_${s.id}`) === 'on',
       coach_notes: rawNotes === '' ? null : rawNotes,
+      mood,
       created_by: user.id
     };
   });
@@ -128,6 +151,7 @@ export async function editSession(
   const durationStr = String(formData.get('duration_minutes') ?? '60').trim();
   const statusRaw = String(formData.get('status') ?? 'scheduled').trim();
   const notesRaw = String(formData.get('notes') ?? '').trim();
+  const vocabRaw = String(formData.get('target_vocabulary') ?? '').trim();
 
   if (!dateStr || !timeStr) return { error: 'dateTimeRequired' };
 
@@ -146,7 +170,8 @@ export async function editSession(
       scheduled_at: scheduledAt,
       duration_minutes: duration,
       status,
-      notes: notesRaw === '' ? null : notesRaw
+      notes: notesRaw === '' ? null : notesRaw,
+      target_vocabulary: parseVocabulary(vocabRaw)
     })
     .eq('id', sessionId);
 

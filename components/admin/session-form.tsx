@@ -16,6 +16,7 @@ type SessionFormProps = {
     durationMinutes?: number;
     status?: 'scheduled' | 'held' | 'cancelled';
     notes?: string | null;
+    targetVocabulary?: string[] | null;
   };
 };
 
@@ -130,6 +131,23 @@ export function SessionForm({
           maxLength={140}
           defaultValue={defaults?.notes ?? ''}
           placeholder={t('fields.sessionNotesPlaceholder')}
+          className="ss-input"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="target_vocabulary" className="ss-label">
+          {t('fields.vocabulary')}{' '}
+          <span className="text-ink-400">{tCommon('optional')}</span>
+        </label>
+        <p className="text-xs text-ink-300">{t('fields.vocabularyHint')}</p>
+        <input
+          id="target_vocabulary"
+          name="target_vocabulary"
+          type="text"
+          maxLength={240}
+          defaultValue={(defaults?.targetVocabulary ?? []).join(', ')}
+          placeholder={t('fields.vocabularyPlaceholder')}
           className="ss-input"
         />
       </div>

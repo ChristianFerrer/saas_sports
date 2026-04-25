@@ -1,10 +1,16 @@
-import { Activity, Brain, Dumbbell, HeartHandshake, Target } from 'lucide-react';
+import {
+  Brain,
+  Dumbbell,
+  HeartHandshake,
+  Languages,
+  Target
+} from 'lucide-react';
 
 import { PremiumLineChart, type LinePoint } from './premium-line-chart';
 import { PremiumProgressRing } from './premium-progress-ring';
 
 export type ProgressSkill = {
-  /** SkillKey ('technique' | 'physical' | 'tactical' | 'mental' | 'social'). */
+  /** SkillKey ('cognitive' | 'physical' | 'football' | 'english' | 'social'). */
   key: string;
   label: string;
   value: number;
@@ -21,11 +27,11 @@ type Props = {
   emptyHint: string;
 };
 
-const SKILL_ICON: Record<string, typeof Activity> = {
-  technique: Target,
+const SKILL_ICON: Record<string, typeof Target> = {
+  cognitive: Brain,
   physical: Dumbbell,
-  tactical: Activity,
-  mental: Brain,
+  football: Target,
+  english: Languages,
   social: HeartHandshake
 };
 

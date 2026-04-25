@@ -20,6 +20,7 @@ type SessionRow = {
   duration_minutes: number;
   status: 'scheduled' | 'held' | 'cancelled';
   notes: string | null;
+  target_vocabulary: string[] | null;
 };
 
 export default async function EditSessionPage({
@@ -39,7 +40,9 @@ export default async function EditSessionPage({
       .maybeSingle(),
     supabase
       .from('class_sessions')
-      .select('id, group_id, scheduled_at, duration_minutes, status, notes')
+      .select(
+        'id, group_id, scheduled_at, duration_minutes, status, notes, target_vocabulary'
+      )
       .eq('id', params.sessionId)
       .maybeSingle()
   ]);
@@ -97,7 +100,8 @@ export default async function EditSessionPage({
             timeHHMM,
             durationMinutes: session.duration_minutes,
             status: session.status,
-            notes: session.notes
+            notes: session.notes,
+            targetVocabulary: session.target_vocabulary ?? []
           }}
         />
       </div>

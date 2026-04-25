@@ -5,8 +5,10 @@ import {
   CheckCircle2,
   CheckSquare,
   ChevronLeft,
+  Frown,
+  Meh,
   MessageSquareQuote,
-  Sparkles,
+  Smile,
   Target,
   Trophy,
   XCircle
@@ -17,7 +19,6 @@ import { AppShell } from '@/components/ui/app-shell';
 import { PremiumAchievementBadge } from '@/components/ui/premium-achievement-badge';
 import { PremiumLineChart } from '@/components/ui/premium-line-chart';
 import { PremiumPlayerCard } from '@/components/ui/premium-player-card';
-import { PremiumProgressBar } from '@/components/ui/premium-progress-bar';
 import { PremiumProgressPanel } from '@/components/ui/premium-progress-panel';
 import { PremiumSectionTitle } from '@/components/ui/premium-section-title';
 import { PremiumStatCard } from '@/components/ui/premium-stat-card';
@@ -25,12 +26,21 @@ import {
   PremiumTimelineRoadmap,
   type RoadmapStep
 } from '@/components/ui/premium-timeline-roadmap';
+import { SoftSkillsPanel } from '@/components/ui/soft-skills-panel';
+import { VocabularyPanel } from '@/components/ui/vocabulary-panel';
 import { requireRole } from '@/lib/auth/guards';
 import { ageYearsMonths } from '@/lib/students/age';
 import { buildMonthlyAttendanceSeries } from '@/lib/students/attendance-series';
-import { buildMonthlySkillSeries, seasonLabel } from '@/lib/students/skill-series';
-import { SKILL_KEYS, type SkillKey } from '@/lib/students/skills';
+import { LK_LEVELS, lkLevelFromAge, lkLevelOrder } from '@/lib/students/lk-levels';
+import { buildMonthlySkillSeries } from '@/lib/students/skill-series';
+import {
+  SKILL_KEYS,
+  SOFT_SKILL_KEYS,
+  type SkillKey,
+  type SoftSkillKey
+} from '@/lib/students/skills';
 import { createUntypedClient } from '@/lib/supabase/server';
+import type { LkLevel } from '@/types/database';
 
 type StudentRow = {
   id: string;
@@ -45,6 +55,8 @@ type StudentRow = {
   height_cm: number | null;
   weight_kg: number | null;
   photo_url: string | null;
+  english_vocab_known: string[] | null;
+  english_vocab_used: string[] | null;
 };
 
 type SessionRow = {
@@ -53,12 +65,14 @@ type SessionRow = {
   duration_minutes: number;
   status: 'scheduled' | 'held' | 'cancelled';
   group_id: string;
+  target_vocabulary: string[] | null;
 };
 
 type AttendanceRow = {
   session_id: string;
   present: boolean;
   coach_notes: string | null;
+  mood: number | null;
 };
 
 type CurrentObjectiveRow = {
@@ -118,7 +132,8 @@ export default async function ParentChildPage({
     .from('students')
     .select(
       'id, full_name, group_id, birth_date, enrolled_at, left_at, ' +
-        'dorsal_number, position, dominant_foot, height_cm, weight_kg, photo_url'
+        'dorsal_number, position, dominant_foot, height_cm, weight_kg, photo_url, ' +
+        'english_vocab_known, english_vocab_used'
     )
     .eq('id', params.studentId)
     .maybeSingle();
@@ -139,20 +154,31 @@ export default async function ParentChildPage({
     s.group_id
       ? supabase
           .from('groups')
-          .select('id, name, school_id')
+          .select('id, name, school_id, lk_level, start_date, end_date')
           .eq('id', s.group_id)
           .maybeSingle()
-      : Promise.resolve({ data: null as { id: string; name: string; school_id: string } | null }),
+      : Promise.resolve({
+          data: null as {
+            id: string;
+            name: string;
+            school_id: string;
+            lk_level: LkLevel | null;
+            start_date: string | null;
+            end_date: string | null;
+          } | null
+        }),
     s.group_id
       ? supabase
           .from('class_sessions')
-          .select('id, scheduled_at, duration_minutes, status, group_id')
+          .select(
+            'id, scheduled_at, duration_minutes, status, group_id, target_vocabulary'
+          )
           .eq('group_id', s.group_id)
           .order('scheduled_at', { ascending: false })
       : Promise.resolve({ data: [] as SessionRow[] }),
     supabase
       .from('attendances')
-      .select('session_id, present, coach_notes')
+      .select('session_id, present, coach_notes, mood')
       .eq('student_id', s.id),
     s.group_id
       ? supabase
@@ -189,6 +215,9 @@ export default async function ParentChildPage({
     id: string;
     name: string;
     school_id: string;
+    lk_level: LkLevel | null;
+    start_date: string | null;
+    end_date: string | null;
   } | null;
   const allSessions = (sessionsResult.data ?? []) as SessionRow[];
   const currentObjectives = (currentObjectivesResult.data ?? []) as CurrentObjectiveRow[];
@@ -223,17 +252,19 @@ export default async function ParentChildPage({
     .slice()
     .reverse()[0];
 
-  // Roadmap (same derivation as admin) — fetch school groups through group
+  // LK roadmap (4 fixed programmes + Graduación). Past levels inferred
+  // from previous groups with achievements that had a lk_level set.
   let schoolGroups: Array<{
     id: string;
     name: string;
     created_at: string;
     display_order: number;
+    lk_level: LkLevel | null;
   }> = [];
   if (group) {
     const { data: gs } = await supabase
       .from('groups')
-      .select('id, name, created_at, display_order')
+      .select('id, name, created_at, display_order, lk_level')
       .eq('school_id', group.school_id)
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: true });
@@ -242,6 +273,7 @@ export default async function ParentChildPage({
       name: string;
       created_at: string;
       display_order: number;
+      lk_level: LkLevel | null;
     }>;
   }
   const pastGroupIds = new Set<string>();
@@ -250,20 +282,32 @@ export default async function ParentChildPage({
       pastGroupIds.add(a.objectives.group_id);
     }
   }
-  const roadmapSteps: RoadmapStep[] = schoolGroups.map((g) => {
-    let state: RoadmapStep['state'];
-    if (g.id === s.group_id) state = 'current';
-    else if (pastGroupIds.has(g.id)) state = 'done';
-    else state = 'upcoming';
-    return { label: g.name, state };
-  });
-  if (roadmapSteps.length > 0) {
-    roadmapSteps.push({
-      label: t('admin.students.detail.futureLabel'),
-      sub: t('admin.students.detail.futureSub'),
-      state: 'dream'
-    });
+  const pastLevels = new Set<LkLevel>();
+  for (const g of schoolGroups) {
+    if (g.lk_level && pastGroupIds.has(g.id)) pastLevels.add(g.lk_level);
   }
+  const currentLkLevel: LkLevel | null =
+    group?.lk_level ?? lkLevelFromAge(s.birth_date);
+  const currentOrder = currentLkLevel ? lkLevelOrder(currentLkLevel) : -1;
+  const roadmapSteps: RoadmapStep[] = LK_LEVELS.map((lvl) => {
+    let state: RoadmapStep['state'];
+    if (currentLkLevel && lvl.key === currentLkLevel) state = 'current';
+    else if (pastLevels.has(lvl.key)) state = 'done';
+    else if (currentOrder >= 0 && lkLevelOrder(lvl.key) < currentOrder)
+      state = 'done';
+    else state = 'upcoming';
+    return {
+      label: t(`admin.students.detail.lkLevel.${lvl.key}` as const),
+      sub: t(`admin.students.detail.lkLevelAge.${lvl.key}` as const),
+      state
+    };
+  });
+  roadmapSteps.push({
+    label: t('admin.students.detail.lkLevel.graduation'),
+    sub: t('admin.students.detail.futureSub'),
+    state: 'dream'
+  });
+  const completedTermsCount = pastLevels.size;
 
   // Latest coach message (just the most recent communication for this parent).
   const latestMessage = (messagesResult.data ?? [])
@@ -288,14 +332,12 @@ export default async function ParentChildPage({
           ? t('parent.detail.positive.mid')
           : t('parent.detail.positive.low');
 
-  // Categorical progress bars — prefer real values from student_skills
-  // when present; fall back to a single synthesised "Compromiso" signal
-  // derived from attendance so the card never looks empty pre-onboarding.
+  // Badge progress = sub-skills achieved this term / total
   const totalObj = currentObjectives.length;
   const reachedObjCurrent = currentObjectives.filter((o) =>
     achievedIds.has(o.id)
   ).length;
-  const objectivesPct =
+  const badgePct =
     totalObj === 0 ? null : Math.round((reachedObjCurrent / totalObj) * 100);
 
   const skillRows = (skillsResult.data ?? []) as Array<{
@@ -305,54 +347,30 @@ export default async function ParentChildPage({
   const skillByKey = new Map<string, number>();
   for (const sr of skillRows) skillByKey.set(sr.skill, sr.value);
 
-  const TONES: Array<'cyan' | 'gold' | 'emerald' | 'amber' | 'red'> = [
-    'gold',
-    'cyan',
-    'emerald',
-    'amber',
-    'red'
-  ];
-
-  const hasRealSkills = skillRows.length > 0;
-  const categories: Array<{
-    label: string;
-    value: number;
-    tone: 'gold' | 'cyan' | 'emerald' | 'amber' | 'red';
-  }> = hasRealSkills
-    ? SKILL_KEYS.map((k: SkillKey, i) => ({
-        label: t(`parent.detail.skills.${k}` as const),
-        value: skillByKey.get(k) ?? 0,
-        tone: TONES[i % TONES.length]
-      }))
-    : [
-        {
-          label: t('parent.detail.skills.technique'),
-          value: objectivesPct ?? 60,
-          tone: 'gold'
-        },
-        {
-          label: t('parent.detail.skills.physical'),
-          value: pct ?? 65,
-          tone: 'cyan'
-        },
-        {
-          label: t('parent.detail.skills.mental'),
-          value: Math.min(100, (pct ?? 50) + (achievements.length > 0 ? 10 : 0)),
-          tone: 'emerald'
-        },
-        {
-          label: t('parent.detail.skills.social'),
-          value: 70,
-          tone: 'amber'
-        }
-      ];
-
   const ageYM = ageYearsMonths(s.birth_date);
 
-  // Player-card meta lines for the left panel.
+  // Term tag and label for the player card / progress panel.
+  const termRange =
+    group?.start_date && group?.end_date
+      ? format.dateTime(new Date(group.start_date), {
+          month: 'short',
+          timeZone: 'UTC'
+        }) +
+        ' – ' +
+        format.dateTime(new Date(group.end_date), {
+          month: 'short',
+          timeZone: 'UTC'
+        })
+      : null;
+  const termTag = termRange ?? '—';
+
+  // Player-card meta lines: "Programa LK · Grupo" + DOB con años/meses
   const playerMetaLines: string[] = [];
-  if (s.position || group) {
-    playerMetaLines.push([s.position, group?.name].filter(Boolean).join(' · '));
+  const lkLevelLabel = currentLkLevel
+    ? t(`admin.students.detail.lkLevel.${currentLkLevel}` as const)
+    : null;
+  if (lkLevelLabel || group) {
+    playerMetaLines.push([lkLevelLabel, group?.name].filter(Boolean).join(' · '));
   }
   if (s.birth_date) {
     const dob = format.dateTime(new Date(s.birth_date), {
@@ -379,11 +397,22 @@ export default async function ParentChildPage({
       playerMetaLines.push(dob);
     }
   }
-  if (group) {
-    playerMetaLines.push(t('admin.students.detail.groupLine', { group: group.name }));
-  }
 
   const playerStats: Array<{ label: string; value: React.ReactNode }> = [];
+  if (s.enrolled_at) {
+    playerStats.push({
+      label: t('admin.students.detail.firstClass'),
+      value: format.dateTime(new Date(s.enrolled_at), {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC'
+      })
+    });
+  }
+  playerStats.push({
+    label: t('admin.students.detail.completedTerms'),
+    value: String(completedTermsCount)
+  });
   if (s.height_cm) {
     playerStats.push({
       label: t('admin.students.detail.height'),
@@ -408,8 +437,8 @@ export default async function ParentChildPage({
     });
   }
 
-  // Mi progreso for parent — same shape as admin, but read-only and
-  // averaged across the 5 skills.
+  // Mi progreso — 5 LK skills + monthly perception line. Big ring is
+  // % of badge sub-skills unlocked this term (matches LK methodology).
   const snapshots = (snapshotsResult.data ?? []) as Array<{
     captured_month: string;
     value: number;
@@ -419,23 +448,64 @@ export default async function ParentChildPage({
     label: t(`parent.detail.skills.${k}` as const),
     value: skillByKey.get(k) ?? 0
   }));
-  const skillsWithValue = skillItems.filter((sk) => sk.value > 0);
-  const globalScore =
-    skillsWithValue.length === 0
-      ? null
-      : Math.round(
-          skillsWithValue.reduce((sum, sk) => sum + sk.value, 0) /
-            skillsWithValue.length
-        );
+  const softSkillItems = SOFT_SKILL_KEYS.map((k: SoftSkillKey) => ({
+    key: k,
+    label: t(`admin.students.detail.softSkillsValues.${k}` as const),
+    value: skillByKey.get(k) ?? 0
+  }));
   const progressSeries = buildMonthlySkillSeries(snapshots, 10);
   const encouragingScore =
-    globalScore !== null && globalScore >= 70
+    badgePct !== null && badgePct >= 70
       ? t('admin.students.detail.progress.encouragingHigh')
-      : globalScore !== null && globalScore >= 50
+      : badgePct !== null && badgePct >= 50
         ? t('admin.students.detail.progress.encouragingMid')
-        : globalScore !== null
+        : badgePct !== null
           ? t('admin.students.detail.progress.encouragingLow')
           : null;
+
+  // Mood average for the disfrute KPI.
+  const moodValues: number[] = [];
+  for (const a of attendanceBySession.values()) {
+    if (a.mood === 0 || a.mood === 1 || a.mood === 2) moodValues.push(a.mood);
+  }
+  const moodAvg =
+    moodValues.length === 0
+      ? null
+      : moodValues.reduce((s, v) => s + v, 0) / moodValues.length;
+  const moodLabel =
+    moodAvg === null
+      ? '—'
+      : moodAvg >= 1.5
+        ? t('admin.students.detail.mood.averageHigh')
+        : moodAvg >= 0.8
+          ? t('admin.students.detail.mood.averageMid')
+          : t('admin.students.detail.mood.averageLow');
+  const moodSub =
+    moodAvg === null
+      ? t('parent.detail.kpis.moodSubEmpty')
+      : moodAvg >= 1.5
+        ? t('parent.detail.kpis.moodSubHigh')
+        : moodAvg >= 0.8
+          ? t('parent.detail.kpis.moodSubMid')
+          : t('parent.detail.kpis.moodSubLow');
+  const moodIcon =
+    moodAvg === null ? Meh : moodAvg >= 1.5 ? Smile : moodAvg >= 0.8 ? Meh : Frown;
+  const MoodIcon = moodIcon;
+
+  // Vocabulary aggregates (term words) and last session's words.
+  const termWords = Array.from(
+    new Set(
+      sessions.flatMap((ss) =>
+        Array.isArray(ss.target_vocabulary) ? ss.target_vocabulary : []
+      )
+    )
+  );
+  const lastSessionWithWords = sessions.find(
+    (ss) => Array.isArray(ss.target_vocabulary) && ss.target_vocabulary.length > 0
+  );
+  const weekWords = lastSessionWithWords?.target_vocabulary ?? [];
+  const knownWords = s.english_vocab_known ?? [];
+  const usedWords = s.english_vocab_used ?? [];
 
   return (
     <AppShell
@@ -458,16 +528,16 @@ export default async function ParentChildPage({
           initials={initialsOf(s.full_name)}
           photoUrl={s.photo_url}
           meta={playerMetaLines}
-          dorsal={s.dorsal_number ?? null}
+          dorsal={termTag}
           dorsalLabel={t('admin.students.detail.dorsalLabel')}
           stats={playerStats}
         />
         <PremiumProgressPanel
           title={t('admin.students.detail.progress.title')}
-          seasonLabel={t('admin.students.detail.progress.season', {
-            season: seasonLabel()
+          seasonLabel={t('admin.students.detail.progress.term', {
+            label: termRange ?? t('admin.students.detail.termNoDates')
           })}
-          globalScore={globalScore}
+          globalScore={badgePct}
           globalLabel={t('admin.students.detail.progress.global')}
           skills={skillItems}
           series={progressSeries}
@@ -514,18 +584,14 @@ export default async function ParentChildPage({
         );
       })()}
 
-      {/* KPI row */}
+      {/* KPI row — Disfrute medio · Sub-skills · Próxima clase */}
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <PremiumStatCard
-          kicker={t('parent.detail.kpis.attendance')}
-          icon={<CheckSquare size={18} strokeWidth={2.2} aria-hidden />}
+          kicker={t('parent.detail.kpis.mood')}
+          icon={<MoodIcon size={18} strokeWidth={2.2} aria-hidden />}
           accent="cyan"
-          value={pct === null ? '—' : `${pct}%`}
-          sub={
-            recorded.length === 0
-              ? t('admin.students.detail.noAttendance')
-              : `${presentCount}/${recorded.length}`
-          }
+          value={moodLabel}
+          sub={moodSub}
         />
         <PremiumStatCard
           kicker={t('parent.detail.kpis.objectives')}
@@ -555,25 +621,43 @@ export default async function ParentChildPage({
         />
       </div>
 
-      {/* Mi progreso — categorical bars */}
+      {/* English vocabulary tracker */}
       <PremiumSectionTitle
-        icon={<Sparkles size={14} strokeWidth={2.4} aria-hidden />}
-        kicker={t('parent.detail.progress.kicker')}
-        title={t('parent.detail.progress.title')}
+        kicker={t('admin.students.detail.vocabulary.kicker')}
+        title={t('admin.students.detail.vocabulary.title')}
       />
-      <section className="ss-card p-4 sm:p-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {categories.map((c) => (
-            <PremiumProgressBar
-              key={c.label}
-              label={c.label}
-              value={c.value}
-              tone={c.tone}
-            />
-          ))}
-        </div>
-        <p className="mt-4 text-xs text-ink-400">{t('parent.detail.progress.note')}</p>
-      </section>
+      <VocabularyPanel
+        kicker={t('admin.students.detail.vocabulary.kicker')}
+        title={t('admin.students.detail.vocabulary.title')}
+        termWords={termWords}
+        knownWords={knownWords}
+        usedWords={usedWords}
+        weekWords={weekWords}
+        weekLabel={t('admin.students.detail.vocabulary.wordsThisWeek')}
+        trackerLabel={
+          termWords.length === 0
+            ? t('admin.students.detail.vocabulary.trackerEmpty')
+            : t('admin.students.detail.vocabulary.tracker', {
+                known: knownWords.length,
+                total: termWords.length
+              })
+        }
+        knownLegend={t('admin.students.detail.vocabulary.knownLabel')}
+        usedLegend={t('admin.students.detail.vocabulary.usedLabel')}
+        emptyHint={t('admin.students.detail.vocabulary.noTarget')}
+      />
+
+      {/* Soft skills (read-only) */}
+      <PremiumSectionTitle
+        kicker={t('admin.students.detail.softSkills.kicker')}
+        title={t('admin.students.detail.softSkills.title')}
+      />
+      <SoftSkillsPanel
+        kicker={t('admin.students.detail.softSkills.kicker')}
+        title={t('admin.students.detail.softSkills.title')}
+        hint={t('admin.students.detail.softSkills.hint')}
+        items={softSkillItems}
+      />
 
       {/* Roadmap */}
       {roadmapSteps.length > 0 ? (
@@ -726,6 +810,22 @@ export default async function ParentChildPage({
                 timeStyle: 'short',
                 timeZone: 'UTC'
               });
+              const RowMoodIcon =
+                att?.mood === 2
+                  ? Smile
+                  : att?.mood === 1
+                    ? Meh
+                    : att?.mood === 0
+                      ? Frown
+                      : null;
+              const moodTitle =
+                att?.mood === 2
+                  ? t('admin.students.detail.mood.happy')
+                  : att?.mood === 1
+                    ? t('admin.students.detail.mood.neutral')
+                    : att?.mood === 0
+                      ? t('admin.students.detail.mood.sad')
+                      : '';
               return (
                 <li key={ss.id} className="flex items-start gap-3 px-4 py-3">
                   <span
@@ -751,11 +851,29 @@ export default async function ParentChildPage({
                     <p className="text-xs text-ink-300">
                       {t(`admin.attendance.status.${ss.status}`)} ·{' '}
                       {ss.duration_minutes} {t('admin.attendance.minutes')}
+                      {Array.isArray(ss.target_vocabulary) &&
+                      ss.target_vocabulary.length > 0 ? (
+                        <>
+                          {' · '}
+                          <span className="text-gold-300">
+                            {ss.target_vocabulary.slice(0, 4).join(' · ')}
+                          </span>
+                        </>
+                      ) : null}
                     </p>
                     {att?.coach_notes ? (
                       <p className="mt-1 text-sm text-ink-200">{att.coach_notes}</p>
                     ) : null}
                   </div>
+                  {RowMoodIcon ? (
+                    <span
+                      title={moodTitle}
+                      aria-label={moodTitle}
+                      className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-ink-200"
+                    >
+                      <RowMoodIcon size={14} strokeWidth={2.4} aria-hidden />
+                    </span>
+                  ) : null}
                   <span
                     className={
                       !att

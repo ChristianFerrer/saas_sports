@@ -5,7 +5,8 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
 import type { GroupFormState } from '@/app/(admin)/admin/groups/actions';
-import type { GroupScheduleEntry } from '@/types/database';
+import type { GroupScheduleEntry, LkLevel } from '@/types/database';
+import { LK_LEVELS } from '@/lib/students/lk-levels';
 
 import { ScheduleEditor } from './schedule-editor';
 
@@ -19,11 +20,13 @@ type GroupFormProps = {
   defaultStartDate?: string | null;
   defaultEndDate?: string | null;
   defaultDisplayOrder?: number;
+  defaultLkLevel?: LkLevel | null;
   coaches?: CoachOption[];
   showSchedule?: boolean;
   showCoach?: boolean;
   showCycle?: boolean;
   showOrder?: boolean;
+  showLkLevel?: boolean;
   submitLabel: string;
 };
 
@@ -37,15 +40,18 @@ export function GroupForm({
   defaultStartDate = null,
   defaultEndDate = null,
   defaultDisplayOrder = 0,
+  defaultLkLevel = null,
   coaches = [],
   showSchedule = false,
   showCoach = false,
   showCycle = false,
   showOrder = false,
+  showLkLevel = false,
   submitLabel
 }: GroupFormProps) {
   const t = useTranslations('admin.groups');
   const tCommon = useTranslations('common');
+  const tLevel = useTranslations('admin.students.detail.lkLevel');
   const [state, formAction] = useFormState(action, INITIAL);
 
   const errorMessage =
@@ -157,6 +163,29 @@ export function GroupForm({
             defaultValue={defaultDisplayOrder}
             className="ss-input max-w-[10rem]"
           />
+        </div>
+      ) : null}
+
+      {showLkLevel ? (
+        <div className="space-y-1.5">
+          <label htmlFor="lk_level" className="ss-label">
+            {t('fields.lkLevel')}{' '}
+            <span className="text-ink-400">{tCommon('optional')}</span>
+          </label>
+          <p className="text-xs text-ink-300">{t('fields.lkLevelHint')}</p>
+          <select
+            id="lk_level"
+            name="lk_level"
+            defaultValue={defaultLkLevel ?? ''}
+            className="ss-input max-w-sm"
+          >
+            <option value="">{t('fields.lkLevelNone')}</option>
+            {LK_LEVELS.map((lvl) => (
+              <option key={lvl.key} value={lvl.key}>
+                {tLevel(lvl.key)}
+              </option>
+            ))}
+          </select>
         </div>
       ) : null}
 

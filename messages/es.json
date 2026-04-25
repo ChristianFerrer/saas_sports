@@ -65,7 +65,10 @@
         "startDate": "Fecha de inicio",
         "endDate": "Fecha de fin",
         "displayOrder": "Orden en el camino",
-        "displayOrderHint": "Controla la posición del grupo en el roadmap del alumno. Menor va primero."
+        "displayOrderHint": "Controla la posición del grupo en el roadmap del alumno. Menor va primero.",
+        "lkLevel": "Programa Little Kickers",
+        "lkLevelHint": "Si vais con la metodología Little Kickers, elige el programa al que pertenece este grupo.",
+        "lkLevelNone": "— No aplica —"
       },
       "errors": {
         "nameRequired": "El nombre es obligatorio.",
@@ -203,15 +206,26 @@
         "skills": {
           "kicker": "Habilidades",
           "title": "Valoración por área",
-          "hint": "0 (en proceso) — 100 (dominado). Se ve en la ficha del alumno y en la vista de los padres."
+          "hint": "0 (en proceso) — 100 (dominado). Las cinco áreas Little Kickers: cómo piensa, cómo se mueve, cómo juega, cómo se comunica y cómo se relaciona."
+        },
+        "softSkills": {
+          "kicker": "Cómo está creciendo",
+          "title": "Autonomía y comportamiento",
+          "hint": "Lectura del coach al final de cada clase, en escala 0–100."
         },
         "trend": {
           "kicker": "Progreso",
           "title": "Asistencia mensual",
           "lastMonths": "Últimos {count} meses"
         },
-        "dorsalLabel": "Dorsal",
+        "dorsalLabel": "Trimestre",
         "groupLine": "{group}",
+        "firstClass": "Primera clase",
+        "completedTerms": "Trimestres completados",
+        "completedTermsValue": "{count, plural, =0 {Sin trimestres todavía} =1 {1 trimestre} other {# trimestres}}",
+        "termCurrent": "Trimestre actual",
+        "termFromTo": "{from} – {to}",
+        "termNoDates": "Trimestre en curso",
         "ageYearOne": "1 año",
         "ageYearOther": "{count} años",
         "ageMonthOne": "1 mes",
@@ -219,11 +233,59 @@
         "progress": {
           "title": "Mi progreso",
           "season": "Temporada {season}",
-          "global": "Global",
+          "term": "Trimestre · {label}",
+          "global": "Badge",
+          "globalCaption": "Sub-skills logrados",
           "emptySeries": "Aún no hay valoraciones mensuales. Cuando el coach guarde las habilidades, este gráfico mostrará la evolución.",
-          "encouragingHigh": "¡Sigue así! Estás por encima del promedio de tu categoría.",
-          "encouragingMid": "Vas progresando. Constancia y enfoque te acercan al siguiente nivel.",
-          "encouragingLow": "Cada entreno cuenta. Vamos por más esta semana."
+          "encouragingHigh": "Va a un gran ritmo. Cerca de desbloquear el badge del trimestre.",
+          "encouragingMid": "Buen progreso del trimestre. Cada clase suma para el badge.",
+          "encouragingLow": "Empezando el trimestre. Cada clase cuenta para el badge."
+        },
+        "vocabulary": {
+          "kicker": "Inglés del trimestre",
+          "title": "Vocabulario del trimestre",
+          "tracker": "{known}/{total} palabras reconocidas",
+          "trackerEmpty": "Aún no hay palabras del trimestre",
+          "knownLabel": "Reconocida",
+          "usedLabel": "Usa por sí solo",
+          "addPlaceholder": "Añadir palabra (ej. ball, kick…)",
+          "add": "Añadir",
+          "noTarget": "Aún no se han registrado palabras objetivo en las sesiones del trimestre.",
+          "edit": "Editar vocabulario",
+          "save": "Guardar",
+          "wordsThisWeek": "Esta semana"
+        },
+        "mood": {
+          "happy": "Disfrutó",
+          "neutral": "Normal",
+          "sad": "Le costó",
+          "average": "Disfrute medio",
+          "averageHigh": "Le encanta venir",
+          "averageMid": "Disfruta",
+          "averageLow": "Necesitamos cuidarlo"
+        },
+        "badge": {
+          "title": "Badge del trimestre",
+          "kicker": "Badge {term}",
+          "progress": "{achieved} de {total} sub-skills"
+        },
+        "softSkillsValues": {
+          "independence": "Independencia",
+          "social_confidence": "Confianza social",
+          "follows_instructions": "Sigue al coach"
+        },
+        "lkLevel": {
+          "little_kicks": "Little Kicks",
+          "junior": "Junior Kickers",
+          "mighty": "Mighty Kickers",
+          "mega": "Mega Kickers",
+          "graduation": "Graduación"
+        },
+        "lkLevelAge": {
+          "little_kicks": "18 m – 2½ años",
+          "junior": "2½ – 3½ años",
+          "mighty": "3½ – 5 años",
+          "mega": "5 – 8 años"
         },
         "contactInfo": {
           "kicker": "Ficha",
@@ -273,7 +335,17 @@
         "sessionNotes": "Nota de la sesión",
         "sessionNotesHint": "Aparece al lado del estado. Ej. \"Festivo\", \"Cambio de sede\".",
         "sessionNotesPlaceholder": "Ej. Cambio de sede por lluvia",
-        "notesPlaceholder": "Notas del entrenador (opcional)"
+        "notesPlaceholder": "Notas del entrenador (opcional)",
+        "vocabulary": "Vocabulario en inglés del día",
+        "vocabularyHint": "3–5 palabras objetivo del trimestre que vais a trabajar hoy. Separa por comas o espacios.",
+        "vocabularyPlaceholder": "ball, kick, run, jump",
+        "moodLegend": "Disfrute al final de la clase"
+      },
+      "mood": {
+        "happy": "Disfrutó",
+        "neutral": "Normal",
+        "sad": "Le costó",
+        "clear": "Limpiar"
       },
       "editSession": "Editar sesión",
       "errors": {
@@ -489,9 +561,15 @@
       },
       "kpis": {
         "attendance": "Asistencia",
-        "objectives": "Objetivos",
-        "objectivesSub": "Logrados en este grupo",
-        "nextSession": "Próxima clase"
+        "mood": "Disfrute medio",
+        "moodSubHigh": "Le encanta venir",
+        "moodSubMid": "Disfruta cada clase",
+        "moodSubLow": "Necesitamos cuidarlo",
+        "moodSubEmpty": "Sin lecturas de disfrute todavía",
+        "objectives": "Sub-skills del badge",
+        "objectivesSub": "Logrados en este trimestre",
+        "nextSession": "Próxima clase",
+        "vocabularyCaption": "Esta semana: {words}"
       },
       "progress": {
         "kicker": "Mi progreso",
@@ -499,14 +577,14 @@
         "note": "Escala visual orientativa basada en asistencia y objetivos logrados. Pronto podrás seguir cada habilidad por separado."
       },
       "skills": {
-        "technique": "Técnica",
+        "cognitive": "Cognitivo",
         "physical": "Físico",
-        "tactical": "Táctico",
-        "mental": "Mental",
+        "football": "Football",
+        "english": "Inglés",
         "social": "Social"
       },
       "roadmap": {
-        "caption": "Cada paso te acerca a tus sueños. Nosotros te ayudamos a llegar."
+        "caption": "Little Kicks → Junior → Mighty → Mega. Cada nivel suma habilidades nuevas."
       },
       "objectives": {
         "kicker": "Objetivos de la temporada"

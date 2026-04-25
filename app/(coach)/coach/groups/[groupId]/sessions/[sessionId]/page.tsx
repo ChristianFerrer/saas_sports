@@ -17,7 +17,12 @@ type SessionRow = {
   status: 'scheduled' | 'held' | 'cancelled';
 };
 type StudentRow = { id: string; full_name: string };
-type AttendanceRow = { student_id: string; present: boolean; coach_notes: string | null };
+type AttendanceRow = {
+  student_id: string;
+  present: boolean;
+  coach_notes: string | null;
+  mood: number | null;
+};
 
 export default async function CoachAttendanceSheetPage({
   params
@@ -55,14 +60,22 @@ export default async function CoachAttendanceSheetPage({
       .order('full_name', { ascending: true }),
     supabase
       .from('attendances')
-      .select('student_id, present, coach_notes')
+      .select('student_id, present, coach_notes, mood')
       .eq('session_id', s.id)
   ]);
 
   const students = (studentsResult.data ?? []) as StudentRow[];
-  const existing = new Map<string, { present: boolean; notes: string }>();
+  const existing = new Map<
+    string,
+    { present: boolean; notes: string; mood: 0 | 1 | 2 | null }
+  >();
   for (const a of (attendanceResult.data ?? []) as AttendanceRow[]) {
-    existing.set(a.student_id, { present: a.present, notes: a.coach_notes ?? '' });
+    const mood = a.mood === 0 || a.mood === 1 || a.mood === 2 ? (a.mood as 0 | 1 | 2) : null;
+    existing.set(a.student_id, {
+      present: a.present,
+      notes: a.coach_notes ?? '',
+      mood
+    });
   }
 
   const display = format.dateTime(new Date(s.scheduled_at), {
@@ -106,7 +119,8 @@ export default async function CoachAttendanceSheetPage({
             id: st.id,
             fullName: st.full_name,
             present: existing.get(st.id)?.present ?? true,
-            notes: existing.get(st.id)?.notes ?? ''
+            notes: existing.get(st.id)?.notes ?? '',
+            mood: existing.get(st.id)?.mood ?? null
           }))}
           submitLabel={t('common.save')}
           savedLabel={t('admin.attendance.saved')}

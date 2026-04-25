@@ -65,7 +65,10 @@
         "startDate": "Start date",
         "endDate": "End date",
         "displayOrder": "Order on the path",
-        "displayOrderHint": "Controls where this group sits on the student's roadmap. Lower goes first."
+        "displayOrderHint": "Controls where this group sits on the student's roadmap. Lower goes first.",
+        "lkLevel": "Little Kickers programme",
+        "lkLevelHint": "If you follow the Little Kickers methodology, pick the programme this group maps to.",
+        "lkLevelNone": "— Not applicable —"
       },
       "errors": {
         "nameRequired": "Name is required.",
@@ -203,15 +206,26 @@
         "skills": {
           "kicker": "Skills",
           "title": "Rating by area",
-          "hint": "0 (learning) — 100 (mastered). Appears on the player profile and parent view."
+          "hint": "0 (learning) — 100 (mastered). The five Little Kickers areas: how they think, how they move, how they play, how they communicate and how they relate."
+        },
+        "softSkills": {
+          "kicker": "How they're growing",
+          "title": "Independence and behaviour",
+          "hint": "Coach read at the end of class, on a 0–100 scale."
         },
         "trend": {
           "kicker": "Progress",
           "title": "Monthly attendance",
           "lastMonths": "Last {count} months"
         },
-        "dorsalLabel": "Jersey",
+        "dorsalLabel": "Term",
         "groupLine": "{group}",
+        "firstClass": "First class",
+        "completedTerms": "Terms completed",
+        "completedTermsValue": "{count, plural, =0 {No terms yet} =1 {1 term} other {# terms}}",
+        "termCurrent": "Current term",
+        "termFromTo": "{from} – {to}",
+        "termNoDates": "Term in progress",
         "ageYearOne": "1 year",
         "ageYearOther": "{count} years",
         "ageMonthOne": "1 month",
@@ -219,11 +233,59 @@
         "progress": {
           "title": "My progress",
           "season": "Season {season}",
-          "global": "Global",
+          "term": "Term · {label}",
+          "global": "Badge",
+          "globalCaption": "Sub-skills unlocked",
           "emptySeries": "No monthly ratings yet. Once the coach saves skills, this chart will show the trend.",
-          "encouragingHigh": "Keep it up! You're above your category's average.",
-          "encouragingMid": "Solid progress. Consistency and focus take you to the next level.",
-          "encouragingLow": "Every practice counts. Let's push more this week."
+          "encouragingHigh": "Going strong. Close to unlocking this term's badge.",
+          "encouragingMid": "Solid term progress. Every class counts towards the badge.",
+          "encouragingLow": "Term just started. Every class counts towards the badge."
+        },
+        "vocabulary": {
+          "kicker": "Term English",
+          "title": "Term vocabulary",
+          "tracker": "{known}/{total} words recognised",
+          "trackerEmpty": "No words for this term yet",
+          "knownLabel": "Recognised",
+          "usedLabel": "Uses on her own",
+          "addPlaceholder": "Add a word (e.g. ball, kick…)",
+          "add": "Add",
+          "noTarget": "No target words registered for this term's sessions yet.",
+          "edit": "Edit vocabulary",
+          "save": "Save",
+          "wordsThisWeek": "This week"
+        },
+        "mood": {
+          "happy": "Enjoyed",
+          "neutral": "Neutral",
+          "sad": "Struggled",
+          "average": "Average mood",
+          "averageHigh": "Loves coming",
+          "averageMid": "Enjoys",
+          "averageLow": "Needs care"
+        },
+        "badge": {
+          "title": "Term badge",
+          "kicker": "Badge {term}",
+          "progress": "{achieved} of {total} sub-skills"
+        },
+        "softSkillsValues": {
+          "independence": "Independence",
+          "social_confidence": "Social confidence",
+          "follows_instructions": "Follows the coach"
+        },
+        "lkLevel": {
+          "little_kicks": "Little Kicks",
+          "junior": "Junior Kickers",
+          "mighty": "Mighty Kickers",
+          "mega": "Mega Kickers",
+          "graduation": "Graduation"
+        },
+        "lkLevelAge": {
+          "little_kicks": "18 m – 2½ yrs",
+          "junior": "2½ – 3½ yrs",
+          "mighty": "3½ – 5 yrs",
+          "mega": "5 – 8 yrs"
         },
         "contactInfo": {
           "kicker": "Record",
@@ -273,7 +335,17 @@
         "sessionNotes": "Session note",
         "sessionNotesHint": "Shown next to the status. e.g. \"Holiday\", \"Venue change\".",
         "sessionNotesPlaceholder": "e.g. Venue change due to rain",
-        "notesPlaceholder": "Coach notes (optional)"
+        "notesPlaceholder": "Coach notes (optional)",
+        "vocabulary": "English vocabulary of the day",
+        "vocabularyHint": "3–5 target words from the term you'll work today. Separate by commas or spaces.",
+        "vocabularyPlaceholder": "ball, kick, run, jump",
+        "moodLegend": "How they enjoyed the class"
+      },
+      "mood": {
+        "happy": "Enjoyed",
+        "neutral": "Neutral",
+        "sad": "Struggled",
+        "clear": "Clear"
       },
       "editSession": "Edit session",
       "errors": {
@@ -489,9 +561,15 @@
       },
       "kpis": {
         "attendance": "Attendance",
-        "objectives": "Objectives",
-        "objectivesSub": "Reached in this group",
-        "nextSession": "Next class"
+        "mood": "Average mood",
+        "moodSubHigh": "Loves coming",
+        "moodSubMid": "Enjoys every class",
+        "moodSubLow": "Needs care",
+        "moodSubEmpty": "No mood reads yet",
+        "objectives": "Badge sub-skills",
+        "objectivesSub": "Reached this term",
+        "nextSession": "Next class",
+        "vocabularyCaption": "This week: {words}"
       },
       "progress": {
         "kicker": "My progress",
@@ -499,14 +577,14 @@
         "note": "Visual snapshot based on attendance and achievements. Per-skill tracking is coming soon."
       },
       "skills": {
-        "technique": "Technique",
+        "cognitive": "Cognitive",
         "physical": "Physical",
-        "tactical": "Tactical",
-        "mental": "Mental",
+        "football": "Football",
+        "english": "English",
         "social": "Social"
       },
       "roadmap": {
-        "caption": "Every step brings them closer to their dreams. We walk alongside them."
+        "caption": "Little Kicks → Junior → Mighty → Mega. Each level unlocks new skills."
       },
       "objectives": {
         "kicker": "Season objectives"

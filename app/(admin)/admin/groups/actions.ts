@@ -5,7 +5,9 @@ import { redirect } from 'next/navigation';
 
 import { requireRole } from '@/lib/auth/guards';
 import { parseSchedule } from '@/lib/groups/schedule';
+import { isLkLevel } from '@/lib/students/lk-levels';
 import { createUntypedClient } from '@/lib/supabase/server';
+import type { LkLevel } from '@/types/database';
 
 export type GroupFormState = { error?: string };
 
@@ -90,6 +92,9 @@ export async function updateGroup(
     displayOrder = parsed;
   }
 
+  const lkLevelRaw = String(formData.get('lk_level') ?? '').trim();
+  const lkLevel: LkLevel | null = isLkLevel(lkLevelRaw) ? lkLevelRaw : null;
+
   const supabase = createUntypedClient();
   const { error } = await supabase
     .from('groups')
@@ -99,6 +104,7 @@ export async function updateGroup(
       coach_id,
       start_date: start,
       end_date: end,
+      lk_level: lkLevel,
       ...(displayOrder !== null ? { display_order: displayOrder } : {})
     })
     .eq('id', id);
